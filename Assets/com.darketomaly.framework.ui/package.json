@@ -1,0 +1,21 @@
+{
+  "name": "com.darketomaly.framework.ui",
+  "version": "0.0.1",
+  "displayName": "Framework UI",
+  "description": "Library of components and utility useful for building UI.",
+  "unity": "2019.1",
+  "unityRelease": "0b5",
+  "documentationUrl": "",
+  "changelogUrl": "",
+  "licensesUrl": "",
+  "keywords": [
+    "keyword1",
+    "keyword2",
+    "keyword3"
+  ],
+  "author": {
+    "name": "Darketomaly",
+    "email": "business@darketomaly.com",
+    "url": "https://darketomaly.com"
+  }
+}

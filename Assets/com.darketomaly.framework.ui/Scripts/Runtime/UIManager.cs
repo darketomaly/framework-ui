@@ -51,7 +51,7 @@ namespace Framework.UI
         {
             switch (uiType)
             {
-                case UIType.Button:
+                case UIType.ButtonBackground:
                     return CurrentStyle.m_ButtonColorBlock;
             }
 

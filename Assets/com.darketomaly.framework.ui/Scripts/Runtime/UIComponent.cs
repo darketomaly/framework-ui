@@ -41,11 +41,6 @@ namespace Framework.UI
             {
                 UpdateText(false);
             }
-
-            if (m_Type is UIType.Button)
-            {
-                UpdateButton();
-            }
         }
 
         private void Initialize()
@@ -55,18 +50,6 @@ namespace Framework.UI
                 UpdateText(true);
             }
 
-            if (m_Type is UIType.Button)
-            {
-                UpdateButton();
-            }
-        }
-
-        private void UpdateButton()
-        {
-            var btn = GetComponent<Button>();
-            var colorBlock = UIManager.Instance.GetColorBlock(m_Type);
-                
-            btn.colors = colorBlock;
         }
 
         private void UpdateText(bool instant)

@@ -3,7 +3,8 @@ namespace Framework.UI
     public enum UIType
     {
         Label,
-        Button
+        ButtonBackground,
+        ButtonBorder
     }
 
     public enum UIEvents

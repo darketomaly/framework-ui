@@ -11,5 +11,8 @@ namespace Framework.UI
         
         [Header("Button color block")]
         public ColorBlock m_ButtonColorBlock;
+        
+        [Header("Button border color block")]
+        public ColorBlock m_ButtonBorderColorBlock;
     }
 }

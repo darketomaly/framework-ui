@@ -3,6 +3,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
+public enum ButtonState
+{
+    Normal,
+    Highlighted,
+    Pressed,
+    Selected,
+    Disabled
+}
+
 [RequireComponent(typeof(Button))]
 public class ButtonEvents : MonoBehaviour, 
     IPointerEnterHandler, IPointerExitHandler, 
@@ -16,6 +25,9 @@ public class ButtonEvents : MonoBehaviour,
     [Tooltip("Check this box to print state changes to the Console.")]
     public bool showDebugLogs = true;
 
+    // Current state property (read-only from outside)
+    public ButtonState CurrentState { get; private set; } = ButtonState.Normal;
+
     // C# Actions for code subscription
     public event Action OnNormal;
     public event Action OnHighlighted;
@@ -28,6 +40,7 @@ public class ButtonEvents : MonoBehaviour,
     {
         targetButton = GetComponent<Button>();
         wasInteractable = targetButton.interactable;
+        CurrentState = wasInteractable ? ButtonState.Normal : ButtonState.Disabled;
     }
 
     private void Update()
@@ -44,6 +57,7 @@ public class ButtonEvents : MonoBehaviour,
             }
             else
             {
+                CurrentState = ButtonState.Disabled;
                 if (showDebugLogs) Debug.Log($"[{gameObject.name}] Button Disabled", gameObject);
                 OnDisabled?.Invoke();
             }
@@ -54,6 +68,7 @@ public class ButtonEvents : MonoBehaviour,
     {
         if (!targetButton.interactable) return;
         
+        CurrentState = ButtonState.Highlighted;
         if (showDebugLogs) Debug.Log($"[{gameObject.name}] Highlighted (Pointer Enter)", gameObject);
         OnHighlighted?.Invoke();
     }
@@ -72,6 +87,7 @@ public class ButtonEvents : MonoBehaviour,
     {
         if (!targetButton.interactable) return;
         
+        CurrentState = ButtonState.Pressed;
         if (showDebugLogs) Debug.Log($"[{gameObject.name}] Pressed (Pointer Down)", gameObject);
         OnPressed?.Invoke();
     }
@@ -83,6 +99,7 @@ public class ButtonEvents : MonoBehaviour,
         if (RectTransformUtility.RectangleContainsScreenPoint(
             targetButton.transform as RectTransform, eventData.position, eventData.pressEventCamera))
         {
+            CurrentState = ButtonState.Highlighted;
             if (showDebugLogs) Debug.Log($"[{gameObject.name}] Highlighted (Pointer Up inside)", gameObject);
             OnHighlighted?.Invoke();
         }
@@ -92,6 +109,7 @@ public class ButtonEvents : MonoBehaviour,
     {
         if (!targetButton.interactable) return;
         
+        CurrentState = ButtonState.Selected;
         if (showDebugLogs) Debug.Log($"[{gameObject.name}] Selected", gameObject);
         OnSelected?.Invoke();
     }
@@ -100,12 +118,12 @@ public class ButtonEvents : MonoBehaviour,
     {
         if (!targetButton.interactable) return;
         
-        if (showDebugLogs) Debug.Log($"[{gameObject.name}] Deselected", gameObject);
         TriggerNormal();
     }
 
     private void TriggerNormal()
     {
+        CurrentState = ButtonState.Normal;
         if (showDebugLogs) Debug.Log($"[{gameObject.name}] Normal State", gameObject);
         OnNormal?.Invoke();
     }

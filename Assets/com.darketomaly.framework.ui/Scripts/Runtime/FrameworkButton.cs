@@ -33,23 +33,42 @@ namespace Framework.UI
         {
             m_buttonEvents.OnNormal += OnNormal;
             m_buttonEvents.OnHighlighted += OnHighlighted;
+            m_buttonEvents.OnDisabled += OnDisabled;
             
             FrameworkEventsFactory.Subscribe(UIEvents.ManagerInitialized, OnManagerInitialized);
+            FrameworkEventsFactory.Subscribe(UIEvents.OnThemeChanged, OnThemeChanged);
         }
 
         private void OnDisable()
         {
             m_buttonEvents.OnNormal -= OnNormal;
             m_buttonEvents.OnHighlighted -= OnHighlighted;
+            m_buttonEvents.OnDisabled -= OnDisabled;
             
             FrameworkEventsFactory.Unsubscribe(UIEvents.ManagerInitialized, OnManagerInitialized);
+            FrameworkEventsFactory.Unsubscribe(UIEvents.OnThemeChanged, OnThemeChanged);
+        }
+        
+        private void OnThemeChanged()
+        {
+            Refresh(false);
         }
         
         private void OnManagerInitialized()
         {
-            ApplyStateColor(block => block.normalColor, true);
+            Refresh(true);
         }
-        
+
+        private void Refresh(bool instant)
+        {
+            ApplyStateColor(block => block.normalColor, instant);
+        }
+
+        private void OnDisabled()
+        {
+            ApplyStateColor(block => block.disabledColor, false);
+        }
+
         private void OnNormal()
         {
             ApplyStateColor(block => block.normalColor, false);

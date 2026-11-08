@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: darketomaly.framework.ui.runtime::Framework.UI.UIStyle
   m_LabelColor: {r: 0.13519025, g: 1, b: 0, a: 1}
   m_ButtonColorBlock:
-    m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
+    m_NormalColor: {r: 0, g: 1, b: 0.23434687, a: 0}
     m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
     m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
     m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}

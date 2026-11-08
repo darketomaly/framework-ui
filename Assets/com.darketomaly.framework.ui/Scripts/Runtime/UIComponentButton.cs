@@ -31,9 +31,11 @@ namespace Framework.UI
 
         private void OnEnable()
         {
-            m_buttonEvents.OnNormal += OnNormal;
-            m_buttonEvents.OnHighlighted += OnHighlighted;
-            m_buttonEvents.OnDisabled += OnDisabled;
+            m_buttonEvents.OnNormal += RefreshAnimated;
+            m_buttonEvents.OnHighlighted += RefreshAnimated;
+            m_buttonEvents.OnPressed += RefreshAnimated;
+            m_buttonEvents.OnSelected += RefreshAnimated;
+            m_buttonEvents.OnDisabled += RefreshAnimated;
             
             FrameworkEventsFactory.Subscribe(UIEvents.ManagerInitialized, OnManagerInitialized);
             FrameworkEventsFactory.Subscribe(UIEvents.OnThemeChanged, OnThemeChanged);
@@ -41,9 +43,11 @@ namespace Framework.UI
 
         private void OnDisable()
         {
-            m_buttonEvents.OnNormal -= OnNormal;
-            m_buttonEvents.OnHighlighted -= OnHighlighted;
-            m_buttonEvents.OnDisabled -= OnDisabled;
+            m_buttonEvents.OnNormal -= RefreshAnimated;
+            m_buttonEvents.OnHighlighted -= RefreshAnimated;
+            m_buttonEvents.OnPressed -= RefreshAnimated;
+            m_buttonEvents.OnSelected -= RefreshAnimated;
+            m_buttonEvents.OnDisabled -= RefreshAnimated;
             
             FrameworkEventsFactory.Unsubscribe(UIEvents.ManagerInitialized, OnManagerInitialized);
             FrameworkEventsFactory.Unsubscribe(UIEvents.OnThemeChanged, OnThemeChanged);
@@ -61,22 +65,29 @@ namespace Framework.UI
 
         private void Refresh(bool instant)
         {
-            ApplyStateColor(block => block.normalColor, instant);
+            switch (m_buttonEvents.CurrentState)
+            {
+                case ButtonState.Normal:
+                    ApplyStateColor(block => block.normalColor, instant);
+                    break;
+                case ButtonState.Highlighted:
+                    ApplyStateColor(block => block.highlightedColor, instant);
+                    break;
+                case ButtonState.Pressed:
+                    ApplyStateColor(block => block.pressedColor, instant);
+                    break;
+                case ButtonState.Selected:
+                    ApplyStateColor(block => block.selectedColor, instant);
+                    break;
+                case ButtonState.Disabled:
+                    ApplyStateColor(block => block.disabledColor, instant);
+                    break;
+            }
         }
 
-        private void OnDisabled()
+        private void RefreshAnimated()
         {
-            ApplyStateColor(block => block.disabledColor, false);
-        }
-
-        private void OnNormal()
-        {
-            ApplyStateColor(block => block.normalColor, false);
-        }
-        
-        private void OnHighlighted()
-        {
-            ApplyStateColor(block => block.highlightedColor, false);
+            Refresh(false);
         }
         
         private void ApplyStateColor(System.Func<ColorBlock, Color> colorSelector, bool instant)

@@ -3,12 +3,20 @@ using Framework.Events;
 using TMPro;
 using UnityEngine;
 
+#if DOTWEEN
+using DG.Tweening;
+#endif
+
 namespace Framework.UI
 {
     public class UIComponent : MonoBehaviour
     {
         [SerializeField]
         private UIType m_Type;
+
+        #if DOTWEEN
+        private Tween m_tween;
+        #endif
 
         private void OnEnable()
         {
@@ -37,7 +45,18 @@ namespace Framework.UI
             var color = UIManager.Instance.GetColor(m_Type);
             var txt = GetComponent<TextMeshProUGUI>();
 
-            txt.color = color;
+            #if DOTWEEN
+
+            m_tween?.Kill();
+
+            m_tween = DOTween.To(
+                () => txt.color,    
+                x => txt.color = x,   
+                color,                 
+                0.5f                        
+            );
+            
+            #endif
         }
     }
 }

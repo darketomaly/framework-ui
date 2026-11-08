@@ -17,7 +17,7 @@ namespace Framework.UI
     }
     
     [RequireComponent(typeof(ButtonEvents))]
-    public class FrameworkButton : MonoBehaviour
+    public class UIComponentButton : MonoBehaviour
     {
         public TargetGraphic[] m_TargetGraphics;
 

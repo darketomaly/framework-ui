@@ -7,7 +7,9 @@ namespace Framework.UI
     public class UIManager : Singleton<UIManager>
     {
         private UIStyle[] m_styles;
-        private UIStyle m_currentStyle;
+        private int m_currentStyleIndex;
+        
+        private UIStyle CurrentStyle => m_styles[m_currentStyleIndex]; 
 
         [RuntimeInitializeOnLoadMethod]
         private static void Spawn()
@@ -22,8 +24,15 @@ namespace Framework.UI
         {
             m_styles = Resources.LoadAll<UIStyle>("");
             
-            m_currentStyle = m_styles[0];
+            m_currentStyleIndex = 0;
             FrameworkEventsFactory.Raise(UIEvents.ManagerInitialized);
+        }
+
+        [DarkButton]
+        public void ChangeTheme()
+        {
+            m_currentStyleIndex = (m_currentStyleIndex + 1) % m_styles.Length;
+            FrameworkEventsFactory.Raise(UIEvents.OnThemeChanged);
         }
 
         public Color GetColor(UIType uiType)
@@ -31,7 +40,7 @@ namespace Framework.UI
             switch (uiType)
             {
                 case UIType.Label:
-                    return m_currentStyle.m_LabelColor;
+                    return CurrentStyle.m_LabelColor;
             }
 
             return default;

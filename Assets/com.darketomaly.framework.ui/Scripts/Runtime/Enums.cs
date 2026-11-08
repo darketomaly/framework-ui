@@ -8,5 +8,6 @@ namespace Framework.UI
     public enum UIEvents
     {
         ManagerInitialized,
+        OnThemeChanged
     }
 }

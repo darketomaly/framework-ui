@@ -1,5 +1,6 @@
 using System;
 using Framework.Events;
+using TMPro;
 using UnityEngine;
 
 namespace Framework.UI
@@ -12,26 +13,31 @@ namespace Framework.UI
         private void OnEnable()
         {
             FrameworkEventsFactory.Subscribe(UIEvents.ManagerInitialized, OnManagerInitialized);
+            FrameworkEventsFactory.Subscribe(UIEvents.OnThemeChanged, OnThemeChanged);
         }
 
         private void OnDisable()
         {
             FrameworkEventsFactory.Unsubscribe(UIEvents.ManagerInitialized, OnManagerInitialized);
+            FrameworkEventsFactory.Unsubscribe(UIEvents.OnThemeChanged, OnThemeChanged);
         }
         
         private void OnManagerInitialized()
         {
             Initialize();
         }
+        
+        private void OnThemeChanged()
+        {
+            Initialize();
+        }
 
         private void Initialize()
         {
-            // To do
-            // Change color based on the type here
-
             var color = UIManager.Instance.GetColor(m_Type);
-            
-            this.Log($"Color should be: {color}");
+            var txt = GetComponent<TextMeshProUGUI>();
+
+            txt.color = color;
         }
     }
 }

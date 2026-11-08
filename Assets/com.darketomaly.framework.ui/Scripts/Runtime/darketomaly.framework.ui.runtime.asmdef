@@ -2,7 +2,8 @@
     "name": "darketomaly.framework.ui.runtime",
     "rootNamespace": "",
     "references": [
-        "GUID:1827483a8a6786940b4ad040be88f273"
+        "GUID:1827483a8a6786940b4ad040be88f273",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

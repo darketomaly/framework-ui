@@ -39,7 +39,7 @@ namespace Framework.UI
         {
             if (m_Type is UIType.Label)
             {
-                UpdateText(false);
+                UpdateGraphic(false);
             }
         }
 
@@ -47,19 +47,19 @@ namespace Framework.UI
         {
             if (m_Type is UIType.Label)
             {
-                UpdateText(true);
+                UpdateGraphic(true);
             }
 
         }
 
-        private void UpdateText(bool instant)
+        private void UpdateGraphic(bool instant)
         {
             var color = UIManager.Instance.GetColor(m_Type);
-            var txt = GetComponent<TextMeshProUGUI>();
+            var graphic = GetComponent<Graphic>();
 
             if (instant)
             {
-                txt.color = color;
+                graphic.color = color;
             }
             else
             {
@@ -68,8 +68,8 @@ namespace Framework.UI
                 m_tween?.Kill();
 
                 m_tween = DOTween.To(
-                    () => txt.color,    
-                    x => txt.color = x,   
+                    () => graphic.color,    
+                    x => graphic.color = x,   
                     color,                 
                     0.5f                        
                 );

@@ -1,14 +1,19 @@
 using System;
+using DG.Tweening;
+using Framework.Events;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Framework.UI
 {
     [System.Serializable]
-    public struct TargetGraphic
+    public class TargetGraphic
     {
         public Graphic Graphic;
         public UIType Type;
+
+        [NonSerialized] 
+        public Tween Tween;
     }
     
     [RequireComponent(typeof(ButtonEvents))]
@@ -28,40 +33,45 @@ namespace Framework.UI
         {
             m_buttonEvents.OnNormal += OnNormal;
             m_buttonEvents.OnHighlighted += OnHighlighted;
+            
+            FrameworkEventsFactory.Subscribe(UIEvents.ManagerInitialized, OnManagerInitialized);
         }
 
         private void OnDisable()
         {
             m_buttonEvents.OnNormal -= OnNormal;
             m_buttonEvents.OnHighlighted -= OnHighlighted;
+            
+            FrameworkEventsFactory.Unsubscribe(UIEvents.ManagerInitialized, OnManagerInitialized);
+        }
+        
+        private void OnManagerInitialized()
+        {
+            ApplyStateColor(block => block.normalColor, true);
         }
         
         private void OnNormal()
         {
-            foreach (var targetGraphic in m_TargetGraphics)
-            {
-                var graphic = targetGraphic.Graphic;
-                var type = targetGraphic.Type;
-                
-                if (type == UIType.ButtonBackground)
-                {
-                    var colorBlock = UIManager.Instance.GetColorBlock(type);
-                    graphic.color = colorBlock.normalColor;
-                }
-            }
+            ApplyStateColor(block => block.normalColor, false);
         }
         
         private void OnHighlighted()
+        {
+            ApplyStateColor(block => block.highlightedColor, false);
+        }
+        
+        private void ApplyStateColor(System.Func<ColorBlock, Color> colorSelector, bool instant)
         {
             foreach (var targetGraphic in m_TargetGraphics)
             {
                 var graphic = targetGraphic.Graphic;
                 var type = targetGraphic.Type;
-                
-                if (type == UIType.ButtonBackground)
+        
+                if (type is UIType.ButtonBackground or UIType.ButtonBorder)
                 {
                     var colorBlock = UIManager.Instance.GetColorBlock(type);
-                    graphic.color = colorBlock.highlightedColor;
+                    var color = colorSelector(colorBlock);
+                    UIManager.UpdateGraphic(graphic, color, type, ref targetGraphic.Tween, instant);
                 }
             }
         }

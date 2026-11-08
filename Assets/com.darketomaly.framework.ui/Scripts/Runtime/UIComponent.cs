@@ -1,5 +1,4 @@
 using Framework.Events;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,45 +36,14 @@ namespace Framework.UI
         
         private void OnThemeChanged()
         {
-            if (m_Type is UIType.Label)
-            {
-                UpdateGraphic(false);
-            }
+            var color = UIManager.Instance.GetColor(m_Type);
+            UIManager.UpdateGraphic(GetComponent<Graphic>(), color, m_Type, ref m_tween, false);
         }
 
         private void Initialize()
         {
-            if (m_Type is UIType.Label)
-            {
-                UpdateGraphic(true);
-            }
-
-        }
-
-        private void UpdateGraphic(bool instant)
-        {
             var color = UIManager.Instance.GetColor(m_Type);
-            var graphic = GetComponent<Graphic>();
-
-            if (instant)
-            {
-                graphic.color = color;
-            }
-            else
-            {
-                #if DOTWEEN
-
-                m_tween?.Kill();
-
-                m_tween = DOTween.To(
-                    () => graphic.color,    
-                    x => graphic.color = x,   
-                    color,                 
-                    0.5f                        
-                );
-            
-                #endif
-            }
+            UIManager.UpdateGraphic(GetComponent<Graphic>(), color, m_Type, ref m_tween, true);
         }
     }
 }

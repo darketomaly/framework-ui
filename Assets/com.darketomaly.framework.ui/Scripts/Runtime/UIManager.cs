@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using Framework.Events;
 using UnityEngine;
 using UnityEngine.UI;
@@ -53,9 +54,35 @@ namespace Framework.UI
             {
                 case UIType.ButtonBackground:
                     return CurrentStyle.m_ButtonColorBlock;
+                
+                case UIType.ButtonBorder:
+                    return CurrentStyle.m_ButtonBorderColorBlock;
             }
 
             return default;
+        }
+        
+        public static void UpdateGraphic(Graphic graphic, Color targetColor, UIType uiType, ref Tween tween, bool instant)
+        {
+            if (instant)
+            {
+                graphic.color = targetColor;
+            }
+            else
+            {
+#if DOTWEEN
+
+                tween?.Kill();
+                
+                tween = DOTween.To(
+                    () => graphic.color,    
+                    x => graphic.color = x,   
+                    targetColor,                 
+                    0.5f                        
+                );
+            
+#endif
+            }
         }
     }
 }

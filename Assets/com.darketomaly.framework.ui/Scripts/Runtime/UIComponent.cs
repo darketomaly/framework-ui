@@ -1,7 +1,7 @@
-using System;
 using Framework.Events;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 #if DOTWEEN
 using DG.Tweening;
@@ -37,26 +37,62 @@ namespace Framework.UI
         
         private void OnThemeChanged()
         {
-            Initialize();
+            if (m_Type is UIType.Label)
+            {
+                UpdateText(false);
+            }
+
+            if (m_Type is UIType.Button)
+            {
+                UpdateButton();
+            }
         }
 
         private void Initialize()
         {
+            if (m_Type is UIType.Label)
+            {
+                UpdateText(true);
+            }
+
+            if (m_Type is UIType.Button)
+            {
+                UpdateButton();
+            }
+        }
+
+        private void UpdateButton()
+        {
+            var btn = GetComponent<Button>();
+            var colorBlock = UIManager.Instance.GetColorBlock(m_Type);
+                
+            btn.colors = colorBlock;
+        }
+
+        private void UpdateText(bool instant)
+        {
             var color = UIManager.Instance.GetColor(m_Type);
             var txt = GetComponent<TextMeshProUGUI>();
 
-            #if DOTWEEN
+            if (instant)
+            {
+                txt.color = color;
+            }
+            else
+            {
+                #if DOTWEEN
 
-            m_tween?.Kill();
+                m_tween?.Kill();
 
-            m_tween = DOTween.To(
-                () => txt.color,    
-                x => txt.color = x,   
-                color,                 
-                0.5f                        
-            );
+                m_tween = DOTween.To(
+                    () => txt.color,    
+                    x => txt.color = x,   
+                    color,                 
+                    0.5f                        
+                );
             
-            #endif
+                #endif
+            }
         }
     }
 }

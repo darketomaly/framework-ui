@@ -1,10 +1,15 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Framework.UI
 {
     [CreateAssetMenu(fileName = "UI Style", menuName = "Framework/UI Style")]
     public class UIStyle : ScriptableObject
     {
+        [Header("Regular colors")]
         public Color m_LabelColor;
+        
+        [Header("Button color block")]
+        public ColorBlock m_ButtonColorBlock;
     }
 }

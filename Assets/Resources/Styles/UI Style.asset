@@ -13,3 +13,11 @@ MonoBehaviour:
   m_Name: UI Style
   m_EditorClassIdentifier: darketomaly.framework.ui.runtime::Framework.UI.UIStyle
   m_LabelColor: {r: 1, g: 0, b: 0, a: 1}
+  m_ButtonColorBlock:
+    m_NormalColor: {r: 1, g: 0, b: 0, a: 1}
+    m_HighlightedColor: {r: 0.9068608, g: 1, b: 0, a: 1}
+    m_PressedColor: {r: 1, g: 0, b: 0, a: 1}
+    m_SelectedColor: {r: 1, g: 0, b: 0, a: 1}
+    m_DisabledColor: {r: 0.2981131, g: 0.2981131, b: 0.2981131, a: 1}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.25

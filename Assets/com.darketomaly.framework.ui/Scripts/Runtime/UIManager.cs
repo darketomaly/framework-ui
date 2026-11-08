@@ -1,6 +1,7 @@
 using System;
 using Framework.Events;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Framework.UI
 {
@@ -41,6 +42,17 @@ namespace Framework.UI
             {
                 case UIType.Label:
                     return CurrentStyle.m_LabelColor;
+            }
+
+            return default;
+        }
+
+        public ColorBlock GetColorBlock(UIType uiType)
+        {
+            switch (uiType)
+            {
+                case UIType.Button:
+                    return CurrentStyle.m_ButtonColorBlock;
             }
 
             return default;

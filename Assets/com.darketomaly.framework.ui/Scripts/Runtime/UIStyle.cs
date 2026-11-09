@@ -20,5 +20,9 @@ namespace Framework.UI
         
         [Header("Button icon color block")]
         public ColorBlock m_ButtonIconColorBlock;
+
+        [Header("Animations")] 
+        public float m_ButtonHoverScale = 1.0f;
+        public float m_ButtonClickScale = 1.0f;
     }
 }

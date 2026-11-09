@@ -48,6 +48,16 @@ namespace Framework.UI
             return default;
         }
 
+        public float GetButtonClickScale()
+        {
+            return CurrentStyle.m_ButtonClickScale;
+        }
+
+        public float GetButtonHoverScale()
+        {
+            return CurrentStyle.m_ButtonHoverScale;
+        }
+
         public ColorBlock GetColorBlock(UIType uiType)
         {
             switch (uiType)
@@ -66,6 +76,16 @@ namespace Framework.UI
             }
 
             return default;
+        }
+
+        public static void UpdateScale(RectTransform rt, Vector3 targetScale, ref Tween tween)
+        {
+            #if DOTWEEN
+            tween?.Kill();
+            rt.DOScale(targetScale, 0.5f);
+            #else
+            rt.localScale = targetScale;
+            #endif
         }
         
         public static void UpdateGraphic(Graphic graphic, Color targetColor, UIType uiType, ref Tween tween, bool instant)

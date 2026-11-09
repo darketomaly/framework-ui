@@ -13,7 +13,7 @@ namespace Framework.UI
         public UIType Type;
 
         [NonSerialized] 
-        public Tween Tween;
+        public Tween ColorTween;
     }
     
     [RequireComponent(typeof(ButtonEvents))]
@@ -22,11 +22,15 @@ namespace Framework.UI
         public TargetGraphic[] m_TargetGraphics;
 
         private ButtonEvents m_buttonEvents;
+        private Button m_button;
+        private Tween m_scaleTween;
         
         private void Awake()
         {
             m_buttonEvents = GetComponent<ButtonEvents>();
-            GetComponent<Button>().targetGraphic = null;
+            
+            m_button = GetComponent<Button>();
+            m_button.targetGraphic = null;
         }
 
         private void OnEnable()
@@ -55,15 +59,21 @@ namespace Framework.UI
         
         private void OnThemeChanged()
         {
-            Refresh(false);
+            RefreshColor(false);
         }
         
         private void OnManagerInitialized()
         {
-            Refresh(true);
+            RefreshColor(true);
+        }
+        
+        private void RefreshAnimated()
+        {
+            RefreshColor(false);
+            ApplyScaleAnimation();
         }
 
-        private void Refresh(bool instant)
+        private void RefreshColor(bool instant)
         {
             switch (m_buttonEvents.CurrentState)
             {
@@ -85,9 +95,24 @@ namespace Framework.UI
             }
         }
 
-        private void RefreshAnimated()
+        private void ApplyScaleAnimation()
         {
-            Refresh(false);
+            var state = m_buttonEvents.CurrentState;
+            var targetScaleMagnitude = 1f;
+
+            if (state is ButtonState.Highlighted or ButtonState.Selected)
+            {
+                targetScaleMagnitude = UIManager.Instance.GetButtonHoverScale();
+            }
+            else if (state is ButtonState.Pressed)
+            {
+                targetScaleMagnitude = UIManager.Instance.GetButtonClickScale();
+            }
+                    
+            var targetScale = targetScaleMagnitude * Vector3.one;
+            var rt = m_button.transform as RectTransform;
+                    
+            UIManager.UpdateScale(rt, targetScale, ref m_scaleTween);
         }
         
         private void ApplyStateColor(System.Func<ColorBlock, Color> colorSelector, bool instant)
@@ -105,7 +130,7 @@ namespace Framework.UI
                 {
                     var colorBlock = UIManager.Instance.GetColorBlock(type);
                     var color = colorSelector(colorBlock);
-                    UIManager.UpdateGraphic(graphic, color, type, ref targetGraphic.Tween, instant);
+                    UIManager.UpdateGraphic(graphic, color, type, ref targetGraphic.ColorTween, instant);
                 }
             }
         }

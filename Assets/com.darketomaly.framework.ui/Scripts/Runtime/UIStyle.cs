@@ -24,5 +24,7 @@ namespace Framework.UI
         [Header("Animations")] 
         public float m_ButtonHoverScale = 1.0f;
         public float m_ButtonClickScale = 1.0f;
+        public float m_ButtonScaleAnimationDuration = 0.5f;
+        public float m_ColorAnimationDuration = 0.5f;
     }
 }

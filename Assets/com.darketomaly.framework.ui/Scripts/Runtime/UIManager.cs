@@ -82,7 +82,7 @@ namespace Framework.UI
         {
             #if DOTWEEN
             tween?.Kill();
-            rt.DOScale(targetScale, 0.5f);
+            rt.DOScale(targetScale, Instance.CurrentStyle.m_ButtonScaleAnimationDuration);
             #else
             rt.localScale = targetScale;
             #endif
@@ -103,7 +103,7 @@ namespace Framework.UI
                     () => graphic.color,    
                     x => graphic.color = x,   
                     targetColor,                 
-                    0.5f                        
+                    Instance.CurrentStyle.m_ColorAnimationDuration                       
                 );
                 #else
                 graphic.color = targetColor;

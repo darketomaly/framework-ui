@@ -97,7 +97,11 @@ namespace Framework.UI
                 var graphic = targetGraphic.Graphic;
                 var type = targetGraphic.Type;
         
-                if (type is UIType.ButtonBackground or UIType.ButtonBorder)
+                if (type is 
+                    UIType.ButtonBackground or 
+                    UIType.ButtonBorder or 
+                    UIType.ButtonText or 
+                    UIType.ButtonIcon)
                 {
                     var colorBlock = UIManager.Instance.GetColorBlock(type);
                     var color = colorSelector(colorBlock);

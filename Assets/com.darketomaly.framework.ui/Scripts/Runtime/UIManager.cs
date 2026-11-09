@@ -57,6 +57,12 @@ namespace Framework.UI
                 
                 case UIType.ButtonBorder:
                     return CurrentStyle.m_ButtonBorderColorBlock;
+                
+                case UIType.ButtonText:
+                    return CurrentStyle.m_ButtonTextColorBlock;
+                
+                case UIType.ButtonIcon:
+                    return CurrentStyle.m_ButtonIconColorBlock;
             }
 
             return default;
@@ -70,8 +76,7 @@ namespace Framework.UI
             }
             else
             {
-#if DOTWEEN
-
+                #if DOTWEEN
                 tween?.Kill();
                 
                 tween = DOTween.To(
@@ -80,8 +85,9 @@ namespace Framework.UI
                     targetColor,                 
                     0.5f                        
                 );
-            
-#endif
+                #else
+                graphic.color = targetColor;
+                #endif
             }
         }
     }

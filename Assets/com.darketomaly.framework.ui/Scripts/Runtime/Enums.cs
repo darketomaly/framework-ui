@@ -4,9 +4,11 @@ namespace Framework.UI
     {
         Label,
         ButtonBackground,
-        ButtonBorder
+        ButtonBorder,
+        ButtonText,
+        ButtonIcon,
     }
-
+    
     public enum UIEvents
     {
         ManagerInitialized,

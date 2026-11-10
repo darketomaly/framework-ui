@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,17 +10,22 @@ namespace Framework.UI
     
     public enum UIType
     {
-        Label,
+        // Colors (100–199)
+        Label = 100,
         Header1,
         Header2,
         Header3,
         Panel,
         PanelBorder,
-        ButtonBackground,
+
+        // ColorBlocks (200–299)
+        ButtonBackground = 200,
         ButtonBorder,
         ButtonText,
         ButtonIcon,
-        Logo
+
+        // Sprites (300–399)
+        Logo = 300
     }
 
     public static class UITypeExtensions
@@ -40,55 +46,30 @@ namespace Framework.UI
 
         public static ColorBlock GetColorBlock(this UIStyle uiStyle, UIType uiType)
         {
-            switch (uiType)
+            return uiType switch
             {
-                case UIType.ButtonBackground:
-                    return uiStyle.m_ButtonColorBlock;
-                
-                case UIType.ButtonBorder:
-                    return uiStyle.m_ButtonBorderColorBlock;
-                
-                case UIType.ButtonText:
-                    return uiStyle.m_ButtonTextColorBlock;
-                
-                case UIType.ButtonIcon:
-                    return uiStyle.m_ButtonIconColorBlock;
-            }
-
-            return default;
+                UIType.ButtonBackground => uiStyle.m_ButtonColorBlock,
+                UIType.ButtonBorder => uiStyle.m_ButtonBorderColorBlock,
+                UIType.ButtonText => uiStyle.m_ButtonTextColorBlock,
+                UIType.ButtonIcon => uiStyle.m_ButtonIconColorBlock,
+                _ => default
+            };
         }
 
         public static Sprite GetSprite(this UIStyle uiStyle, UIType uiType)
         {
-            switch (uiType)
+            return uiType switch
             {
-                case UIType.Logo:
-                    return uiStyle.m_Logo;
-                default:
-                    return null;
-            }
+                UIType.Logo => uiStyle.m_Logo,
+                _ => null
+            };
         }
         
-        public static bool IsColor(this UIType uiType)
-        {
-            return uiType is 
-                UIType.Label or
-                UIType.Header1 or
-                UIType.Header2 or
-                UIType.Header3 or
-                UIType.Panel or 
-                UIType.PanelBorder;
-        }
+        public static bool IsColor(this UIType type) => (int)type is >= 100 and < 200;
         
-        public static bool IsColorBlock(this UIType uiType)
-        {
-            return uiType is UIType.ButtonBackground or UIType.ButtonBorder or UIType.ButtonText or UIType.ButtonIcon;
-        }
+        public static bool IsColorBlock(this UIType type) => (int)type is >= 200 and < 300;
         
-        public static bool IsSprite(this UIType uiType)
-        {
-            return uiType is UIType.Logo;
-        }
+        public static bool IsSprite(this UIType type) => (int)type is >= 300 and < 400;
     }
     
     public enum UIEvents

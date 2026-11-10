@@ -12,20 +12,86 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d06013b09e627742a0ae642494e4326, type: 3}
   m_Name: UI Style 1
   m_EditorClassIdentifier: darketomaly.framework.ui.runtime::Framework.UI.UIStyle
-  m_LabelColor: {r: 0.13519025, g: 1, b: 0, a: 1}
+  m_ParentStyle: {fileID: 11400000, guid: 09eb53ef689f45c419611c2ae8fd4302, type: 2}
+  m_Logo:
+    IsOverriden: 0
+    Value: {fileID: 0}
+  m_LabelColor:
+    IsOverriden: 0
+    Value: {r: 0, g: 0, b: 0, a: 0}
+  m_Header1Color:
+    IsOverriden: 0
+    Value: {r: 0, g: 0, b: 0, a: 0}
+  m_Header2Color:
+    IsOverriden: 0
+    Value: {r: 0, g: 0, b: 0, a: 0}
+  m_Header3Color:
+    IsOverriden: 0
+    Value: {r: 0, g: 0, b: 0, a: 0}
+  m_PanelColor:
+    IsOverriden: 1
+    Value: {r: 0.2905661, g: 0.06304732, b: 0.2702317, a: 1}
+  m_PanelBorderColor:
+    IsOverriden: 0
+    Value: {r: 0, g: 0, b: 0, a: 0}
+  m_PanelSeparatorColor:
+    IsOverriden: 0
+    Value: {r: 0, g: 0, b: 0, a: 0}
   m_ButtonColorBlock:
-    m_NormalColor: {r: 0, g: 1, b: 0.23434687, a: 0}
-    m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
-    m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
-    m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
-    m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0
+    IsOverriden: 0
+    Value:
+      m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
+      m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
+      m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
+      m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
+      m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
+      m_ColorMultiplier: 0
+      m_FadeDuration: 0
   m_ButtonBorderColorBlock:
-    m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
-    m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
-    m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
-    m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
-    m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0
+    IsOverriden: 0
+    Value:
+      m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
+      m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
+      m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
+      m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
+      m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
+      m_ColorMultiplier: 0
+      m_FadeDuration: 0
+  m_ButtonTextColorBlock:
+    IsOverriden: 0
+    Value:
+      m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
+      m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
+      m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
+      m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
+      m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
+      m_ColorMultiplier: 0
+      m_FadeDuration: 0
+  m_ButtonIconColorBlock:
+    IsOverriden: 0
+    Value:
+      m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
+      m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
+      m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
+      m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
+      m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
+      m_ColorMultiplier: 0
+      m_FadeDuration: 0
+  m_ButtonHoverScale:
+    IsOverriden: 0
+    Value: 0
+  m_ButtonClickScale:
+    IsOverriden: 0
+    Value: 0
+  m_ButtonHoverAnimationDuration:
+    IsOverriden: 0
+    Value: 0
+  m_ButtonClickAnimationDuration:
+    IsOverriden: 0
+    Value: 0
+  m_ButtonBackToNormalDuration:
+    IsOverriden: 0
+    Value: 0
+  m_ColorAnimationDuration:
+    IsOverriden: 0
+    Value: 0

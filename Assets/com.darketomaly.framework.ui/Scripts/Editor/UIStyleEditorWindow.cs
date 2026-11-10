@@ -14,6 +14,7 @@ namespace Framework.UI.Editor
     public class UIStyleEditorWindow : EditorWindow
     {
         private UIStyle m_TargetStyle;
+        private UIStyle m_LastKnownParentStyle;
         private SerializedObject m_SerializedObject;
 
         // UI Toolkit Root & Layout
@@ -283,67 +284,90 @@ namespace Framework.UI.Editor
             if (string.IsNullOrEmpty(path)) return;
 
             var newStyle = CreateInstance<UIStyle>();
-            // Sensible defaults
-            newStyle.m_LabelColor = new Color(0.85f, 0.85f, 0.85f, 1f);
-            newStyle.m_Header1Color = new Color(1f, 1f, 1f, 1f);
-            newStyle.m_Header2Color = new Color(0.88f, 0.88f, 0.88f, 1f);
-            newStyle.m_Header3Color = new Color(0.75f, 0.75f, 0.75f, 1f);
-            newStyle.m_PanelColor = new Color(0.18f, 0.22f, 0.28f, 1f);
-            newStyle.m_PanelBorderColor = new Color(0.28f, 0.52f, 0.80f, 1f);
-            newStyle.m_PanelSeparatorColor = new Color(0.28f, 0.52f, 0.80f, 0.4f);
-
-            newStyle.m_ButtonColorBlock = new ColorBlock
-            {
-                normalColor = new Color(0.24f, 0.42f, 0.65f, 1f),
-                highlightedColor = new Color(0.32f, 0.55f, 0.85f, 1f),
-                pressedColor = new Color(0.18f, 0.32f, 0.52f, 1f),
-                selectedColor = new Color(0.30f, 0.50f, 0.80f, 1f),
-                disabledColor = new Color(0.25f, 0.25f, 0.25f, 0.6f),
-                colorMultiplier = 1f,
-                fadeDuration = 0.2f
-            };
-
-            newStyle.m_ButtonBorderColorBlock = new ColorBlock
-            {
-                normalColor = new Color(0.40f, 0.65f, 0.95f, 1f),
-                highlightedColor = new Color(0.60f, 0.80f, 1f, 1f),
-                pressedColor = new Color(0.25f, 0.45f, 0.75f, 1f),
-                selectedColor = new Color(0.50f, 0.75f, 1f, 1f),
-                disabledColor = new Color(0.35f, 0.35f, 0.35f, 0.4f),
-                colorMultiplier = 1f,
-                fadeDuration = 0.2f
-            };
-
-            newStyle.m_ButtonTextColorBlock = new ColorBlock
-            {
-                normalColor = Color.white,
-                highlightedColor = Color.white,
-                pressedColor = new Color(0.9f, 0.9f, 0.9f, 1f),
-                selectedColor = Color.white,
-                disabledColor = new Color(0.6f, 0.6f, 0.6f, 1f),
-                colorMultiplier = 1f,
-                fadeDuration = 0.2f
-            };
-
-            newStyle.m_ButtonIconColorBlock = new ColorBlock
-            {
-                normalColor = Color.white,
-                highlightedColor = Color.white,
-                pressedColor = new Color(0.9f, 0.9f, 0.9f, 1f),
-                selectedColor = Color.white,
-                disabledColor = new Color(0.6f, 0.6f, 0.6f, 1f),
-                colorMultiplier = 1f,
-                fadeDuration = 0.2f
-            };
-
-            newStyle.m_ButtonHoverScale = 1.05f;
-            newStyle.m_ButtonClickScale = 0.95f;
-            newStyle.m_ButtonHoverAnimationDuration = 0.2f;
-            newStyle.m_ButtonClickAnimationDuration = 0.1f;
-            newStyle.m_ButtonBackToNormalDuration = 0.2f;
-            newStyle.m_ColorAnimationDuration = 0.2f;
-
             AssetDatabase.CreateAsset(newStyle, path);
+
+            var so = new SerializedObject(newStyle);
+
+            void SetColor(string name, Color color)
+            {
+                var prop = so.FindProperty(name);
+                if (prop == null) return;
+                var isOverridden = prop.FindPropertyRelative("IsOverriden") ?? prop.FindPropertyRelative("IsOverridden");
+                if (isOverridden != null) isOverridden.boolValue = true;
+                var val = prop.FindPropertyRelative("Value") ?? prop;
+                val.colorValue = color;
+            }
+
+            void SetFloat(string name, float value)
+            {
+                var prop = so.FindProperty(name);
+                if (prop == null) return;
+                var isOverridden = prop.FindPropertyRelative("IsOverriden") ?? prop.FindPropertyRelative("IsOverridden");
+                if (isOverridden != null) isOverridden.boolValue = true;
+                var val = prop.FindPropertyRelative("Value") ?? prop;
+                val.floatValue = value;
+            }
+
+            void SetColorBlock(string name, Color normal, Color highlighted, Color pressed, Color selected, Color disabled)
+            {
+                var prop = so.FindProperty(name);
+                if (prop == null) return;
+                var isOverridden = prop.FindPropertyRelative("IsOverriden") ?? prop.FindPropertyRelative("IsOverridden");
+                if (isOverridden != null) isOverridden.boolValue = true;
+                var val = prop.FindPropertyRelative("Value") ?? prop;
+                var n = val.FindPropertyRelative("m_NormalColor"); if (n != null) n.colorValue = normal;
+                var h = val.FindPropertyRelative("m_HighlightedColor"); if (h != null) h.colorValue = highlighted;
+                var p = val.FindPropertyRelative("m_PressedColor"); if (p != null) p.colorValue = pressed;
+                var s = val.FindPropertyRelative("m_SelectedColor"); if (s != null) s.colorValue = selected;
+                var d = val.FindPropertyRelative("m_DisabledColor"); if (d != null) d.colorValue = disabled;
+                var m = val.FindPropertyRelative("m_ColorMultiplier"); if (m != null) m.floatValue = 1f;
+                var f = val.FindPropertyRelative("m_FadeDuration"); if (f != null) f.floatValue = 0.2f;
+            }
+
+            SetColor("m_LabelColor", new Color(0.85f, 0.85f, 0.85f, 1f));
+            SetColor("m_Header1Color", new Color(1f, 1f, 1f, 1f));
+            SetColor("m_Header2Color", new Color(0.88f, 0.88f, 0.88f, 1f));
+            SetColor("m_Header3Color", new Color(0.75f, 0.75f, 0.75f, 1f));
+            SetColor("m_PanelColor", new Color(0.18f, 0.22f, 0.28f, 1f));
+            SetColor("m_PanelBorderColor", new Color(0.28f, 0.52f, 0.80f, 1f));
+            SetColor("m_PanelSeparatorColor", new Color(0.28f, 0.52f, 0.80f, 0.4f));
+
+            SetColorBlock("m_ButtonColorBlock",
+                new Color(0.24f, 0.42f, 0.65f, 1f),
+                new Color(0.32f, 0.55f, 0.85f, 1f),
+                new Color(0.18f, 0.32f, 0.52f, 1f),
+                new Color(0.30f, 0.50f, 0.80f, 1f),
+                new Color(0.25f, 0.25f, 0.25f, 0.6f));
+
+            SetColorBlock("m_ButtonBorderColorBlock",
+                new Color(0.40f, 0.65f, 0.95f, 1f),
+                new Color(0.60f, 0.80f, 1f, 1f),
+                new Color(0.25f, 0.45f, 0.75f, 1f),
+                new Color(0.50f, 0.75f, 1f, 1f),
+                new Color(0.35f, 0.35f, 0.35f, 0.4f));
+
+            SetColorBlock("m_ButtonTextColorBlock",
+                Color.white,
+                Color.white,
+                new Color(0.9f, 0.9f, 0.9f, 1f),
+                Color.white,
+                new Color(0.6f, 0.6f, 0.6f, 1f));
+
+            SetColorBlock("m_ButtonIconColorBlock",
+                Color.white,
+                Color.white,
+                new Color(0.9f, 0.9f, 0.9f, 1f),
+                Color.white,
+                new Color(0.6f, 0.6f, 0.6f, 1f));
+
+            SetFloat("m_ButtonHoverScale", 1.05f);
+            SetFloat("m_ButtonClickScale", 0.95f);
+            SetFloat("m_ButtonHoverAnimationDuration", 0.2f);
+            SetFloat("m_ButtonClickAnimationDuration", 0.1f);
+            SetFloat("m_ButtonBackToNormalDuration", 0.2f);
+            SetFloat("m_ColorAnimationDuration", 0.2f);
+
+            so.ApplyModifiedPropertiesWithoutUndo();
             AssetDatabase.SaveAssets();
             SetTarget(newStyle);
         }
@@ -358,11 +382,13 @@ namespace Framework.UI.Editor
 
             if (m_TargetStyle == null)
             {
+                m_LastKnownParentStyle = null;
                 ShowEmptyState();
             }
             else
             {
                 m_SerializedObject = new SerializedObject(m_TargetStyle);
+                m_LastKnownParentStyle = GetParentStyle();
                 BuildPropertiesUI();
                 UpdatePreview();
             }
@@ -434,6 +460,11 @@ namespace Framework.UI.Editor
             {
                 m_PreviewPanel.style.display = DisplayStyle.Flex;
             }
+
+            // Section 0: Hierarchy & Inheritance
+            var inheritanceCard = CreateSectionCard("Inheritance", new Color(0.20f, 0.70f, 0.85f, 1f));
+            AddPropertyField(inheritanceCard, "m_ParentStyle", "Parent Style");
+            m_LeftScrollView.Add(inheritanceCard);
 
             // Section 1: Sprites
             var spritesCard = CreateSectionCard("Sprites & Branding", new Color(0.25f, 0.60f, 0.95f, 1f));
@@ -524,14 +555,104 @@ namespace Framework.UI.Editor
             return card;
         }
 
+        private UIStyle GetParentStyle()
+        {
+            var parentProp = m_SerializedObject?.FindProperty("m_ParentStyle");
+            return parentProp?.objectReferenceValue as UIStyle;
+        }
+
         private void AddPropertyField(VisualElement parent, string propertyPath, string customLabel = null)
         {
             var prop = m_SerializedObject.FindProperty(propertyPath);
             if (prop == null) return;
 
-            var propField = new PropertyField(prop, customLabel ?? prop.displayName);
-            propField.style.marginBottom = 4;
-            parent.Add(propField);
+            var isOverriddenProp = prop.FindPropertyRelative("IsOverriden") ?? prop.FindPropertyRelative("IsOverridden");
+            var valueProp = prop.FindPropertyRelative("Value") ?? prop;
+
+            var row = new VisualElement();
+            row.style.flexDirection = FlexDirection.Row;
+            row.style.alignItems = Align.Center;
+            row.style.marginBottom = 4;
+
+            Toggle toggle = null;
+            if (isOverriddenProp != null)
+            {
+                toggle = new Toggle
+                {
+                    bindingPath = isOverriddenProp.propertyPath,
+                    tooltip = "Override"
+                };
+                toggle.style.marginLeft = 0;
+                toggle.style.marginRight = 2;
+                toggle.style.marginTop = 0;
+                toggle.style.marginBottom = 0;
+                toggle.style.paddingLeft = 0;
+                toggle.style.paddingRight = 0;
+                toggle.style.flexShrink = 0;
+                toggle.style.display = GetParentStyle() != null ? DisplayStyle.Flex : DisplayStyle.None;
+                toggle.RegisterCallback<AttachToPanelEvent>(_ =>
+                {
+                    var tl = toggle.Q<Label>();
+                    if (tl != null) tl.style.display = DisplayStyle.None;
+                });
+                row.Add(toggle);
+            }
+
+            var propField = new PropertyField(valueProp, customLabel ?? prop.displayName);
+            propField.style.flexGrow = 1;
+            propField.style.marginLeft = 0;
+            propField.style.marginBottom = 0;
+            row.Add(propField);
+
+            if (toggle != null)
+            {
+                bool? lastApplied = null;
+                void ApplyOverrideState(bool isOverridden, bool force = false)
+                {
+                    bool hasParent = GetParentStyle() != null;
+                    toggle.style.display = hasParent ? DisplayStyle.Flex : DisplayStyle.None;
+
+                    bool isEditable = !hasParent || isOverridden;
+                    propField.SetEnabled(isEditable);
+
+                    if (!force && lastApplied == isOverridden && hasParent) return;
+                    lastApplied = isOverridden;
+
+                    var label = propField.Q<Label>();
+                    if (label != null)
+                    {
+                        label.style.color = isEditable
+                            ? new Color(0.85f, 0.85f, 0.85f, 1f)
+                            : new Color(0.48f, 0.48f, 0.48f, 1f);
+                    }
+                }
+
+                toggle.RegisterValueChangedCallback(evt =>
+                {
+                    if (isOverriddenProp != null)
+                    {
+                        isOverriddenProp.boolValue = evt.newValue;
+                        m_SerializedObject.ApplyModifiedProperties();
+                    }
+                    ApplyOverrideState(evt.newValue, force: true);
+                    UpdatePreview();
+                });
+
+                propField.RegisterCallback<AttachToPanelEvent>(_ =>
+                {
+                    propField.schedule.Execute(() => ApplyOverrideState(toggle.value, force: true));
+                });
+
+                propField.RegisterCallback<GeometryChangedEvent>(_ =>
+                {
+                    if (lastApplied == null)
+                    {
+                        ApplyOverrideState(toggle.value, force: true);
+                    }
+                });
+            }
+
+            parent.Add(row);
         }
 
         private void AddColorBlockField(VisualElement parent, string propertyPath, string customLabel)
@@ -539,25 +660,99 @@ namespace Framework.UI.Editor
             var blockProp = m_SerializedObject.FindProperty(propertyPath);
             if (blockProp == null) return;
 
+            var isOverriddenProp = blockProp.FindPropertyRelative("IsOverriden") ?? blockProp.FindPropertyRelative("IsOverridden");
+            var targetBlockProp = blockProp.FindPropertyRelative("Value") ?? blockProp;
+
+            var container = new VisualElement();
+            container.style.marginBottom = 8;
+            container.style.backgroundColor = new Color(0.20f, 0.20f, 0.20f, 0.5f);
+            container.style.paddingLeft = 4;
+            container.style.paddingRight = 6;
+            container.style.paddingTop = 4;
+            container.style.paddingBottom = 6;
+            container.style.borderTopLeftRadius = 4;
+            container.style.borderTopRightRadius = 4;
+            container.style.borderBottomLeftRadius = 4;
+            container.style.borderBottomRightRadius = 4;
+
+            var headerRow = new VisualElement();
+            headerRow.style.flexDirection = FlexDirection.Row;
+            headerRow.style.alignItems = Align.FlexStart;
+
+            Toggle toggle = null;
+            if (isOverriddenProp != null)
+            {
+                toggle = new Toggle
+                {
+                    bindingPath = isOverriddenProp.propertyPath,
+                    tooltip = "Override"
+                };
+                toggle.style.marginLeft = 4;
+                toggle.style.marginRight = 2;
+                toggle.style.marginTop = 2;
+                toggle.style.marginBottom = 0;
+                toggle.style.paddingLeft = 0;
+                toggle.style.paddingRight = 0;
+                toggle.style.flexShrink = 0;
+                toggle.style.display = GetParentStyle() != null ? DisplayStyle.Flex : DisplayStyle.None;
+                toggle.RegisterCallback<AttachToPanelEvent>(_ =>
+                {
+                    var tl = toggle.Q<Label>();
+                    if (tl != null) tl.style.display = DisplayStyle.None;
+                });
+                headerRow.Add(toggle);
+            }
+
             var foldout = new Foldout();
             foldout.text = customLabel;
             foldout.value = true;
-            foldout.style.marginBottom = 8;
-            foldout.style.backgroundColor = new Color(0.20f, 0.20f, 0.20f, 0.5f);
-            foldout.style.paddingLeft = 8;
-            foldout.style.paddingRight = 6;
-            foldout.style.paddingTop = 4;
-            foldout.style.paddingBottom = 6;
-            foldout.style.borderTopLeftRadius = 4;
-            foldout.style.borderTopRightRadius = 4;
-            foldout.style.borderBottomLeftRadius = 4;
-            foldout.style.borderBottomRightRadius = 4;
+            foldout.style.flexGrow = 1;
+            foldout.style.marginLeft = 0;
+            foldout.style.paddingLeft = 0;
+            headerRow.Add(foldout);
+            container.Add(headerRow);
 
-            var normalProp = blockProp.FindPropertyRelative("m_NormalColor");
-            var highlightedProp = blockProp.FindPropertyRelative("m_HighlightedColor");
-            var pressedProp = blockProp.FindPropertyRelative("m_PressedColor");
-            var selectedProp = blockProp.FindPropertyRelative("m_SelectedColor");
-            var disabledProp = blockProp.FindPropertyRelative("m_DisabledColor");
+            if (toggle != null)
+            {
+                void ApplyBlockOverrideState(bool isOverridden)
+                {
+                    bool hasParent = GetParentStyle() != null;
+                    toggle.style.display = hasParent ? DisplayStyle.Flex : DisplayStyle.None;
+
+                    bool isEditable = !hasParent || isOverridden;
+                    foldout.contentContainer.SetEnabled(isEditable);
+
+                    var fText = foldout.Q<TextElement>() ?? foldout.Q<Label>();
+                    if (fText != null)
+                    {
+                        fText.style.color = isEditable
+                            ? new Color(0.85f, 0.85f, 0.85f, 1f)
+                            : new Color(0.48f, 0.48f, 0.48f, 1f);
+                    }
+                }
+
+                toggle.RegisterValueChangedCallback(evt =>
+                {
+                    if (isOverriddenProp != null)
+                    {
+                        isOverriddenProp.boolValue = evt.newValue;
+                        m_SerializedObject.ApplyModifiedProperties();
+                    }
+                    ApplyBlockOverrideState(evt.newValue);
+                    UpdatePreview();
+                });
+
+                foldout.RegisterCallback<AttachToPanelEvent>(_ =>
+                {
+                    foldout.schedule.Execute(() => ApplyBlockOverrideState(toggle.value));
+                });
+            }
+
+            var normalProp = targetBlockProp.FindPropertyRelative("m_NormalColor");
+            var highlightedProp = targetBlockProp.FindPropertyRelative("m_HighlightedColor");
+            var pressedProp = targetBlockProp.FindPropertyRelative("m_PressedColor");
+            var selectedProp = targetBlockProp.FindPropertyRelative("m_SelectedColor");
+            var disabledProp = targetBlockProp.FindPropertyRelative("m_DisabledColor");
 
             if (normalProp != null)
             {
@@ -590,7 +785,7 @@ namespace Framework.UI.Editor
                 foldout.Add(f);
             }
 
-            parent.Add(foldout);
+            parent.Add(container);
         }
 
         #endregion
@@ -987,42 +1182,148 @@ namespace Framework.UI.Editor
             }
         }
 
+        private Color GetResolvedColor(System.Func<Color> getter, string propertyPath)
+        {
+            try
+            {
+                if (m_TargetStyle != null)
+                {
+                    return getter();
+                }
+            }
+            catch
+            {
+                // Fall back to serialized object if runtime property evaluation fails
+            }
+
+            var prop = m_SerializedObject?.FindProperty(propertyPath);
+            var val = prop?.FindPropertyRelative("Value") ?? prop;
+            return val != null ? val.colorValue : default;
+        }
+
+        private float GetResolvedFloat(System.Func<float> getter, string propertyPath, float fallback = 1.0f)
+        {
+            try
+            {
+                if (m_TargetStyle != null)
+                {
+                    return getter();
+                }
+            }
+            catch
+            {
+                // Fall back to serialized object if runtime property evaluation fails
+            }
+
+            var prop = m_SerializedObject?.FindProperty(propertyPath);
+            var val = prop?.FindPropertyRelative("Value") ?? prop;
+            return val != null ? val.floatValue : fallback;
+        }
+
+        private ColorBlock GetResolvedColorBlock(System.Func<ColorBlock> getter, string propertyPath)
+        {
+            try
+            {
+                if (m_TargetStyle != null)
+                {
+                    return getter();
+                }
+            }
+            catch
+            {
+                // Fall back to serialized object if runtime property evaluation fails
+            }
+
+            var prop = m_SerializedObject?.FindProperty(propertyPath);
+            var val = prop?.FindPropertyRelative("Value") ?? prop;
+            if (val != null)
+            {
+                var cb = new ColorBlock();
+                var n = val.FindPropertyRelative("m_NormalColor"); if (n != null) cb.normalColor = n.colorValue;
+                var h = val.FindPropertyRelative("m_HighlightedColor"); if (h != null) cb.highlightedColor = h.colorValue;
+                var p = val.FindPropertyRelative("m_PressedColor"); if (p != null) cb.pressedColor = p.colorValue;
+                var s = val.FindPropertyRelative("m_SelectedColor"); if (s != null) cb.selectedColor = s.colorValue;
+                var d = val.FindPropertyRelative("m_DisabledColor"); if (d != null) cb.disabledColor = d.colorValue;
+                cb.colorMultiplier = 1f;
+                cb.fadeDuration = 0.2f;
+                return cb;
+            }
+            return default;
+        }
+
+        private Sprite GetResolvedSprite(System.Func<Sprite> getter, string propertyPath)
+        {
+            try
+            {
+                if (m_TargetStyle != null)
+                {
+                    return getter();
+                }
+            }
+            catch
+            {
+                // Fall back to serialized object if runtime property evaluation fails
+            }
+
+            var prop = m_SerializedObject?.FindProperty(propertyPath);
+            var val = prop?.FindPropertyRelative("Value") ?? prop;
+            return val?.objectReferenceValue as Sprite;
+        }
+
         private void UpdatePreview()
         {
             if (m_TargetStyle == null || m_PreviewPanel == null) return;
 
             if (m_SerializedObject != null && m_SerializedObject.targetObject != null)
             {
-                m_SerializedObject.ApplyModifiedProperties();
-                m_SerializedObject.Update();
+                var parentProp = m_SerializedObject.FindProperty("m_ParentStyle");
+                if (parentProp != null && parentProp.objectReferenceValue == m_TargetStyle)
+                {
+                    parentProp.objectReferenceValue = null;
+                }
+
+                var currentParent = parentProp?.objectReferenceValue as UIStyle;
+                if (currentParent != m_LastKnownParentStyle)
+                {
+                    m_LastKnownParentStyle = currentParent;
+                    m_SerializedObject.ApplyModifiedProperties();
+                    m_SerializedObject.Update();
+                    BuildPropertiesUI();
+                }
+                else
+                {
+                    m_SerializedObject.ApplyModifiedProperties();
+                    m_SerializedObject.Update();
+                }
             }
 
             // 1. Panel & Separator Colors
-            m_PreviewPanel.style.backgroundColor = m_TargetStyle.m_PanelColor;
-            m_PreviewPanel.style.borderTopColor = m_TargetStyle.m_PanelBorderColor;
-            m_PreviewPanel.style.borderRightColor = m_TargetStyle.m_PanelBorderColor;
-            m_PreviewPanel.style.borderBottomColor = m_TargetStyle.m_PanelBorderColor;
-            m_PreviewPanel.style.borderLeftColor = m_TargetStyle.m_PanelBorderColor;
+            m_PreviewPanel.style.backgroundColor = GetResolvedColor(() => m_TargetStyle.PanelColor, "m_PanelColor");
+            m_PreviewPanel.style.borderTopColor = GetResolvedColor(() => m_TargetStyle.PanelBorderColor, "m_PanelBorderColor");
+            m_PreviewPanel.style.borderRightColor = GetResolvedColor(() => m_TargetStyle.PanelBorderColor, "m_PanelBorderColor");
+            m_PreviewPanel.style.borderBottomColor = GetResolvedColor(() => m_TargetStyle.PanelBorderColor, "m_PanelBorderColor");
+            m_PreviewPanel.style.borderLeftColor = GetResolvedColor(() => m_TargetStyle.PanelBorderColor, "m_PanelBorderColor");
 
             if (m_PreviewSeparator != null)
             {
-                m_PreviewSeparator.style.backgroundColor = m_TargetStyle.m_PanelSeparatorColor;
+                m_PreviewSeparator.style.backgroundColor = GetResolvedColor(() => m_TargetStyle.PanelSeparatorColor, "m_PanelSeparatorColor");
             }
 
             // 2. Regular Text Colors
-            m_PreviewLabel.style.color = m_TargetStyle.m_LabelColor;
-            m_PreviewHeader1.style.color = m_TargetStyle.m_Header1Color;
-            m_PreviewHeader2.style.color = m_TargetStyle.m_Header2Color;
-            m_PreviewHeader3.style.color = m_TargetStyle.m_Header3Color;
+            m_PreviewLabel.style.color = GetResolvedColor(() => m_TargetStyle.LabelColor, "m_LabelColor");
+            m_PreviewHeader1.style.color = GetResolvedColor(() => m_TargetStyle.Header1Color, "m_Header1Color");
+            m_PreviewHeader2.style.color = GetResolvedColor(() => m_TargetStyle.Header2Color, "m_Header2Color");
+            m_PreviewHeader3.style.color = GetResolvedColor(() => m_TargetStyle.Header3Color, "m_Header3Color");
 
             // 3. Logo Sprites
-            if (m_TargetStyle.m_Logo != null)
+            var logoSprite = GetResolvedSprite(() => m_TargetStyle.Logo, "m_Logo");
+            if (logoSprite != null)
             {
-                m_PreviewLogoImage.sprite = m_TargetStyle.m_Logo;
+                m_PreviewLogoImage.sprite = logoSprite;
                 m_PreviewLogoImage.style.display = DisplayStyle.Flex;
 
-                m_PreviewButtonIcon.sprite = m_TargetStyle.m_Logo;
-                m_DisabledPreviewButtonIcon.sprite = m_TargetStyle.m_Logo;
+                m_PreviewButtonIcon.sprite = logoSprite;
+                m_DisabledPreviewButtonIcon.sprite = logoSprite;
             }
             else
             {
@@ -1066,33 +1367,33 @@ namespace Framework.UI.Editor
             if (m_TargetStyle == null || m_PreviewButton == null) return;
 
             // Compute colors from ColorBlocks for current state
-            Color bgColor = GetEffectiveColor(m_TargetStyle.m_ButtonColorBlock, m_CurrentButtonState);
-            Color borderColor = GetEffectiveColor(m_TargetStyle.m_ButtonBorderColorBlock, m_CurrentButtonState);
-            Color textColor = GetEffectiveColor(m_TargetStyle.m_ButtonTextColorBlock, m_CurrentButtonState);
-            Color iconColor = GetEffectiveColor(m_TargetStyle.m_ButtonIconColorBlock, m_CurrentButtonState);
+            Color bgColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.ButtonColorBlock, "m_ButtonColorBlock"), m_CurrentButtonState);
+            Color borderColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.ButtonBorderColorBlock, "m_ButtonBorderColorBlock"), m_CurrentButtonState);
+            Color textColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.ButtonTextColorBlock, "m_ButtonTextColorBlock"), m_CurrentButtonState);
+            Color iconColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.ButtonIconColorBlock, "m_ButtonIconColorBlock"), m_CurrentButtonState);
 
             // Compute Scale and Animation Duration
             float targetScale = 1.0f;
-            float animDuration = m_TargetStyle.m_ButtonBackToNormalDuration;
+            float animDuration = GetResolvedFloat(() => m_TargetStyle.ButtonBackToNormalDuration, "m_ButtonBackToNormalDuration", 0.5f);
 
             switch (m_CurrentButtonState)
             {
                 case ButtonState.Highlighted:
-                    targetScale = m_TargetStyle.m_ButtonHoverScale;
-                    animDuration = m_TargetStyle.m_ButtonHoverAnimationDuration;
+                    targetScale = GetResolvedFloat(() => m_TargetStyle.ButtonHoverScale, "m_ButtonHoverScale", 1.0f);
+                    animDuration = GetResolvedFloat(() => m_TargetStyle.ButtonHoverAnimationDuration, "m_ButtonHoverAnimationDuration", 0.5f);
                     break;
                 case ButtonState.Pressed:
-                    targetScale = m_TargetStyle.m_ButtonClickScale;
-                    animDuration = m_TargetStyle.m_ButtonClickAnimationDuration;
+                    targetScale = GetResolvedFloat(() => m_TargetStyle.ButtonClickScale, "m_ButtonClickScale", 1.0f);
+                    animDuration = GetResolvedFloat(() => m_TargetStyle.ButtonClickAnimationDuration, "m_ButtonClickAnimationDuration", 0.25f);
                     break;
                 case ButtonState.Selected:
-                    targetScale = m_TargetStyle.m_ButtonClickScale;
-                    animDuration = m_TargetStyle.m_ButtonClickAnimationDuration;
+                    targetScale = GetResolvedFloat(() => m_TargetStyle.ButtonClickScale, "m_ButtonClickScale", 1.0f);
+                    animDuration = GetResolvedFloat(() => m_TargetStyle.ButtonClickAnimationDuration, "m_ButtonClickAnimationDuration", 0.25f);
                     break;
             }
 
             // Apply transition durations
-            float colorDuration = m_TargetStyle.m_ColorAnimationDuration;
+            float colorDuration = GetResolvedFloat(() => m_TargetStyle.ColorAnimationDuration, "m_ColorAnimationDuration", 0.5f);
             m_PreviewButton.style.transitionDuration = new List<TimeValue>
             {
                 new TimeValue(animDuration, TimeUnit.Second),
@@ -1129,10 +1430,10 @@ namespace Framework.UI.Editor
         {
             if (m_TargetStyle == null || m_DisabledPreviewButton == null) return;
 
-            Color bgColor = GetEffectiveColor(m_TargetStyle.m_ButtonColorBlock, ButtonState.Disabled);
-            Color borderColor = GetEffectiveColor(m_TargetStyle.m_ButtonBorderColorBlock, ButtonState.Disabled);
-            Color textColor = GetEffectiveColor(m_TargetStyle.m_ButtonTextColorBlock, ButtonState.Disabled);
-            Color iconColor = GetEffectiveColor(m_TargetStyle.m_ButtonIconColorBlock, ButtonState.Disabled);
+            Color bgColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.ButtonColorBlock, "m_ButtonColorBlock"), ButtonState.Disabled);
+            Color borderColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.ButtonBorderColorBlock, "m_ButtonBorderColorBlock"), ButtonState.Disabled);
+            Color textColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.ButtonTextColorBlock, "m_ButtonTextColorBlock"), ButtonState.Disabled);
+            Color iconColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.ButtonIconColorBlock, "m_ButtonIconColorBlock"), ButtonState.Disabled);
 
             m_DisabledPreviewButton.style.backgroundColor = bgColor;
             m_DisabledPreviewButton.style.borderTopColor = borderColor;

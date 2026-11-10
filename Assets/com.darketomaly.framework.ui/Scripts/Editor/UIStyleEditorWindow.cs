@@ -308,8 +308,35 @@ namespace Framework.UI.Editor
 
         private void CreateNewStyleAsset()
         {
-            var path = EditorUtility.SaveFilePanelInProject("Create UI Style", "New UI Style", "asset", "Save new UI Style asset");
-            if (string.IsNullOrEmpty(path)) return;
+            string folder = "Assets";
+            if (m_TargetStyle != null)
+            {
+                string targetPath = AssetDatabase.GetAssetPath(m_TargetStyle);
+                if (!string.IsNullOrEmpty(targetPath))
+                {
+                    folder = System.IO.Path.GetDirectoryName(targetPath)?.Replace('\\', '/');
+                }
+            }
+            else
+            {
+                var existing = FindAllStyleAssets();
+                if (existing != null && existing.Count > 0)
+                {
+                    string existingPath = AssetDatabase.GetAssetPath(existing[0]);
+                    if (!string.IsNullOrEmpty(existingPath))
+                    {
+                        folder = System.IO.Path.GetDirectoryName(existingPath)?.Replace('\\', '/');
+                    }
+                }
+                else if (AssetDatabase.IsValidFolder("Assets/Resources/Styles"))
+                {
+                    folder = "Assets/Resources/Styles";
+                }
+            }
+
+            if (string.IsNullOrEmpty(folder)) folder = "Assets";
+
+            string path = AssetDatabase.GenerateUniqueAssetPath($"{folder}/New UI Style.asset");
 
             var newStyle = CreateInstance<UIStyle>();
             AssetDatabase.CreateAsset(newStyle, path);
@@ -398,6 +425,8 @@ namespace Framework.UI.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
             AssetDatabase.SaveAssets();
             SetTarget(newStyle);
+            Selection.activeObject = newStyle;
+            EditorGUIUtility.PingObject(newStyle);
         }
 
         public void SetTarget(UIStyle style)

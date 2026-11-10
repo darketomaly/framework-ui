@@ -53,45 +53,18 @@ namespace Framework.UI
             {
                 currentStyle = Instance.CurrentStyle;
             }
-            
-            return uiType switch
-            {
-                UIType.Label => currentStyle.m_LabelColor,
-                UIType.Panel =>  currentStyle.m_PanelColor,
-                UIType.PanelBorder => currentStyle.m_PanelBorderColor,
-                _ => default
-            };
+
+            return currentStyle.GetColor(uiType);
         }
 
         public ColorBlock GetColorBlock(UIType uiType)
         {
-            switch (uiType)
-            {
-                case UIType.ButtonBackground:
-                    return CurrentStyle.m_ButtonColorBlock;
-                
-                case UIType.ButtonBorder:
-                    return CurrentStyle.m_ButtonBorderColorBlock;
-                
-                case UIType.ButtonText:
-                    return CurrentStyle.m_ButtonTextColorBlock;
-                
-                case UIType.ButtonIcon:
-                    return CurrentStyle.m_ButtonIconColorBlock;
-            }
-
-            return default;
+            return CurrentStyle.GetColorBlock(uiType);
         }
 
         public Sprite GetSprite(UIType uiType)
         {
-            switch (uiType)
-            {
-                case UIType.Logo:
-                    return CurrentStyle.m_Logo;
-                default:
-                    return null;
-            }
+            return CurrentStyle.GetSprite(uiType);
         }
 
         public static void UpdateScale(RectTransform rt, ref Tween tween, ButtonState buttonState)

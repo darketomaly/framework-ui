@@ -175,6 +175,10 @@ namespace Framework.UI.Editor
             {
                 UpdatePreview();
             });
+            m_LeftScrollView.RegisterCallback<ChangeEvent<UnityEngine.Object>>(evt =>
+            {
+                UpdatePreview();
+            });
             leftPane.Add(m_LeftScrollView);
 
             splitView.Add(leftPane);
@@ -818,6 +822,7 @@ namespace Framework.UI.Editor
             propField.style.flexGrow = 1;
             propField.style.marginLeft = 0;
             propField.style.marginBottom = 0;
+            propField.RegisterValueChangeCallback(evt => UpdatePreview());
             row.Add(propField);
 
             if (toggle != null)
@@ -1207,6 +1212,7 @@ namespace Framework.UI.Editor
             m_PreviewLogoImage.style.width = 36;
             m_PreviewLogoImage.style.height = 36;
             m_PreviewLogoImage.style.marginRight = 12;
+            m_PreviewLogoImage.scaleMode = ScaleMode.ScaleToFit;
             m_PreviewLogoImage.style.display = DisplayStyle.None;
             headerRow.Add(m_PreviewLogoImage);
 
@@ -1499,7 +1505,8 @@ namespace Framework.UI.Editor
             {
                 if (m_TargetStyle != null)
                 {
-                    return getter();
+                    var resolved = getter();
+                    if (resolved != null) return resolved;
                 }
             }
             catch
@@ -1508,8 +1515,21 @@ namespace Framework.UI.Editor
             }
 
             var prop = m_SerializedObject?.FindProperty(propertyPath);
-            var val = prop?.FindPropertyRelative("Value") ?? prop;
-            return val?.objectReferenceValue as Sprite;
+            var isOverridden = prop?.FindPropertyRelative("IsOverriden") ?? prop?.FindPropertyRelative("IsOverridden");
+            bool hasParent = GetParentStyle() != null;
+            if (!hasParent || (isOverridden != null && isOverridden.boolValue))
+            {
+                var val = prop?.FindPropertyRelative("Value") ?? prop;
+                if (val?.objectReferenceValue is Sprite s) return s;
+            }
+            else if (hasParent)
+            {
+                var parentStyle = GetParentStyle();
+                if (parentStyle != null) return parentStyle.Logo;
+            }
+
+            var fallbackVal = prop?.FindPropertyRelative("Value") ?? prop;
+            return fallbackVal?.objectReferenceValue as Sprite;
         }
 
         private void UpdatePreview()
@@ -1561,22 +1581,33 @@ namespace Framework.UI.Editor
             var logoSprite = GetResolvedSprite(() => m_TargetStyle.Logo, "m_Logo");
             if (logoSprite != null)
             {
+                m_PreviewLogoImage.image = null;
                 m_PreviewLogoImage.sprite = logoSprite;
                 m_PreviewLogoImage.style.display = DisplayStyle.Flex;
 
+                m_PreviewButtonIcon.image = null;
                 m_PreviewButtonIcon.sprite = logoSprite;
+                m_PreviewButtonIcon.style.display = DisplayStyle.Flex;
+
+                m_DisabledPreviewButtonIcon.image = null;
                 m_DisabledPreviewButtonIcon.sprite = logoSprite;
+                m_DisabledPreviewButtonIcon.style.display = DisplayStyle.Flex;
             }
             else
             {
+                m_PreviewLogoImage.sprite = null;
+                m_PreviewLogoImage.image = null;
                 m_PreviewLogoImage.style.display = DisplayStyle.None;
 
                 // Fallback icon for preview buttons if available
                 var defaultIcon = EditorGUIUtility.FindTexture("d_PlayButton") ?? EditorGUIUtility.FindTexture("PlayButton");
                 if (defaultIcon != null)
                 {
+                    m_PreviewButtonIcon.sprite = null;
                     m_PreviewButtonIcon.image = defaultIcon;
                     m_PreviewButtonIcon.style.display = DisplayStyle.Flex;
+
+                    m_DisabledPreviewButtonIcon.sprite = null;
                     m_DisabledPreviewButtonIcon.image = defaultIcon;
                     m_DisabledPreviewButtonIcon.style.display = DisplayStyle.Flex;
                 }

@@ -17,7 +17,7 @@ namespace Framework.UI
         }
 
         // Implicit conversion from T to Overridable<T>
-        public static implicit operator Overridable<T>(T value) => new()
+        public static implicit operator Overridable<T>(T value) => value is null ? null : new()
         { 
             Value = value, 
             IsOverriden = true 
@@ -42,7 +42,7 @@ namespace Framework.UI
         
         [Header("Sprites")] 
         [SerializeField] private Overridable<Sprite> m_Logo = new();
-        public Sprite Logo => m_Logo.ResolveValue(m_ParentStyle?.Logo);
+        public Sprite Logo => m_Logo.ResolveValue(m_ParentStyle?.m_Logo);
         
         [Header("Regular colors")]
         [SerializeField] private Overridable<Color> m_LabelColor = new();

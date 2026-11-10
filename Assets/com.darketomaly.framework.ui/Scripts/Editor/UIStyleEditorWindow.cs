@@ -21,7 +21,10 @@ namespace Framework.UI.Editor
         private ObjectField m_StyleObjectField;
         private ScrollView m_LeftScrollView;
         private VisualElement m_RightPreviewPane;
-        private VisualElement m_PreviewViewport;
+        private ScrollView m_PreviewViewport;
+        private GridBackground m_GridBackground;
+        private bool m_ShowGrid = true;
+        private Button m_GridToggleButton;
         private VisualElement m_EmptyStateContainer;
         private VisualElement m_EditorContainer;
 
@@ -869,7 +872,7 @@ namespace Framework.UI.Editor
             toolbar.Add(spacer);
 
             // Background Theme Toggle
-            var bgLabel = new Label("Canvas BG:");
+            var bgLabel = new Label("Canvas:");
             bgLabel.style.fontSize = 10;
             bgLabel.style.color = new Color(0.65f, 0.65f, 0.65f, 1f);
             bgLabel.style.marginRight = 4;
@@ -883,9 +886,34 @@ namespace Framework.UI.Editor
             bgBtn.style.fontSize = 10;
             bgBtn.style.paddingLeft = 8;
             bgBtn.style.paddingRight = 8;
+            bgBtn.style.marginRight = 6;
             toolbar.Add(bgBtn);
 
+            m_GridToggleButton = new Button(ToggleGridVisibility)
+            {
+                text = "Grid: ON"
+            };
+            m_GridToggleButton.style.fontSize = 10;
+            m_GridToggleButton.style.paddingLeft = 8;
+            m_GridToggleButton.style.paddingRight = 8;
+            toolbar.Add(m_GridToggleButton);
+
             pane.Add(toolbar);
+
+            // Canvas Container with Grid Background
+            var canvasContainer = new VisualElement();
+            canvasContainer.style.flexGrow = 1;
+            canvasContainer.style.position = Position.Relative;
+            canvasContainer.style.overflow = Overflow.Hidden;
+
+            m_GridBackground = new GridBackground();
+            m_GridBackground.style.position = Position.Absolute;
+            m_GridBackground.style.left = 0;
+            m_GridBackground.style.top = 0;
+            m_GridBackground.style.right = 0;
+            m_GridBackground.style.bottom = 0;
+            m_GridBackground.pickingMode = PickingMode.Ignore;
+            canvasContainer.Add(m_GridBackground);
 
             // Viewport ScrollView / Canvas Container
             m_PreviewViewport = new ScrollView();
@@ -907,13 +935,14 @@ namespace Framework.UI.Editor
                 evt.StopPropagation();
             });
 
-            UpdateBackgroundTheme();
-
             // Preview Panel inside Viewport
             m_PreviewPanel = CreatePreviewPanel();
             m_PreviewViewport.Add(m_PreviewPanel);
 
-            pane.Add(m_PreviewViewport);
+            canvasContainer.Add(m_PreviewViewport);
+            pane.Add(canvasContainer);
+
+            UpdateBackgroundTheme();
 
             // Status Bar at Bottom
             var statusBar = new VisualElement();
@@ -1460,7 +1489,20 @@ namespace Framework.UI.Editor
 
         #endregion
 
-        #region Background Themes
+        #region Background Themes & Grid
+
+        private void ToggleGridVisibility()
+        {
+            m_ShowGrid = !m_ShowGrid;
+            if (m_GridToggleButton != null)
+            {
+                m_GridToggleButton.text = m_ShowGrid ? "Grid: ON" : "Grid: OFF";
+            }
+            if (m_GridBackground != null)
+            {
+                m_GridBackground.ShowGrid = m_ShowGrid;
+            }
+        }
 
         private void ToggleBackgroundTheme()
         {
@@ -1482,19 +1524,145 @@ namespace Framework.UI.Editor
 
         private void UpdateBackgroundTheme()
         {
-            if (m_PreviewViewport == null) return;
+            if (m_GridBackground == null) return;
 
             switch (m_BackgroundThemeIndex)
             {
                 case 0: // Dark
-                    m_PreviewViewport.style.backgroundColor = new Color(0.12f, 0.12f, 0.12f, 1f);
+                    m_GridBackground.SetColors(
+                        new Color(0.12f, 0.12f, 0.12f, 1f),
+                        new Color(1f, 1f, 1f, 0.035f),
+                        new Color(1f, 1f, 1f, 0.08f)
+                    );
                     break;
                 case 1: // Light
-                    m_PreviewViewport.style.backgroundColor = new Color(0.85f, 0.85f, 0.85f, 1f);
+                    m_GridBackground.SetColors(
+                        new Color(0.88f, 0.88f, 0.88f, 1f),
+                        new Color(0f, 0f, 0f, 0.045f),
+                        new Color(0f, 0f, 0f, 0.10f)
+                    );
                     break;
                 case 2: // Neutral
-                    m_PreviewViewport.style.backgroundColor = new Color(0.28f, 0.28f, 0.28f, 1f);
+                    m_GridBackground.SetColors(
+                        new Color(0.24f, 0.24f, 0.24f, 1f),
+                        new Color(1f, 1f, 1f, 0.04f),
+                        new Color(1f, 1f, 1f, 0.09f)
+                    );
                     break;
+            }
+        }
+
+        #endregion
+
+        #region Grid Background Element
+
+        private class GridBackground : VisualElement
+        {
+            private Color m_MinorGridColor;
+            private Color m_MajorGridColor;
+            private bool m_ShowGrid = true;
+
+            public bool ShowGrid
+            {
+                get => m_ShowGrid;
+                set
+                {
+                    if (m_ShowGrid != value)
+                    {
+                        m_ShowGrid = value;
+                        MarkDirtyRepaint();
+                    }
+                }
+            }
+
+            public GridBackground()
+            {
+                generateVisualContent += OnGenerateVisualContent;
+            }
+
+            public void SetColors(Color baseColor, Color minorGrid, Color majorGrid)
+            {
+                style.backgroundColor = baseColor;
+                m_MinorGridColor = minorGrid;
+                m_MajorGridColor = majorGrid;
+                MarkDirtyRepaint();
+            }
+
+            private void OnGenerateVisualContent(MeshGenerationContext mgc)
+            {
+                if (!m_ShowGrid) return;
+
+                var rect = contentRect;
+                if (rect.width <= 0 || rect.height <= 0) return;
+
+                var painter = mgc.painter2D;
+                float width = rect.width;
+                float height = rect.height;
+
+                const float spacing = 20f;
+                const int majorStep = 5;
+                const float majorSpacing = spacing * majorStep;
+
+                float centerX = Mathf.Round(width * 0.5f);
+                float centerY = Mathf.Round(height * 0.5f);
+
+                // Minor grid lines
+                painter.strokeColor = m_MinorGridColor;
+                painter.lineWidth = 1f;
+                painter.BeginPath();
+
+                for (float x = centerX + spacing; x <= width; x += spacing)
+                {
+                    if (Mathf.Abs(x - centerX) % majorSpacing < 0.1f) continue;
+                    painter.MoveTo(new Vector2(x, 0));
+                    painter.LineTo(new Vector2(x, height));
+                }
+                for (float x = centerX - spacing; x >= 0; x -= spacing)
+                {
+                    if (Mathf.Abs(x - centerX) % majorSpacing < 0.1f) continue;
+                    painter.MoveTo(new Vector2(x, 0));
+                    painter.LineTo(new Vector2(x, height));
+                }
+                for (float y = centerY + spacing; y <= height; y += spacing)
+                {
+                    if (Mathf.Abs(y - centerY) % majorSpacing < 0.1f) continue;
+                    painter.MoveTo(new Vector2(0, y));
+                    painter.LineTo(new Vector2(width, y));
+                }
+                for (float y = centerY - spacing; y >= 0; y -= spacing)
+                {
+                    if (Mathf.Abs(y - centerY) % majorSpacing < 0.1f) continue;
+                    painter.MoveTo(new Vector2(0, y));
+                    painter.LineTo(new Vector2(width, y));
+                }
+                painter.Stroke();
+
+                // Major grid lines
+                painter.strokeColor = m_MajorGridColor;
+                painter.lineWidth = 1f;
+                painter.BeginPath();
+
+                for (float x = centerX; x <= width; x += majorSpacing)
+                {
+                    painter.MoveTo(new Vector2(x, 0));
+                    painter.LineTo(new Vector2(x, height));
+                }
+                for (float x = centerX - majorSpacing; x >= 0; x -= majorSpacing)
+                {
+                    painter.MoveTo(new Vector2(x, 0));
+                    painter.LineTo(new Vector2(x, height));
+                }
+                for (float y = centerY; y <= height; y += majorSpacing)
+                {
+                    painter.MoveTo(new Vector2(0, y));
+                    painter.LineTo(new Vector2(width, y));
+                }
+                for (float y = centerY - majorSpacing; y >= 0; y -= majorSpacing)
+                {
+                    painter.MoveTo(new Vector2(0, y));
+                    painter.LineTo(new Vector2(width, y));
+                }
+                painter.Stroke();
             }
         }
 

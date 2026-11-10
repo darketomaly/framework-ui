@@ -35,13 +35,13 @@ namespace Framework.UI
         {
             return uiType switch
             {
-                UIType.Label => uiStyle.m_LabelColor,
-                UIType.Header1 => uiStyle.m_Header1Color,
-                UIType.Header2 => uiStyle.m_Header2Color,
-                UIType.Header3 => uiStyle.m_Header3Color,
-                UIType.Panel =>  uiStyle.m_PanelColor,
-                UIType.PanelBorder => uiStyle.m_PanelBorderColor,
-                UIType.PanelSeparator => uiStyle.m_PanelSeparatorColor,
+                UIType.Label => uiStyle.LabelColor,
+                UIType.Header1 => uiStyle.Header1Color,
+                UIType.Header2 => uiStyle.Header2Color,
+                UIType.Header3 => uiStyle.Header3Color,
+                UIType.Panel =>  uiStyle.PanelColor,
+                UIType.PanelBorder => uiStyle.PanelBorderColor,
+                UIType.PanelSeparator => uiStyle.PanelSeparatorColor,
                 _ => default
             };
         }
@@ -50,10 +50,10 @@ namespace Framework.UI
         {
             return uiType switch
             {
-                UIType.ButtonBackground => uiStyle.m_ButtonColorBlock,
-                UIType.ButtonBorder => uiStyle.m_ButtonBorderColorBlock,
-                UIType.ButtonText => uiStyle.m_ButtonTextColorBlock,
-                UIType.ButtonIcon => uiStyle.m_ButtonIconColorBlock,
+                UIType.ButtonBackground => uiStyle.ButtonColorBlock,
+                UIType.ButtonBorder => uiStyle.ButtonBorderColorBlock,
+                UIType.ButtonText => uiStyle.ButtonTextColorBlock,
+                UIType.ButtonIcon => uiStyle.ButtonIconColorBlock,
                 _ => default
             };
         }
@@ -62,7 +62,7 @@ namespace Framework.UI
         {
             return uiType switch
             {
-                UIType.Logo => uiStyle.m_Logo,
+                UIType.Logo => uiStyle.Logo,
                 _ => null
             };
         }

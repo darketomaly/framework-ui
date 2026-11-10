@@ -71,20 +71,20 @@ namespace Framework.UI
         {
             var currentStyle = Instance.CurrentStyle;
             var targetScaleMagnitude = 1f;
-            var duration = currentStyle.m_ButtonBackToNormalDuration;
+            var duration = currentStyle.ButtonBackToNormalDuration;
             
             switch (buttonState)
             {
                 case ButtonState.Highlighted:
-                    duration = currentStyle.m_ButtonHoverAnimationDuration;
-                    targetScaleMagnitude = currentStyle.m_ButtonHoverScale;
+                    duration = currentStyle.ButtonHoverAnimationDuration;
+                    targetScaleMagnitude = currentStyle.ButtonHoverScale;
                     break;
                 case ButtonState.Pressed:
-                    duration = currentStyle.m_ButtonClickAnimationDuration;
-                    targetScaleMagnitude = currentStyle.m_ButtonClickScale;
+                    duration = currentStyle.ButtonClickAnimationDuration;
+                    targetScaleMagnitude = currentStyle.ButtonClickScale;
                     break;
                 case ButtonState.Selected:
-                    duration = currentStyle.m_ButtonClickAnimationDuration;
+                    duration = currentStyle.ButtonClickAnimationDuration;
                     break;
             }
 
@@ -113,7 +113,7 @@ namespace Framework.UI
                     () => graphic.color,    
                     x => graphic.color = x,   
                     targetColor,                 
-                    Instance.CurrentStyle.m_ColorAnimationDuration                       
+                    Instance.CurrentStyle.ColorAnimationDuration                       
                 );
                 #else
                 graphic.color = targetColor;

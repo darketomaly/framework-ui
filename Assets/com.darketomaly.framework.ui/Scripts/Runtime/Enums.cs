@@ -1,5 +1,9 @@
 namespace Framework.UI
 {
+    // To do
+    // Should be able to have Label 1, Label 2, Label 3 etc
+    // Without having to re-define the enums or the extensions
+    
     public enum UIType
     {
         Label,

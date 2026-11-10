@@ -24,6 +24,7 @@ namespace Framework.UI
         private void OnEnable()
         {
             FrameworkEventsFactory.Subscribe(UIEvents.ManagerInitialized, OnManagerInitialized);
+            FrameworkEventsFactory.Subscribe(UIEvents.OnThemeChanged, OnThemeChanged);
         }
 
         private void OnDisable()
@@ -35,7 +36,6 @@ namespace Framework.UI
         private void OnManagerInitialized()
         {
             Initialize();
-            FrameworkEventsFactory.Subscribe(UIEvents.OnThemeChanged, OnThemeChanged);
         }
         
         private void Initialize()

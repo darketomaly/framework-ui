@@ -42,6 +42,7 @@ namespace Framework.UI
             m_buttonEvents.OnDisabled += RefreshAnimated;
             
             FrameworkEventsFactory.Subscribe(UIEvents.ManagerInitialized, OnManagerInitialized);
+            FrameworkEventsFactory.Subscribe(UIEvents.OnThemeChanged, OnThemeChanged);
         }
 
         private void OnDisable()
@@ -64,7 +65,6 @@ namespace Framework.UI
         private void OnManagerInitialized()
         {
             RefreshColor(true);
-            FrameworkEventsFactory.Subscribe(UIEvents.OnThemeChanged, OnThemeChanged);
         }
         
         private void RefreshAnimated()

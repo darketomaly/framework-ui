@@ -64,7 +64,9 @@ namespace Framework.UI.Editor
         [MenuItem("Framework/UI Style Editor", false, 100)]
         public static void OpenWindow()
         {
-            var window = GetWindow<UIStyleEditorWindow>("UI Style Editor");
+            var window = GetWindow<UIStyleEditorWindow>();
+            var icon = LoadBrandIcon() ?? EditorGUIUtility.FindTexture("d_StyleSheet Icon") ?? EditorGUIUtility.FindTexture("StyleSheet Icon");
+            window.titleContent = new GUIContent("UI Style Editor", icon, "Darketomaly UI Style Editor");
             window.minSize = new Vector2(800, 520);
             window.Show();
 
@@ -84,7 +86,9 @@ namespace Framework.UI.Editor
 
         public static void OpenWindowWithTarget(UIStyle style)
         {
-            var window = GetWindow<UIStyleEditorWindow>("UI Style Editor");
+            var window = GetWindow<UIStyleEditorWindow>();
+            var icon = LoadBrandIcon() ?? EditorGUIUtility.FindTexture("d_StyleSheet Icon") ?? EditorGUIUtility.FindTexture("StyleSheet Icon");
+            window.titleContent = new GUIContent("UI Style Editor", icon, "Darketomaly UI Style Editor");
             window.minSize = new Vector2(800, 520);
             window.Show();
             window.SetTarget(style);
@@ -92,8 +96,8 @@ namespace Framework.UI.Editor
 
         private void OnEnable()
         {
-            var sheetIcon = EditorGUIUtility.FindTexture("d_StyleSheet Icon") ?? EditorGUIUtility.FindTexture("StyleSheet Icon");
-            titleContent = new GUIContent("UI Style Editor", sheetIcon);
+            var icon = LoadBrandIcon() ?? EditorGUIUtility.FindTexture("d_StyleSheet Icon") ?? EditorGUIUtility.FindTexture("StyleSheet Icon");
+            titleContent = new GUIContent("UI Style Editor", icon, "Darketomaly UI Style Editor");
             Undo.undoRedoPerformed += OnUndoRedo;
         }
 
@@ -1872,6 +1876,72 @@ namespace Framework.UI.Editor
                     painter.LineTo(new Vector2(width, y));
                 }
                 painter.Stroke();
+            }
+        }
+
+        #endregion
+
+        #region Brand Icon
+
+        private static Texture2D s_CachedBrandIcon;
+
+        private const string EmbeddedBrandIconBase64 =
+            "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEUUlEQVR4nMVXTU8bVxT1eGz8gQOJBCYrxJIVRKZuqasgJbQUCoIV" +
+            "GxZIJY1UiJIlYsFH+VhG2bBAahaoyg8I0CbdJGlTohBFKRtAbNrYRiBBa6JWJMYez3B67xuPYxtjZuSkedLxeOyZd88797z73rPZ" +
+            "cptECBDuECKEFAElQiGECT8QPiPYbSc0N+EmIfEOghYjcysd61jw5+8xcD6eZ5Owp1n9X8ENsNqccpEXxcrLkiRlUAIBTjX7TZjD" +
+            "dECzMEmCzS4capqA3W4XKBTU+D37/1P6jthOk1+SdNjtEjxuD1paWtDa2oqOjg50d3ejt7cXfX196O/vF9f29nZUVVVlSJxCgKf5" +
+            "SSO25UCWJVxovIAjTcPR0VEO8tvW1hYaGxtz1CpCorjcxlWWZZ1AOiB/akRGVVUBLY/YxsYGGhoaxHunpKOwAkZQhjGSpkBTOoCK" +
+            "ZCqJF7+/wOPHv2Jl5SnW1tawu7sLRVGQUjVo9NzOzo4ZEoUJBAIBzM7O4vbt7zE4+C0RkBEMfmKMHdvUeV1dHbxej4DP50NtbS3m" +
+            "5+cRP0xCUVNEQsPm5qYgUSQVhQkMDAzg9esDHBz8i0ePHsLhkNHU1ETxSWpNRXQrivM159Mdv1XN7XZjanoaSooIaKrA6uoqXGUu" +
+            "awSGhoaQSMRxePiGZP5FyBgMfiwIaDS6SCQCf7UfUoHUecu9WFxcolQRWaQQ+/svVJypsEagvr4eN25cx7Vrg+jq6iQFnGj+NCQ6" +
+            "VVMKotEoavy5BHRIYsq2ffElkskkPZ/EP6/2UVlZaY6AYRYescPhgEMmM1KHDroPhUJCfkVJEIEIEagpQEDv49KlVlIwQSlI4tV+" +
+            "jAictaaALNnhIONlIDvQ3NwscppMJigFYfhJgZPev3z5c0FAVRXsM4EKkwoYHXB+v6Jqxwh+FIRTdiJEKeD5zgqEwy8FgfxODQXb" +
+            "2tpECgSBGKWAPWCzQODKla+FCRnPnj2F06krwHUgRTWACVRXVxec32xELsm6B1TEYjHdhGYJcAdXr35DMyCOePwAT578JvzAHuDG" +
+            "lY9N6CcPvF14jHmuz4Surm5RlLhm7O3tocJ3BnYrCnR2dmJ5eZlGv4K5uTlB4OLFFqEAE+D8PnjwEAsLi7h7d4GuC1ha+hE/3buH" +
+            "+/d/xp9/vMysDdvb2/B5fRZNSK73eDwoLy+Hy+US92IWEAH2gdG4LmavD/lLE/+3vr6OsrIy8wSyzZS9MAWDQd0DXOFYCaoJ/F3l" +
+            "RYmQvyDxPftgZGREvH9CrMIEChE6d/YcRkdHMTYxjsmpSUzNTGN6ZgaTk1MYn/gOEwITGBsbF88NDw+jp6eH1gpv0dXQ1N7/2I6I" +
+            "ipNAadsz3gyJbZFpFfI7LVQJLSDMBO6U0EGp4A2x2Bq/z9NQMfn5SCAOBzc/AAE+DGXOiR/0aJZN4pbN4inJIhJptY8FNxpLwnlh" +
+            "c4TfERme5hGbbnb2m5Qd8D/Aa6oEwk9/mwAAAABJRU5ErkJggg==";
+
+        private static Texture2D LoadBrandIcon()
+        {
+            if (s_CachedBrandIcon != null) return s_CachedBrandIcon;
+
+            // 1. Try finding asset by search in AssetDatabase
+            var guids = AssetDatabase.FindAssets("darketomaly_icon t:Texture2D");
+            if (guids != null && guids.Length > 0)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                s_CachedBrandIcon = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+                if (s_CachedBrandIcon != null) return s_CachedBrandIcon;
+            }
+
+            // 2. Try direct package / project paths
+            string[] directPaths = new[]
+            {
+                "Assets/com.darketomaly.framework.ui/Scripts/Editor/Icons/darketomaly_icon.png",
+                "Packages/com.darketomaly.framework.ui/Scripts/Editor/Icons/darketomaly_icon.png"
+            };
+            foreach (var p in directPaths)
+            {
+                s_CachedBrandIcon = AssetDatabase.LoadAssetAtPath<Texture2D>(p);
+                if (s_CachedBrandIcon != null) return s_CachedBrandIcon;
+            }
+
+            // 3. Fallback: decode embedded PNG bytes
+            try
+            {
+                byte[] bytes = System.Convert.FromBase64String(EmbeddedBrandIconBase64);
+                var tex = new Texture2D(32, 32, TextureFormat.RGBA32, false);
+                tex.LoadImage(bytes);
+                tex.hideFlags = HideFlags.HideAndDontSave;
+                tex.name = "darketomaly_icon";
+                s_CachedBrandIcon = tex;
+                return s_CachedBrandIcon;
+            }
+            catch
+            {
+                return null;
             }
         }
 

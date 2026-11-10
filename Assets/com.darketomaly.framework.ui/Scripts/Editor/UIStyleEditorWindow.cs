@@ -8,7 +8,6 @@ using UnityEngine.UIElements;
 using Button = UnityEngine.UIElements.Button;
 using Image = UnityEngine.UIElements.Image;
 using Toggle = UnityEngine.UIElements.Toggle;
-using Slider = UnityEngine.UIElements.Slider;
 
 namespace Framework.UI.Editor
 {
@@ -671,26 +670,6 @@ namespace Framework.UI.Editor
             spacer.style.flexGrow = 1;
             toolbar.Add(spacer);
 
-            // Zoom / Scale Slider
-            var zoomLabel = new Label("Zoom:");
-            zoomLabel.style.fontSize = 10;
-            zoomLabel.style.color = new Color(0.65f, 0.65f, 0.65f, 1f);
-            zoomLabel.style.marginRight = 4;
-            toolbar.Add(zoomLabel);
-
-            var zoomSlider = new Slider(0.6f, 1.4f)
-            {
-                value = m_PreviewScale
-            };
-            zoomSlider.style.width = 75;
-            zoomSlider.style.marginRight = 12;
-            zoomSlider.RegisterValueChangedCallback(evt =>
-            {
-                m_PreviewScale = evt.newValue;
-                ApplyPreviewScale();
-            });
-            toolbar.Add(zoomSlider);
-
             // Background Theme Toggle
             var bgLabel = new Label("Canvas BG:");
             bgLabel.style.fontSize = 10;
@@ -721,6 +700,15 @@ namespace Framework.UI.Editor
             m_PreviewViewport.contentContainer.style.paddingLeft = 24;
             m_PreviewViewport.contentContainer.style.paddingRight = 24;
 
+            // Mouse wheel zoom (clamped between 0.6x and 1.4x)
+            m_PreviewViewport.RegisterCallback<WheelEvent>(evt =>
+            {
+                float step = Mathf.Abs(evt.delta.y) > 1f ? Mathf.Sign(evt.delta.y) * 0.05f : evt.delta.y * 0.05f;
+                m_PreviewScale = Mathf.Clamp(m_PreviewScale - step, 0.6f, 1.4f);
+                ApplyPreviewScale();
+                evt.StopPropagation();
+            });
+
             UpdateBackgroundTheme();
 
             // Preview Panel inside Viewport
@@ -741,7 +729,7 @@ namespace Framework.UI.Editor
             statusBar.style.borderTopColor = new Color(0.11f, 0.11f, 0.11f, 1f);
             statusBar.style.backgroundColor = new Color(0.12f, 0.12f, 0.12f, 1f);
 
-            m_StateInfoLabel = new Label("State: Normal | Hover / Click the button to test live animations.");
+            m_StateInfoLabel = new Label("State: Normal | Hover / Click button for live animations | Mouse wheel to zoom.");
             m_StateInfoLabel.style.fontSize = 11;
             m_StateInfoLabel.style.color = new Color(0.6f, 0.75f, 0.9f, 1f);
             statusBar.Add(m_StateInfoLabel);
@@ -1062,6 +1050,8 @@ namespace Framework.UI.Editor
                 m_PreviewPanel.style.scale = new Scale(new Vector3(m_PreviewScale, m_PreviewScale, 1f));
                 m_PreviewPanel.style.transformOrigin = new TransformOrigin(Length.Percent(50), Length.Percent(50));
             }
+
+            UpdatePreviewButtonVisuals();
         }
 
         private void UpdatePreviewButtonVisuals()
@@ -1123,7 +1113,7 @@ namespace Framework.UI.Editor
             // Status message
             if (m_StateInfoLabel != null)
             {
-                m_StateInfoLabel.text = $"State: {m_CurrentButtonState}  |  Scale: {targetScale:F2}x ({animDuration:F2}s)  |  Color Transition: {colorDuration:F2}s" +
+                m_StateInfoLabel.text = $"State: {m_CurrentButtonState}  |  Scale: {targetScale:F2}x ({animDuration:F2}s)  |  Zoom: {m_PreviewScale * 100:F0}%  |  Color Transition: {colorDuration:F2}s" +
                     (m_IsInteractive ? "  [Interactive Mode]" : "  [Fixed State Preview]");
             }
         }

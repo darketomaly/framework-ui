@@ -78,6 +78,17 @@ namespace Framework.UI
             return default;
         }
 
+        public Sprite GetSprite(UIType uiType)
+        {
+            switch (uiType)
+            {
+                case UIType.Logo:
+                    return CurrentStyle.m_Logo;
+                default:
+                    return null;
+            }
+        }
+
         public static void UpdateScale(RectTransform rt, Vector3 targetScale, ref Tween tween)
         {
             #if DOTWEEN
@@ -88,7 +99,7 @@ namespace Framework.UI
             #endif
         }
         
-        public static void UpdateGraphic(Graphic graphic, Color targetColor, UIType uiType, ref Tween tween, bool instant)
+        public static void UpdateGraphicColor(Graphic graphic, Color targetColor, ref Tween tween, bool instant)
         {
             if (instant)
             {

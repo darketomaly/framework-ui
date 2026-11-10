@@ -6,6 +6,9 @@ namespace Framework.UI
     [CreateAssetMenu(fileName = "UI Style", menuName = "Framework/UI Style")]
     public class UIStyle : ScriptableObject
     {
+        [Header("Sprites")] 
+        public Sprite m_Logo;
+        
         [Header("Regular colors")]
         public Color m_LabelColor;
         

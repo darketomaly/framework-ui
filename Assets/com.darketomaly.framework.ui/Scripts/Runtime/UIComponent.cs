@@ -17,10 +17,13 @@ namespace Framework.UI
         private Tween m_tween;
         #endif
 
+        private Graphic m_graphic;
+        
+        private Color GetColor => UIManager.Instance.GetColor(m_Type);
+
         private void OnEnable()
         {
             FrameworkEventsFactory.Subscribe(UIEvents.ManagerInitialized, OnManagerInitialized);
-            FrameworkEventsFactory.Subscribe(UIEvents.OnThemeChanged, OnThemeChanged);
         }
 
         private void OnDisable()
@@ -32,18 +35,35 @@ namespace Framework.UI
         private void OnManagerInitialized()
         {
             Initialize();
+            FrameworkEventsFactory.Subscribe(UIEvents.OnThemeChanged, OnThemeChanged);
+        }
+        
+        private void Initialize()
+        {
+            m_graphic = GetComponent<Graphic>();
+
+            if (m_Type.IsSprite())
+            {
+                var img = m_graphic as Image;
+                img.sprite = UIManager.Instance.GetSprite(m_Type);
+            }
+            else if (m_Type.IsColor())
+            {
+                UIManager.UpdateGraphicColor(m_graphic, GetColor, ref m_tween, true);
+            }
         }
         
         private void OnThemeChanged()
         {
-            var color = UIManager.Instance.GetColor(m_Type);
-            UIManager.UpdateGraphic(GetComponent<Graphic>(), color, m_Type, ref m_tween, false);
-        }
-
-        private void Initialize()
-        {
-            var color = UIManager.Instance.GetColor(m_Type);
-            UIManager.UpdateGraphic(GetComponent<Graphic>(), color, m_Type, ref m_tween, true);
+            if (m_Type.IsSprite())
+            {
+                var img = m_graphic as Image;
+                img.sprite = UIManager.Instance.GetSprite(m_Type);
+            }
+            else if (m_Type.IsColor())
+            {
+                UIManager.UpdateGraphicColor(m_graphic, GetColor, ref m_tween, false);
+            }
         }
     }
 }

@@ -42,7 +42,6 @@ namespace Framework.UI
             m_buttonEvents.OnDisabled += RefreshAnimated;
             
             FrameworkEventsFactory.Subscribe(UIEvents.ManagerInitialized, OnManagerInitialized);
-            FrameworkEventsFactory.Subscribe(UIEvents.OnThemeChanged, OnThemeChanged);
         }
 
         private void OnDisable()
@@ -53,7 +52,7 @@ namespace Framework.UI
             m_buttonEvents.OnSelected -= RefreshAnimated;
             m_buttonEvents.OnDisabled -= RefreshAnimated;
             
-            FrameworkEventsFactory.Unsubscribe(UIEvents.ManagerInitialized, OnManagerInitialized);
+            FrameworkEventsFactory.Unsubscribe(UIEvents.ManagerInitialized, OnThemeChanged);
             FrameworkEventsFactory.Unsubscribe(UIEvents.OnThemeChanged, OnThemeChanged);
         }
         
@@ -65,6 +64,7 @@ namespace Framework.UI
         private void OnManagerInitialized()
         {
             RefreshColor(true);
+            FrameworkEventsFactory.Subscribe(UIEvents.OnThemeChanged, OnThemeChanged);
         }
         
         private void RefreshAnimated()
@@ -122,15 +122,11 @@ namespace Framework.UI
                 var graphic = targetGraphic.Graphic;
                 var type = targetGraphic.Type;
         
-                if (type is 
-                    UIType.ButtonBackground or 
-                    UIType.ButtonBorder or 
-                    UIType.ButtonText or 
-                    UIType.ButtonIcon)
+                if (type.IsColorBlock())
                 {
                     var colorBlock = UIManager.Instance.GetColorBlock(type);
                     var color = colorSelector(colorBlock);
-                    UIManager.UpdateGraphic(graphic, color, type, ref targetGraphic.ColorTween, instant);
+                    UIManager.UpdateGraphicColor(graphic, color, ref targetGraphic.ColorTween, instant);
                 }
             }
         }

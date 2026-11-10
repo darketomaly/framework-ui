@@ -18,7 +18,8 @@ namespace Framework.UI.Editor
         private SerializedObject m_SerializedObject;
 
         // UI Toolkit Root & Layout
-        private ObjectField m_StyleObjectField;
+        private DropdownField m_StyleDropdown;
+        private List<UIStyle> m_AvailableStyles = new List<UIStyle>();
         private ScrollView m_LeftScrollView;
         private VisualElement m_RightPreviewPane;
         private ScrollView m_PreviewViewport;
@@ -108,6 +109,11 @@ namespace Framework.UI.Editor
             {
                 SetTarget(selectedStyle);
             }
+        }
+
+        private void OnFocus()
+        {
+            RefreshTopToolbarDropdown();
         }
 
         private void OnUndoRedo()
@@ -234,18 +240,29 @@ namespace Framework.UI.Editor
             titleLabel.style.marginRight = 8;
             toolbar.Add(titleLabel);
 
-            m_StyleObjectField = new ObjectField
+            m_StyleDropdown = new DropdownField();
+            m_StyleDropdown.style.width = 240;
+            m_StyleDropdown.RegisterValueChangedCallback(evt =>
             {
-                objectType = typeof(UIStyle),
-                allowSceneObjects = false,
-                value = m_TargetStyle
-            };
-            m_StyleObjectField.style.width = 240;
-            m_StyleObjectField.RegisterValueChangedCallback(evt =>
-            {
-                SetTarget(evt.newValue as UIStyle);
+                if (m_StyleDropdown.choices == null) return;
+                int index = m_StyleDropdown.choices.IndexOf(evt.newValue);
+                if (m_TargetStyle == null)
+                {
+                    if (index > 0 && index - 1 < m_AvailableStyles.Count)
+                    {
+                        SetTarget(m_AvailableStyles[index - 1]);
+                    }
+                }
+                else
+                {
+                    if (index >= 0 && index < m_AvailableStyles.Count)
+                    {
+                        SetTarget(m_AvailableStyles[index]);
+                    }
+                }
             });
-            toolbar.Add(m_StyleObjectField);
+            toolbar.Add(m_StyleDropdown);
+            RefreshTopToolbarDropdown();
 
             var pingButton = new Button(() =>
             {
@@ -378,10 +395,7 @@ namespace Framework.UI.Editor
         public void SetTarget(UIStyle style)
         {
             m_TargetStyle = style;
-            if (m_StyleObjectField != null && m_StyleObjectField.value != style)
-            {
-                m_StyleObjectField.SetValueWithoutNotify(style);
-            }
+            RefreshTopToolbarDropdown();
 
             if (m_TargetStyle == null)
             {
@@ -466,7 +480,7 @@ namespace Framework.UI.Editor
 
             // Section 0: Hierarchy & Inheritance
             var inheritanceCard = CreateSectionCard("Inheritance", new Color(0.20f, 0.70f, 0.85f, 1f));
-            AddPropertyField(inheritanceCard, "m_ParentStyle", "Parent Style");
+            AddParentStyleField(inheritanceCard);
             m_LeftScrollView.Add(inheritanceCard);
 
             // Section 1: Sprites
@@ -563,6 +577,201 @@ namespace Framework.UI.Editor
             var parentProp = m_SerializedObject?.FindProperty("m_ParentStyle");
             return parentProp?.objectReferenceValue as UIStyle;
         }
+
+        #region Style Asset Lookup & Inheritance Helpers
+
+        private static List<UIStyle> FindAllStyleAssets()
+        {
+            var list = new List<UIStyle>();
+            var set = new HashSet<UIStyle>();
+
+            var guids = AssetDatabase.FindAssets("t:UIStyle");
+            foreach (var guid in guids)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var style = AssetDatabase.LoadAssetAtPath<UIStyle>(path);
+                if (style != null && set.Add(style))
+                {
+                    list.Add(style);
+                }
+            }
+
+            if (list.Count == 0)
+            {
+                var resStyles = Resources.LoadAll<UIStyle>("");
+                if (resStyles != null)
+                {
+                    foreach (var s in resStyles)
+                    {
+                        if (s != null && set.Add(s)) list.Add(s);
+                    }
+                }
+            }
+
+            list.Sort((a, b) => string.Compare(a.name, b.name, StringComparison.OrdinalIgnoreCase));
+            return list;
+        }
+
+        private static string GetStyleDisplayName(UIStyle style, List<UIStyle> allStyles)
+        {
+            if (style == null) return "None";
+            bool duplicate = false;
+            for (int i = 0; i < allStyles.Count; i++)
+            {
+                if (allStyles[i] != style && allStyles[i].name == style.name)
+                {
+                    duplicate = true;
+                    break;
+                }
+            }
+
+            if (!duplicate) return style.name;
+
+            string path = AssetDatabase.GetAssetPath(style);
+            return $"{style.name} ({path})";
+        }
+
+        private static bool WouldCauseCircularInheritance(UIStyle candidate, UIStyle target)
+        {
+            if (candidate == null || target == null) return false;
+            if (candidate == target) return true;
+
+            var visited = new HashSet<UIStyle> { candidate };
+            var current = candidate;
+
+            while (current != null)
+            {
+                var so = new SerializedObject(current);
+                var parent = so.FindProperty("m_ParentStyle")?.objectReferenceValue as UIStyle;
+                if (parent == target) return true;
+                if (parent == null || !visited.Add(parent)) break;
+                current = parent;
+            }
+
+            return false;
+        }
+
+        private void RefreshTopToolbarDropdown()
+        {
+            if (m_StyleDropdown == null) return;
+
+            m_AvailableStyles = FindAllStyleAssets();
+            var choices = new List<string>();
+
+            if (m_AvailableStyles.Count == 0)
+            {
+                choices.Add("(No UI Styles in Project)");
+                m_StyleDropdown.choices = choices;
+                m_StyleDropdown.SetValueWithoutNotify("(No UI Styles in Project)");
+                return;
+            }
+
+            int selectedIndex = -1;
+            for (int i = 0; i < m_AvailableStyles.Count; i++)
+            {
+                var style = m_AvailableStyles[i];
+                string displayName = GetStyleDisplayName(style, m_AvailableStyles);
+                choices.Add(displayName);
+                if (style == m_TargetStyle)
+                {
+                    selectedIndex = i;
+                }
+            }
+
+            if (m_TargetStyle == null)
+            {
+                choices.Insert(0, "(Select a UI Style...)");
+                m_StyleDropdown.choices = choices;
+                m_StyleDropdown.SetValueWithoutNotify("(Select a UI Style...)");
+            }
+            else
+            {
+                m_StyleDropdown.choices = choices;
+                if (selectedIndex >= 0)
+                {
+                    m_StyleDropdown.SetValueWithoutNotify(choices[selectedIndex]);
+                }
+                else
+                {
+                    m_StyleDropdown.SetValueWithoutNotify(m_TargetStyle.name);
+                }
+            }
+        }
+
+        private void AddParentStyleField(VisualElement parent)
+        {
+            var allStyles = FindAllStyleAssets();
+            var candidates = new List<UIStyle>();
+
+            foreach (var style in allStyles)
+            {
+                if (style != m_TargetStyle && !WouldCauseCircularInheritance(style, m_TargetStyle))
+                {
+                    candidates.Add(style);
+                }
+            }
+
+            var choices = new List<string> { "None (Root Style)" };
+            foreach (var cand in candidates)
+            {
+                choices.Add(GetStyleDisplayName(cand, allStyles));
+            }
+
+            var currentParent = GetParentStyle();
+            int selectedIndex = 0;
+            if (currentParent != null)
+            {
+                int candIdx = candidates.IndexOf(currentParent);
+                if (candIdx >= 0)
+                {
+                    selectedIndex = candIdx + 1;
+                }
+            }
+
+            var row = new VisualElement();
+            row.style.flexDirection = FlexDirection.Row;
+            row.style.alignItems = Align.Center;
+            row.style.marginBottom = 4;
+
+            var parentDropdown = new DropdownField("Parent Style", choices, selectedIndex);
+            parentDropdown.style.flexGrow = 1;
+            parentDropdown.style.marginLeft = 0;
+            parentDropdown.style.marginBottom = 0;
+
+            parentDropdown.RegisterValueChangedCallback(evt =>
+            {
+                int idx = parentDropdown.choices.IndexOf(evt.newValue);
+                UIStyle newParent = (idx > 0 && idx - 1 < candidates.Count) ? candidates[idx - 1] : null;
+
+                var parentProp = m_SerializedObject.FindProperty("m_ParentStyle");
+                if (parentProp != null)
+                {
+                    parentProp.objectReferenceValue = newParent;
+                    m_SerializedObject.ApplyModifiedProperties();
+                    m_SerializedObject.Update();
+                    UpdatePreview();
+                }
+            });
+
+            row.Add(parentDropdown);
+
+            if (currentParent != null)
+            {
+                var pingBtn = new Button(() => EditorGUIUtility.PingObject(currentParent))
+                {
+                    text = "Ping",
+                    tooltip = "Ping parent style asset in Project window"
+                };
+                pingBtn.style.marginLeft = 4;
+                pingBtn.style.paddingLeft = 8;
+                pingBtn.style.paddingRight = 8;
+                row.Add(pingBtn);
+            }
+
+            parent.Add(row);
+        }
+
+        #endregion
 
         private void AddPropertyField(VisualElement parent, string propertyPath, string customLabel = null)
         {

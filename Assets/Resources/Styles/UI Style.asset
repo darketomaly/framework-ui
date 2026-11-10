@@ -12,20 +12,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d06013b09e627742a0ae642494e4326, type: 3}
   m_Name: UI Style
   m_EditorClassIdentifier: darketomaly.framework.ui.runtime::Framework.UI.UIStyle
-  m_LabelColor: {r: 1, g: 0, b: 0, a: 1}
+  m_Logo: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  m_LabelColor: {r: 1, g: 1, b: 1, a: 1}
+  m_Header1Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Header2Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Header3Color: {r: 1, g: 1, b: 1, a: 1}
+  m_PanelColor: {r: 0.13962269, g: 0.13962269, b: 0.13962269, a: 1}
+  m_PanelBorderColor: {r: 0.3207547, g: 0.3207547, b: 0.3207547, a: 1}
+  m_PanelSeparatorColor: {r: 1, g: 1, b: 1, a: 1}
   m_ButtonColorBlock:
-    m_NormalColor: {r: 1, g: 0, b: 0, a: 1}
-    m_HighlightedColor: {r: 0.9068608, g: 1, b: 0, a: 1}
-    m_PressedColor: {r: 1, g: 0, b: 0, a: 1}
-    m_SelectedColor: {r: 1, g: 0, b: 0, a: 1}
+    m_NormalColor: {r: 0.38005382, g: 0.38005382, b: 0.38005382, a: 1}
+    m_HighlightedColor: {r: 0.81132066, g: 0.81132066, b: 0.81132066, a: 1}
+    m_PressedColor: {r: 0.38039216, g: 0.38039216, b: 0.38039216, a: 1}
+    m_SelectedColor: {r: 0.8117647, g: 0.8117647, b: 0.8117647, a: 1}
     m_DisabledColor: {r: 0.2981131, g: 0.2981131, b: 0.2981131, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.25
   m_ButtonBorderColorBlock:
-    m_NormalColor: {r: 1, g: 0, b: 0.5729208, a: 1}
-    m_HighlightedColor: {r: 0, g: 0.5608425, b: 1, a: 1}
-    m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
-    m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
-    m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
+    m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.25
+  m_ButtonTextColorBlock:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
+    m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 4.79
+  m_ButtonIconColorBlock:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
+    m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0
+  m_ButtonHoverScale: 1.05
+  m_ButtonClickScale: 1
+  m_ButtonHoverAnimationDuration: 0.1
+  m_ButtonClickAnimationDuration: 0.1
+  m_ButtonBackToNormalDuration: 0.1
+  m_ColorAnimationDuration: 0.25

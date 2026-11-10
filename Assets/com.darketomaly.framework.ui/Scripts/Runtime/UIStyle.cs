@@ -23,9 +23,14 @@ namespace Framework.UI
             IsOverriden = true 
         };
 
-        public T ResolveValue(T parentValue)
+        public T ResolveValue(Overridable<T> parent)
         {
-            return IsOverriden || parentValue == null ? Value : parentValue;
+            if (IsOverriden || parent == null)
+            {
+                return Value;
+            }
+
+            return parent.Value;
         }
     }
     

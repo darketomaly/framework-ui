@@ -19,7 +19,7 @@ namespace Framework.UI
 
         private Graphic m_graphic;
         
-        private Color GetColor => UIManager.Instance.GetColor(m_Type);
+        private Color GetColor => UIManager.GetColor(m_Type);
 
         private void OnEnable()
         {
@@ -65,5 +65,30 @@ namespace Framework.UI
                 UIManager.UpdateGraphicColor(m_graphic, GetColor, ref m_tween, false);
             }
         }
+        
+        #if UNITY_EDITOR
+
+        private void OnValidate()
+        {
+            Refresh();
+        }
+
+        [DarkButton("Refresh")]
+        private void Refresh()
+        {
+            if (!Application.isPlaying)
+            {
+                var graphic = GetComponent<Graphic>();
+                
+                UIManager.UpdateGraphicColor
+                (graphic, 
+                    UIManager.GetColor(m_Type), 
+                    ref m_tween, 
+                    false);
+                
+                graphic.SetAllDirty();
+            }
+        }
+#endif
     }
 }

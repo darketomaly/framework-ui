@@ -36,13 +36,29 @@ namespace Framework.UI
             FrameworkEventsFactory.Raise(UIEvents.OnThemeChanged);
         }
 
-        public Color GetColor(UIType uiType)
+        public static Color GetColor(UIType uiType)
         {
+            UIStyle currentStyle = null;
+            
+            #if UNITY_EDITOR
+
+            if (!Application.isPlaying)
+            {
+                currentStyle = Resources.LoadAll<UIStyle>("")[0];
+            }
+            
+            #endif
+
+            if (!currentStyle)
+            {
+                currentStyle = Instance.CurrentStyle;
+            }
+            
             return uiType switch
             {
-                UIType.Label => CurrentStyle.m_LabelColor,
-                UIType.Panel => CurrentStyle.m_PanelColor,
-                UIType.PanelBorder => CurrentStyle.m_PanelBorderColor,
+                UIType.Label => currentStyle.m_LabelColor,
+                UIType.Panel =>  currentStyle.m_PanelColor,
+                UIType.PanelBorder => currentStyle.m_PanelBorderColor,
                 _ => default
             };
         }
@@ -111,7 +127,7 @@ namespace Framework.UI
         
         public static void UpdateGraphicColor(Graphic graphic, Color targetColor, ref Tween tween, bool instant)
         {
-            if (instant)
+            if (instant || !Application.isPlaying)
             {
                 graphic.color = targetColor;
             }

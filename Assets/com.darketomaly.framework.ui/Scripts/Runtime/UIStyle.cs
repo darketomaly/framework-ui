@@ -11,6 +11,8 @@ namespace Framework.UI
         
         [Header("Regular colors")]
         public Color m_LabelColor;
+        public Color m_PanelColor;
+        public Color m_PanelBorderColor;
         
         [Header("Button color block")]
         public ColorBlock m_ButtonColorBlock;

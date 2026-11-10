@@ -3,6 +3,8 @@ namespace Framework.UI
     public enum UIType
     {
         Label,
+        Panel,
+        PanelBorder,
         ButtonBackground,
         ButtonBorder,
         ButtonText,
@@ -14,7 +16,7 @@ namespace Framework.UI
     {
         public static bool IsColor(this UIType uiType)
         {
-            return uiType is UIType.Label;
+            return uiType is UIType.Label or UIType.Panel or UIType.PanelBorder;
         }
         
         public static bool IsColorBlock(this UIType uiType)

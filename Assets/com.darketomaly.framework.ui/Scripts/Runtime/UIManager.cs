@@ -38,13 +38,13 @@ namespace Framework.UI
 
         public Color GetColor(UIType uiType)
         {
-            switch (uiType)
+            return uiType switch
             {
-                case UIType.Label:
-                    return CurrentStyle.m_LabelColor;
-            }
-
-            return default;
+                UIType.Label => CurrentStyle.m_LabelColor,
+                UIType.Panel => CurrentStyle.m_PanelColor,
+                UIType.PanelBorder => CurrentStyle.m_PanelBorderColor,
+                _ => default
+            };
         }
 
         public ColorBlock GetColorBlock(UIType uiType)

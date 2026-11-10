@@ -17,6 +17,7 @@ namespace Framework.UI
         Header3,
         Panel,
         PanelBorder,
+        PanelSeparator,
 
         // ColorBlocks (200–299)
         ButtonBackground = 200,
@@ -40,6 +41,7 @@ namespace Framework.UI
                 UIType.Header3 => uiStyle.m_Header3Color,
                 UIType.Panel =>  uiStyle.m_PanelColor,
                 UIType.PanelBorder => uiStyle.m_PanelBorderColor,
+                UIType.PanelSeparator => uiStyle.m_PanelSeparatorColor,
                 _ => default
             };
         }

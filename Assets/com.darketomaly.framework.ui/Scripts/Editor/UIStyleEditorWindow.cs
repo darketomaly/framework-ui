@@ -32,6 +32,7 @@ namespace Framework.UI.Editor
         private Label m_PreviewHeader2;
         private Label m_PreviewHeader3;
         private Label m_PreviewLabel;
+        private VisualElement m_PreviewSeparator;
 
         // Primary Preview Button
         private VisualElement m_PreviewButton;
@@ -289,6 +290,7 @@ namespace Framework.UI.Editor
             newStyle.m_Header3Color = new Color(0.75f, 0.75f, 0.75f, 1f);
             newStyle.m_PanelColor = new Color(0.18f, 0.22f, 0.28f, 1f);
             newStyle.m_PanelBorderColor = new Color(0.28f, 0.52f, 0.80f, 1f);
+            newStyle.m_PanelSeparatorColor = new Color(0.28f, 0.52f, 0.80f, 0.4f);
 
             newStyle.m_ButtonColorBlock = new ColorBlock
             {
@@ -446,6 +448,7 @@ namespace Framework.UI.Editor
             AddPropertyField(regularColorsCard, "m_Header3Color", "Header 3 Color");
             AddPropertyField(regularColorsCard, "m_PanelColor", "Panel Color");
             AddPropertyField(regularColorsCard, "m_PanelBorderColor", "Panel Border Color");
+            AddPropertyField(regularColorsCard, "m_PanelSeparatorColor", "Panel Separator Color");
             m_LeftScrollView.Add(regularColorsCard);
 
             // Section 3: Button Color Blocks
@@ -801,12 +804,11 @@ namespace Framework.UI.Editor
             m_PreviewLabel.style.marginBottom = 16;
             panel.Add(m_PreviewLabel);
 
-            // Divider Line
-            var divider = new VisualElement();
-            divider.style.height = 1;
-            divider.style.backgroundColor = new Color(1f, 1f, 1f, 0.15f);
-            divider.style.marginBottom = 16;
-            panel.Add(divider);
+            // Divider / Separator Line
+            m_PreviewSeparator = new VisualElement();
+            m_PreviewSeparator.style.height = 1;
+            m_PreviewSeparator.style.marginBottom = 16;
+            panel.Add(m_PreviewSeparator);
 
             // Buttons Container
             var buttonsContainer = new VisualElement();
@@ -995,12 +997,17 @@ namespace Framework.UI.Editor
                 m_SerializedObject.Update();
             }
 
-            // 1. Panel Colors
+            // 1. Panel & Separator Colors
             m_PreviewPanel.style.backgroundColor = m_TargetStyle.m_PanelColor;
             m_PreviewPanel.style.borderTopColor = m_TargetStyle.m_PanelBorderColor;
             m_PreviewPanel.style.borderRightColor = m_TargetStyle.m_PanelBorderColor;
             m_PreviewPanel.style.borderBottomColor = m_TargetStyle.m_PanelBorderColor;
             m_PreviewPanel.style.borderLeftColor = m_TargetStyle.m_PanelBorderColor;
+
+            if (m_PreviewSeparator != null)
+            {
+                m_PreviewSeparator.style.backgroundColor = m_TargetStyle.m_PanelSeparatorColor;
+            }
 
             // 2. Regular Text Colors
             m_PreviewLabel.style.color = m_TargetStyle.m_LabelColor;

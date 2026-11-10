@@ -1,4 +1,3 @@
-using System;
 using DG.Tweening;
 using Framework.Events;
 using UnityEngine;
@@ -48,16 +47,6 @@ namespace Framework.UI
             return default;
         }
 
-        public float GetButtonClickScale()
-        {
-            return CurrentStyle.m_ButtonClickScale;
-        }
-
-        public float GetButtonHoverScale()
-        {
-            return CurrentStyle.m_ButtonHoverScale;
-        }
-
         public ColorBlock GetColorBlock(UIType uiType)
         {
             switch (uiType)
@@ -89,13 +78,34 @@ namespace Framework.UI
             }
         }
 
-        public static void UpdateScale(RectTransform rt, Vector3 targetScale, ref Tween tween)
+        public static void UpdateScale(RectTransform rt, ref Tween tween, ButtonState buttonState)
         {
+            var currentStyle = Instance.CurrentStyle;
+            var targetScaleMagnitude = 1f;
+            var duration = currentStyle.m_ButtonBackToNormalDuration;
+            
+            switch (buttonState)
+            {
+                case ButtonState.Highlighted:
+                    duration = currentStyle.m_ButtonHoverAnimationDuration;
+                    targetScaleMagnitude = currentStyle.m_ButtonHoverScale;
+                    break;
+                case ButtonState.Pressed:
+                    duration = currentStyle.m_ButtonClickAnimationDuration;
+                    targetScaleMagnitude = currentStyle.m_ButtonClickScale;
+                    break;
+                case ButtonState.Selected:
+                    duration = currentStyle.m_ButtonClickAnimationDuration;
+                    break;
+            }
+
+            Instance.Log($"{buttonState}, Changing scale to {targetScaleMagnitude}");
+            
             #if DOTWEEN
             tween?.Kill();
-            rt.DOScale(targetScale, Instance.CurrentStyle.m_ButtonScaleAnimationDuration);
+            tween = rt.DOScale(targetScaleMagnitude * Vector3.one, duration);
             #else
-            rt.localScale = targetScale;
+            rt.localScale = targetScaleMagnitude * Vector3.one;
             #endif
         }
         

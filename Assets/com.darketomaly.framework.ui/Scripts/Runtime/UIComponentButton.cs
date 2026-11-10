@@ -98,21 +98,9 @@ namespace Framework.UI
         private void ApplyScaleAnimation()
         {
             var state = m_buttonEvents.CurrentState;
-            var targetScaleMagnitude = 1f;
-
-            if (state is ButtonState.Highlighted or ButtonState.Selected)
-            {
-                targetScaleMagnitude = UIManager.Instance.GetButtonHoverScale();
-            }
-            else if (state is ButtonState.Pressed)
-            {
-                targetScaleMagnitude = UIManager.Instance.GetButtonClickScale();
-            }
-                    
-            var targetScale = targetScaleMagnitude * Vector3.one;
             var rt = m_button.transform as RectTransform;
                     
-            UIManager.UpdateScale(rt, targetScale, ref m_scaleTween);
+            UIManager.UpdateScale(rt, ref m_scaleTween, state);
         }
         
         private void ApplyStateColor(System.Func<ColorBlock, Color> colorSelector, bool instant)

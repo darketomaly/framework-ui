@@ -95,3 +95,15 @@ MonoBehaviour:
   m_ColorAnimationDuration:
     IsOverriden: 0
     Value: 0.2
+  m_LabelFontSize:
+    IsOverriden: 0
+    Value: 16
+  m_Header1FontSize:
+    IsOverriden: 0
+    Value: 24
+  m_Header2FontSize:
+    IsOverriden: 0
+    Value: 20
+  m_Header3FontSize:
+    IsOverriden: 0
+    Value: 16

@@ -422,6 +422,11 @@ namespace Framework.UI.Editor
             SetFloat("m_ButtonBackToNormalDuration", 0.2f);
             SetFloat("m_ColorAnimationDuration", 0.2f);
 
+            SetFloat("m_LabelFontSize", 12f);
+            SetFloat("m_Header1FontSize", 18f);
+            SetFloat("m_Header2FontSize", 14f);
+            SetFloat("m_Header3FontSize", 12f);
+
             so.ApplyModifiedPropertiesWithoutUndo();
             AssetDatabase.SaveAssets();
             SetTarget(newStyle);
@@ -553,6 +558,14 @@ namespace Framework.UI.Editor
             AddPropertyField(animCard, "m_ButtonBackToNormalDuration", "Return To Normal Duration (s)");
             AddPropertyField(animCard, "m_ColorAnimationDuration", "Color Transition Duration (s)");
             m_LeftScrollView.Add(animCard);
+
+            // Section 5: Text Sizes
+            var textSizesCard = CreateSectionCard("Text Sizes", new Color(0.95f, 0.40f, 0.55f, 1f));
+            AddPropertyField(textSizesCard, "m_LabelFontSize", "Label Font Size");
+            AddPropertyField(textSizesCard, "m_Header1FontSize", "Header 1 Font Size");
+            AddPropertyField(textSizesCard, "m_Header2FontSize", "Header 2 Font Size");
+            AddPropertyField(textSizesCard, "m_Header3FontSize", "Header 3 Font Size");
+            m_LeftScrollView.Add(textSizesCard);
 
             // Bind the SerializedObject so undo/redo, auto-serialization, and dirty tracking work
             m_LeftScrollView.Bind(m_SerializedObject);
@@ -1600,11 +1613,23 @@ namespace Framework.UI.Editor
                 m_PreviewSeparator.style.backgroundColor = GetResolvedColor(() => m_TargetStyle.PanelSeparatorColor, "m_PanelSeparatorColor");
             }
 
-            // 2. Regular Text Colors
+            // 2. Regular Text Colors & Sizes
             m_PreviewLabel.style.color = GetResolvedColor(() => m_TargetStyle.LabelColor, "m_LabelColor");
             m_PreviewHeader1.style.color = GetResolvedColor(() => m_TargetStyle.Header1Color, "m_Header1Color");
             m_PreviewHeader2.style.color = GetResolvedColor(() => m_TargetStyle.Header2Color, "m_Header2Color");
             m_PreviewHeader3.style.color = GetResolvedColor(() => m_TargetStyle.Header3Color, "m_Header3Color");
+
+            float labelFontSize = GetResolvedFloat(() => m_TargetStyle.LabelFontSize, "m_LabelFontSize", 12f);
+            m_PreviewLabel.style.fontSize = labelFontSize > 0 ? labelFontSize : 12f;
+
+            float h1FontSize = GetResolvedFloat(() => m_TargetStyle.Header1FontSize, "m_Header1FontSize", 18f);
+            m_PreviewHeader1.style.fontSize = h1FontSize > 0 ? h1FontSize : 18f;
+
+            float h2FontSize = GetResolvedFloat(() => m_TargetStyle.Header2FontSize, "m_Header2FontSize", 14f);
+            m_PreviewHeader2.style.fontSize = h2FontSize > 0 ? h2FontSize : 14f;
+
+            float h3FontSize = GetResolvedFloat(() => m_TargetStyle.Header3FontSize, "m_Header3FontSize", 12f);
+            m_PreviewHeader3.style.fontSize = h3FontSize > 0 ? h3FontSize : 12f;
 
             // 3. Logo Sprites
             var logoSprite = GetResolvedSprite(() => m_TargetStyle.Logo, "m_Logo");

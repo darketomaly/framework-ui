@@ -99,5 +99,18 @@ namespace Framework.UI
         [Space]
         [SerializeField] private Overridable<float> m_ColorAnimationDuration = new();
         public float ColorAnimationDuration => m_ColorAnimationDuration.ResolveValue(m_ParentStyle?.m_ColorAnimationDuration);
+        
+        [Header("Text sizes")]
+        [SerializeField] private Overridable<float> m_LabelFontSize = new();
+        public float LabelFontSize => m_LabelFontSize.ResolveValue(m_ParentStyle?.m_LabelFontSize);
+        
+        [SerializeField] private Overridable<float> m_Header1FontSize = new();
+        public float Header1FontSize => m_Header1FontSize.ResolveValue(m_ParentStyle?.m_Header1FontSize);
+        
+        [SerializeField] private Overridable<float> m_Header2FontSize = new();
+        public float Header2FontSize => m_Header2FontSize.ResolveValue(m_ParentStyle?.m_Header2FontSize);
+        
+        [SerializeField] private Overridable<float> m_Header3FontSize = new();
+        public float Header3FontSize => m_Header3FontSize.ResolveValue(m_ParentStyle?.m_Header3FontSize);
     }
 }

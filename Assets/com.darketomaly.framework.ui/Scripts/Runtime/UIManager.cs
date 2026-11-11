@@ -1,5 +1,9 @@
+#if DOTWEEN
 using DG.Tweening;
+#endif
+
 using Framework.Events;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,7 +14,29 @@ namespace Framework.UI
         private UIStyle[] m_styles;
         private int m_currentStyleIndex;
         
-        private UIStyle CurrentStyle => m_styles[m_currentStyleIndex]; 
+        private static UIStyle CurrentStyle
+        {
+            get
+            {
+                UIStyle currentStyle = null;
+            
+                #if UNITY_EDITOR
+
+                if (!Application.isPlaying)
+                {
+                    currentStyle = Resources.LoadAll<UIStyle>("")[0];
+                }
+            
+                #endif
+
+                if (!currentStyle)
+                {
+                    currentStyle = Instance.m_styles[Instance.m_currentStyleIndex];
+                }
+
+                return currentStyle;
+            }
+        }
 
         [RuntimeInitializeOnLoadMethod]
         private static void Spawn()
@@ -38,23 +64,7 @@ namespace Framework.UI
 
         public static Color GetColor(UIType uiType)
         {
-            UIStyle currentStyle = null;
-            
-            #if UNITY_EDITOR
-
-            if (!Application.isPlaying)
-            {
-                currentStyle = Resources.LoadAll<UIStyle>("")[0];
-            }
-            
-            #endif
-
-            if (!currentStyle)
-            {
-                currentStyle = Instance.CurrentStyle;
-            }
-
-            return currentStyle.GetColor(uiType);
+            return CurrentStyle.GetColor(uiType);
         }
 
         public ColorBlock GetColorBlock(UIType uiType)
@@ -69,22 +79,21 @@ namespace Framework.UI
 
         public static void UpdateScale(RectTransform rt, ref Tween tween, ButtonState buttonState)
         {
-            var currentStyle = Instance.CurrentStyle;
             var targetScaleMagnitude = 1f;
-            var duration = currentStyle.ButtonBackToNormalDuration;
+            var duration = CurrentStyle.ButtonBackToNormalDuration;
             
             switch (buttonState)
             {
                 case ButtonState.Highlighted:
-                    duration = currentStyle.ButtonHoverAnimationDuration;
-                    targetScaleMagnitude = currentStyle.ButtonHoverScale;
+                    duration = CurrentStyle.ButtonHoverAnimationDuration;
+                    targetScaleMagnitude = CurrentStyle.ButtonHoverScale;
                     break;
                 case ButtonState.Pressed:
-                    duration = currentStyle.ButtonClickAnimationDuration;
-                    targetScaleMagnitude = currentStyle.ButtonClickScale;
+                    duration = CurrentStyle.ButtonClickAnimationDuration;
+                    targetScaleMagnitude = CurrentStyle.ButtonClickScale;
                     break;
                 case ButtonState.Selected:
-                    duration = currentStyle.ButtonClickAnimationDuration;
+                    duration = CurrentStyle.ButtonClickAnimationDuration;
                     break;
             }
 
@@ -96,6 +105,12 @@ namespace Framework.UI
             #else
             rt.localScale = targetScaleMagnitude * Vector3.one;
             #endif
+        }
+
+        public static void UpdateTextSize(TextMeshProUGUI txt, UIType uiType)
+        {
+            var size = CurrentStyle.GetTextSize(uiType);
+            txt.fontSize = size;
         }
         
         public static void UpdateGraphicColor(Graphic graphic, Color targetColor, ref Tween tween, bool instant)
@@ -113,7 +128,7 @@ namespace Framework.UI
                     () => graphic.color,    
                     x => graphic.color = x,   
                     targetColor,                 
-                    Instance.CurrentStyle.ColorAnimationDuration                       
+                    CurrentStyle.ColorAnimationDuration                       
                 );
                 #else
                 graphic.color = targetColor;

@@ -1,4 +1,5 @@
 using Framework.Events;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,6 +19,7 @@ namespace Framework.UI
         #endif
 
         private Graphic m_graphic;
+        private TextMeshProUGUI m_text;
         
         private Color GetColor => UIManager.GetColor(m_Type);
 
@@ -41,15 +43,22 @@ namespace Framework.UI
         private void Initialize()
         {
             m_graphic = GetComponent<Graphic>();
+            m_text = GetComponent<TextMeshProUGUI>();
 
             if (m_Type.IsSprite())
             {
                 var img = m_graphic as Image;
                 img.sprite = UIManager.Instance.GetSprite(m_Type);
             }
-            else if (m_Type.IsColor())
+            
+            if (m_Type.IsColor())
             {
                 UIManager.UpdateGraphicColor(m_graphic, GetColor, ref m_tween, true);
+            }
+
+            if (m_Type.IsText())
+            {
+                UIManager.UpdateTextSize(m_text, m_Type);
             }
         }
         
@@ -60,9 +69,15 @@ namespace Framework.UI
                 var img = m_graphic as Image;
                 img.sprite = UIManager.Instance.GetSprite(m_Type);
             }
-            else if (m_Type.IsColor())
+            
+            if (m_Type.IsColor())
             {
                 UIManager.UpdateGraphicColor(m_graphic, GetColor, ref m_tween, false);
+            }
+            
+            if (m_Type.IsText())
+            {
+                UIManager.UpdateTextSize(m_text, m_Type);
             }
         }
         
@@ -85,10 +100,16 @@ namespace Framework.UI
                     UIManager.GetColor(m_Type), 
                     ref m_tween, 
                     false);
+
+                if (TryGetComponent<TextMeshProUGUI>(out var txt))
+                {
+                    UIManager.UpdateTextSize(txt, m_Type);
+                }
                 
                 graphic.SetAllDirty();
             }
         }
-#endif
+        
+        #endif
     }
 }

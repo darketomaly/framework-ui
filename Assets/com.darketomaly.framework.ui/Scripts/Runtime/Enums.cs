@@ -67,11 +67,30 @@ namespace Framework.UI
             };
         }
         
+        public static float GetTextSize(this UIStyle uiStyle, UIType uiType)
+        {
+            return uiType switch
+            {
+                UIType.Label => uiStyle.LabelFontSize,
+                UIType.Header1 => uiStyle.Header1FontSize,
+                UIType.Header2 => uiStyle.Header2FontSize,
+                UIType.Header3 => uiStyle.Header3FontSize,
+                _ => 0
+            };
+        }
+        
         public static bool IsColor(this UIType type) => (int)type is >= 100 and < 200;
         
         public static bool IsColorBlock(this UIType type) => (int)type is >= 200 and < 300;
         
         public static bool IsSprite(this UIType type) => (int)type is >= 300 and < 400;
+
+        public static bool IsText(this UIType type) => type is 
+            UIType.Label or 
+            UIType.ButtonText or
+            UIType.Header1 or 
+            UIType.Header2 or 
+            UIType.Header3;
     }
     
     public enum UIEvents

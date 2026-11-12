@@ -57,16 +57,19 @@ namespace Framework.UI
         
         public Sprite GetLogo(UISemantic semantic)
         {
-            foreach (var semanticEntry in m_StyleSemantics)
+            // Always default to the default semantic
+            StyleSemanticEntry semanticEntry = m_StyleSemantics[0];
+            
+            foreach (var entry in m_StyleSemantics)
             {
-                if (semanticEntry.Semantic == semantic)
+                if (entry.Semantic == semantic)
                 {
-                    Debug.Log("Found a match, I should resolve the style");
-                    return semanticEntry.m_Logo.ResolveValue(m_ParentStyle?.GetLogo(semantic));
+                    semanticEntry = entry;
                 }
             }
 
-            return default;
+            this.Log($"{name} logo for {semantic.Name}");
+            return semanticEntry.m_Logo.ResolveValue(m_ParentStyle?.GetLogo(semantic));
         }
         
         [Header("Regular colors")]

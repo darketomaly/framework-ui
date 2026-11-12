@@ -585,7 +585,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: darketomaly.framework.ui.runtime::Framework.UI.UIComponent
   m_Type: 300
-  m_Semantic: {fileID: 11400000, guid: a9161214ce2e526409642c5b0fd44794, type: 2}
+  m_Semantic: {fileID: 11400000, guid: fe30d1c80e60c9547aee3cf37847e639, type: 2}
 --- !u!114 &1505153166
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -606,7 +606,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

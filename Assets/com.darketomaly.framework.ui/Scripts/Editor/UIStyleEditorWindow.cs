@@ -516,6 +516,42 @@ namespace Framework.UI.Editor
             menu.ShowAsContext();
         }
 
+        private static StyleSemanticEntry CloneSemanticEntry(StyleSemanticEntry source, UISemantic newSemantic)
+        {
+            if (source == null) return new StyleSemanticEntry { Semantic = newSemantic };
+
+            var copy = new StyleSemanticEntry { Semantic = newSemantic };
+            var fields = typeof(StyleSemanticEntry).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            foreach (var field in fields)
+            {
+                if (field.Name == "Semantic") continue;
+
+                var srcVal = field.GetValue(source);
+                if (srcVal == null) continue;
+
+                var overridableType = srcVal.GetType();
+                var destOverridable = System.Activator.CreateInstance(overridableType);
+
+                var isOverriddenField = overridableType.GetField("IsOverriden", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                    ?? overridableType.GetField("IsOverridden", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var valField = overridableType.GetField("Value", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+                if (isOverriddenField != null)
+                {
+                    isOverriddenField.SetValue(destOverridable, isOverriddenField.GetValue(srcVal));
+                }
+
+                if (valField != null)
+                {
+                    valField.SetValue(destOverridable, valField.GetValue(srcVal));
+                }
+
+                field.SetValue(copy, destOverridable);
+            }
+
+            return copy;
+        }
+
         private void AddSemanticToTargetStyle(UISemantic semantic)
         {
             if (m_TargetStyle == null || semantic == null) return;
@@ -527,10 +563,18 @@ namespace Framework.UI.Editor
                 m_TargetStyle.m_StyleSemantics = new List<StyleSemanticEntry>();
             }
 
-            var newEntry = new StyleSemanticEntry
+            StyleSemanticEntry newEntry;
+            if (m_TargetStyle.m_StyleSemantics.Count > 0 && m_TargetStyle.m_StyleSemantics[0] != null)
             {
-                Semantic = semantic
-            };
+                newEntry = CloneSemanticEntry(m_TargetStyle.m_StyleSemantics[0], semantic);
+            }
+            else
+            {
+                newEntry = new StyleSemanticEntry
+                {
+                    Semantic = semantic
+                };
+            }
 
             m_TargetStyle.m_StyleSemantics.Add(newEntry);
             EditorUtility.SetDirty(m_TargetStyle);

@@ -64,7 +64,6 @@ namespace Framework.UI
         };
     }
     
-    [CreateAssetMenu(fileName = "UI Style", menuName = "Framework/UI Style")]
     public class UIStyle : ScriptableObject
     {
         // --- Data storage (Parent style, semantics and its style values) ---

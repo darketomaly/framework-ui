@@ -1,0 +1,301 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d06013b09e627742a0ae642494e4326, type: 3}
+  m_Name: New UI Style
+  m_EditorClassIdentifier: darketomaly.framework.ui.runtime::Framework.UI.UIStyle
+  m_ParentStyle: {fileID: 0}
+  m_StyleSemantics:
+  - Semantic: {fileID: 11400000, guid: a9161214ce2e526409642c5b0fd44794, type: 2}
+    m_Logo:
+      IsOverriden: 0
+      Value: {fileID: 0}
+    m_LabelColor:
+      IsOverriden: 1
+      Value: {r: 0.85, g: 0.85, b: 0.85, a: 1}
+    m_Header1Color:
+      IsOverriden: 1
+      Value: {r: 1, g: 1, b: 1, a: 1}
+    m_Header2Color:
+      IsOverriden: 1
+      Value: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+    m_Header3Color:
+      IsOverriden: 1
+      Value: {r: 0.75, g: 0.75, b: 0.75, a: 1}
+    m_PanelColor:
+      IsOverriden: 1
+      Value: {r: 0.18, g: 0.22, b: 0.28, a: 1}
+    m_PanelBorderColor:
+      IsOverriden: 1
+      Value: {r: 0.28, g: 0.52, b: 0.8, a: 1}
+    m_PanelSeparatorColor:
+      IsOverriden: 1
+      Value: {r: 0.28, g: 0.52, b: 0.8, a: 0.4}
+    m_ButtonColorBlock:
+      IsOverriden: 1
+      Value:
+        m_NormalColor: {r: 0.24, g: 0.42, b: 0.65, a: 1}
+        m_HighlightedColor: {r: 0.32, g: 0.55, b: 0.85, a: 1}
+        m_PressedColor: {r: 0.18, g: 0.32, b: 0.52, a: 1}
+        m_SelectedColor: {r: 0.3, g: 0.5, b: 0.8, a: 1}
+        m_DisabledColor: {r: 0.25, g: 0.25, b: 0.25, a: 0.6}
+        m_ColorMultiplier: 1
+        m_FadeDuration: 0.2
+    m_ButtonBorderColorBlock:
+      IsOverriden: 1
+      Value:
+        m_NormalColor: {r: 0.4, g: 0.65, b: 0.95, a: 1}
+        m_HighlightedColor: {r: 0.6, g: 0.8, b: 1, a: 1}
+        m_PressedColor: {r: 0.25, g: 0.45, b: 0.75, a: 1}
+        m_SelectedColor: {r: 0.5, g: 0.75, b: 1, a: 1}
+        m_DisabledColor: {r: 0.35, g: 0.35, b: 0.35, a: 0.4}
+        m_ColorMultiplier: 1
+        m_FadeDuration: 0.2
+    m_ButtonTextColorBlock:
+      IsOverriden: 1
+      Value:
+        m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+        m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
+        m_PressedColor: {r: 0.9, g: 0.9, b: 0.9, a: 1}
+        m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
+        m_DisabledColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+        m_ColorMultiplier: 1
+        m_FadeDuration: 0.2
+    m_ButtonIconColorBlock:
+      IsOverriden: 1
+      Value:
+        m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+        m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
+        m_PressedColor: {r: 0.9, g: 0.9, b: 0.9, a: 1}
+        m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
+        m_DisabledColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+        m_ColorMultiplier: 1
+        m_FadeDuration: 0.2
+    m_ButtonHoverScale:
+      IsOverriden: 1
+      Value: 1.05
+    m_ButtonClickScale:
+      IsOverriden: 1
+      Value: 0.95
+    m_ButtonHoverAnimationDuration:
+      IsOverriden: 1
+      Value: 0.2
+    m_ButtonClickAnimationDuration:
+      IsOverriden: 1
+      Value: 0.1
+    m_ButtonBackToNormalDuration:
+      IsOverriden: 1
+      Value: 0.2
+    m_ColorAnimationDuration:
+      IsOverriden: 1
+      Value: 0.2
+    m_LabelFontSize:
+      IsOverriden: 1
+      Value: 12
+    m_Header1FontSize:
+      IsOverriden: 1
+      Value: 18
+    m_Header2FontSize:
+      IsOverriden: 1
+      Value: 14
+    m_Header3FontSize:
+      IsOverriden: 1
+      Value: 12
+  - Semantic: {fileID: 11400000, guid: 694fd63c2cea30f4f8502367a3da3d63, type: 2}
+    m_Logo:
+      IsOverriden: 0
+      Value: {fileID: 0}
+    m_LabelColor:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_Header1Color:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_Header2Color:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_Header3Color:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_PanelColor:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_PanelBorderColor:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_PanelSeparatorColor:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_ButtonColorBlock:
+      IsOverriden: 0
+      Value:
+        m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
+        m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
+        m_ColorMultiplier: 0
+        m_FadeDuration: 0
+    m_ButtonBorderColorBlock:
+      IsOverriden: 0
+      Value:
+        m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
+        m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
+        m_ColorMultiplier: 0
+        m_FadeDuration: 0
+    m_ButtonTextColorBlock:
+      IsOverriden: 0
+      Value:
+        m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
+        m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
+        m_ColorMultiplier: 0
+        m_FadeDuration: 0
+    m_ButtonIconColorBlock:
+      IsOverriden: 0
+      Value:
+        m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
+        m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
+        m_ColorMultiplier: 0
+        m_FadeDuration: 0
+    m_ButtonHoverScale:
+      IsOverriden: 0
+      Value: 0
+    m_ButtonClickScale:
+      IsOverriden: 0
+      Value: 0
+    m_ButtonHoverAnimationDuration:
+      IsOverriden: 0
+      Value: 0
+    m_ButtonClickAnimationDuration:
+      IsOverriden: 0
+      Value: 0
+    m_ButtonBackToNormalDuration:
+      IsOverriden: 0
+      Value: 0
+    m_ColorAnimationDuration:
+      IsOverriden: 0
+      Value: 0
+    m_LabelFontSize:
+      IsOverriden: 0
+      Value: 0
+    m_Header1FontSize:
+      IsOverriden: 0
+      Value: 0
+    m_Header2FontSize:
+      IsOverriden: 0
+      Value: 0
+    m_Header3FontSize:
+      IsOverriden: 0
+      Value: 0
+  - Semantic: {fileID: 11400000, guid: d9ddc25cd8789154b9e3299d62d52ead, type: 2}
+    m_Logo:
+      IsOverriden: 0
+      Value: {fileID: 0}
+    m_LabelColor:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_Header1Color:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_Header2Color:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_Header3Color:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_PanelColor:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_PanelBorderColor:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_PanelSeparatorColor:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_ButtonColorBlock:
+      IsOverriden: 0
+      Value:
+        m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
+        m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
+        m_ColorMultiplier: 0
+        m_FadeDuration: 0
+    m_ButtonBorderColorBlock:
+      IsOverriden: 0
+      Value:
+        m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
+        m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
+        m_ColorMultiplier: 0
+        m_FadeDuration: 0
+    m_ButtonTextColorBlock:
+      IsOverriden: 0
+      Value:
+        m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
+        m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
+        m_ColorMultiplier: 0
+        m_FadeDuration: 0
+    m_ButtonIconColorBlock:
+      IsOverriden: 0
+      Value:
+        m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
+        m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_PressedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}
+        m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
+        m_ColorMultiplier: 0
+        m_FadeDuration: 0
+    m_ButtonHoverScale:
+      IsOverriden: 0
+      Value: 0
+    m_ButtonClickScale:
+      IsOverriden: 0
+      Value: 0
+    m_ButtonHoverAnimationDuration:
+      IsOverriden: 0
+      Value: 0
+    m_ButtonClickAnimationDuration:
+      IsOverriden: 0
+      Value: 0
+    m_ButtonBackToNormalDuration:
+      IsOverriden: 0
+      Value: 0
+    m_ColorAnimationDuration:
+      IsOverriden: 0
+      Value: 0
+    m_LabelFontSize:
+      IsOverriden: 0
+      Value: 0
+    m_Header1FontSize:
+      IsOverriden: 0
+      Value: 0
+    m_Header2FontSize:
+      IsOverriden: 0
+      Value: 0
+    m_Header3FontSize:
+      IsOverriden: 0
+      Value: 0

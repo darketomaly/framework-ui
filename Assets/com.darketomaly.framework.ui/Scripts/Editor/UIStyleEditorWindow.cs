@@ -288,10 +288,13 @@ namespace Framework.UI.Editor
 
         private static UISemantic GetDefaultSemanticAsset()
         {
-            var sem = AssetDatabase.LoadAssetAtPath<UISemantic>("Assets/Resources/Semantics/Default.asset");
+            var sem = Resources.Load<UISemantic>("Semantics/Default");
             if (sem != null) return sem;
 
-            sem = Resources.Load<UISemantic>("Semantics/Default");
+            sem = AssetDatabase.LoadAssetAtPath<UISemantic>("Packages/com.darketomaly.framework.ui/Resources/Semantics/Default.asset");
+            if (sem != null) return sem;
+
+            sem = AssetDatabase.LoadAssetAtPath<UISemantic>("Assets/com.darketomaly.framework.ui/Resources/Semantics/Default.asset");
             if (sem != null) return sem;
 
             string[] guids = AssetDatabase.FindAssets("Default t:UISemantic");

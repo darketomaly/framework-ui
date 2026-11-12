@@ -108,11 +108,26 @@ namespace Framework.UI
         
                 if (type.IsColorBlock())
                 {
-                    var colorBlock = UIManager.Instance.GetColorBlock(type, m_Semantic);
+                    var colorBlock = UIManager.GetColorBlock(type, m_Semantic);
                     var color = colorSelector(colorBlock);
                     UIManager.UpdateGraphicColor(graphic, color, instant, m_Semantic);
                 }
             }
         }
+        
+        #if UNITY_EDITOR
+
+        private void OnValidate()
+        {
+            Refresh();
+        }
+
+        [DarkButton("Refresh")]
+        public void Refresh()
+        {
+            ApplyStateColor(block => block.normalColor, true);
+        }
+        
+        #endif
     }
 }

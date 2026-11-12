@@ -67,7 +67,7 @@ namespace Framework.UI
             return CurrentStyle.GetColor(uiType, semantic);
         }
 
-        public ColorBlock GetColorBlock(UIType uiType, UISemantic semantic)
+        public static ColorBlock GetColorBlock(UIType uiType, UISemantic semantic)
         {
             return CurrentStyle.GetColorBlock(uiType, semantic);
         }

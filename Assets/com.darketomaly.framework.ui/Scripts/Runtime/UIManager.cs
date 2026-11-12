@@ -62,9 +62,9 @@ namespace Framework.UI
             FrameworkEventsFactory.Raise(UIEvents.OnThemeChanged);
         }
 
-        public static Color GetColor(UIType uiType)
+        public static Color GetColor(UIType uiType, UISemantic semantic)
         {
-            return CurrentStyle.GetColor(uiType);
+            return CurrentStyle.GetColor(uiType, semantic);
         }
 
         public ColorBlock GetColorBlock(UIType uiType)

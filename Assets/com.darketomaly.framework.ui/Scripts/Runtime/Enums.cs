@@ -26,11 +26,11 @@ namespace Framework.UI
 
     public static class UITypeExtensions
     {
-        public static Color GetColor(this UIStyle uiStyle, UIType uiType)
+        public static Color GetColor(this UIStyle uiStyle, UIType uiType, UISemantic semantic)
         {
             return uiType switch
             {
-                UIType.Label => uiStyle.LabelColor,
+                UIType.Label => uiStyle.GetLabelColor(semantic),
                 UIType.Header1 => uiStyle.Header1Color,
                 UIType.Header2 => uiStyle.Header2Color,
                 UIType.Header3 => uiStyle.Header3Color,

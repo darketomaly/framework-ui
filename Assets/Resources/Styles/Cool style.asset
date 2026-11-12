@@ -12,19 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d06013b09e627742a0ae642494e4326, type: 3}
   m_Name: Cool style
   m_EditorClassIdentifier: darketomaly.framework.ui.runtime::Framework.UI.UIStyle
-  m_ParentStyle: {fileID: 11400000, guid: 09eb53ef689f45c419611c2ae8fd4302, type: 2}
+  m_ParentStyle: {fileID: 0}
   m_StyleSemantics:
   - Semantic: {fileID: 11400000, guid: a9161214ce2e526409642c5b0fd44794, type: 2}
     m_Logo:
       IsOverriden: 0
       Value: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
+    m_LabelColor:
+      IsOverriden: 0
+      Value: {r: 0.25067383, g: 0.25067383, b: 0.25067383, a: 1}
   - Semantic: {fileID: 11400000, guid: fe30d1c80e60c9547aee3cf37847e639, type: 2}
     m_Logo:
       IsOverriden: 1
       Value: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_LabelColor:
-    IsOverriden: 0
-    Value: {r: 0.8792453, g: 0.8792453, b: 0.8792453, a: 1}
+    m_LabelColor:
+      IsOverriden: 0
+      Value: {r: 0.9529412, g: 0.060297072, b: 0, a: 1}
   m_Header1Color:
     IsOverriden: 0
     Value: {r: 1, g: 0.5001972, b: 0, a: 1}

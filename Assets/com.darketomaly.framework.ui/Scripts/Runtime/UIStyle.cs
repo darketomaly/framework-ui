@@ -11,6 +11,9 @@ namespace Framework.UI
         
         [Header("Sprites")] 
         public Overridable<Sprite> m_Logo = new();
+        
+        [Header("Regular colors")]
+        public Overridable<Color> m_LabelColor = new();
     }
     
     [System.Serializable]
@@ -53,9 +56,7 @@ namespace Framework.UI
         
         public List<StyleSemanticEntry> m_StyleSemantics = new();
 
-        // ---
-        
-        public Sprite GetLogo(UISemantic semantic)
+        private StyleSemanticEntry GetSemanticEntry(UISemantic semantic)
         {
             // Always default to the default semantic
             StyleSemanticEntry semanticEntry = m_StyleSemantics[0];
@@ -68,13 +69,20 @@ namespace Framework.UI
                 }
             }
 
-            this.Log($"{name} logo for {semantic.Name}");
-            return semanticEntry.m_Logo.ResolveValue(m_ParentStyle?.GetLogo(semantic));
+            return semanticEntry;
+        }
+
+        // ---
+        
+        public Sprite GetLogo(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_Logo.ResolveValue(m_ParentStyle?.GetLogo(semantic));
         }
         
-        [Header("Regular colors")]
-        [SerializeField] private Overridable<Color> m_LabelColor = new();
-        public Color LabelColor => m_LabelColor.ResolveValue(m_ParentStyle?.m_LabelColor);
+        public Color GetLabelColor(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_LabelColor.ResolveValue(m_ParentStyle?.GetLabelColor(semantic));
+        }
         
         [SerializeField] private Overridable<Color> m_Header1Color = new();
         public Color Header1Color => m_Header1Color.ResolveValue(m_ParentStyle?.m_Header1Color);

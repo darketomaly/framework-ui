@@ -24,7 +24,7 @@ namespace Framework.UI
         private Graphic m_graphic;
         private TextMeshProUGUI m_text;
         
-        private Color GetColor => UIManager.GetColor(m_Type);
+        private Color GetColor => UIManager.GetColor(m_Type, m_Semantic);
 
         private void OnEnable()
         {

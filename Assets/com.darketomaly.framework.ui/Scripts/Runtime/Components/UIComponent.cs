@@ -56,7 +56,7 @@ namespace Framework.UI
             
             if (m_Type.IsColor())
             {
-                UIManager.UpdateGraphicColor(m_graphic, GetColor, ref m_tween, true);
+                UIManager.UpdateGraphicColor(m_graphic, GetColor, ref m_tween, true, m_Semantic);
             }
 
             if (m_Type.IsText())
@@ -75,7 +75,7 @@ namespace Framework.UI
             
             if (m_Type.IsColor())
             {
-                UIManager.UpdateGraphicColor(m_graphic, GetColor, ref m_tween, false);
+                UIManager.UpdateGraphicColor(m_graphic, GetColor, ref m_tween, false, m_Semantic);
             }
             
             if (m_Type.IsText())
@@ -106,7 +106,7 @@ namespace Framework.UI
                 
                 if (m_Type.IsColor())
                 {
-                    UIManager.UpdateGraphicColor(graphic, GetColor, ref m_tween, true);
+                    UIManager.UpdateGraphicColor(graphic, GetColor, ref m_tween, true, m_Semantic);
                 }
             
                 if (m_Type.IsText())

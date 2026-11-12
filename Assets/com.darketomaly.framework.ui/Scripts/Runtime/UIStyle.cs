@@ -23,6 +23,11 @@ namespace Framework.UI
         
         [Header("Animations")] 
         public Overridable<float> m_ButtonHoverScale = new();
+        public Overridable<float> m_ButtonClickScale = new();
+        public Overridable<float> m_ButtonHoverAnimationDuration = new();
+        public Overridable<float> m_ButtonClickAnimationDuration = new();
+        public Overridable<float> m_ButtonBackToNormalDuration = new();
+        public Overridable<float> m_ColorAnimationDuration = new();
         
         [Header("Text sizes")]
         public Overridable<float> m_LabelFontSize = new();
@@ -66,6 +71,8 @@ namespace Framework.UI
     [CreateAssetMenu(fileName = "UI Style", menuName = "Framework/UI Style")]
     public class UIStyle : ScriptableObject
     {
+        // --- Data storage (Parent style, semantics and its style values) ---
+        
         [SerializeField] 
         private UIStyle m_ParentStyle;
         
@@ -87,8 +94,6 @@ namespace Framework.UI
             return semanticEntry;
         }
 
-        // ---
-        
         // --- Sprites ---
         
         public Sprite GetLogo(UISemantic semantic)
@@ -152,23 +157,31 @@ namespace Framework.UI
         {
             return GetSemanticEntry(semantic).m_ButtonHoverScale.ResolveValue(m_ParentStyle?.GetButtonHoverScale(semantic));
         }
-        
-        [SerializeField] private Overridable<float> m_ButtonClickScale = new();
-        public float ButtonClickScale => m_ButtonClickScale.ResolveValue(m_ParentStyle?.m_ButtonClickScale);
 
-        [Space] 
-        [SerializeField] private Overridable<float> m_ButtonHoverAnimationDuration = new();
-        public float ButtonHoverAnimationDuration => m_ButtonHoverAnimationDuration.ResolveValue(m_ParentStyle?.m_ButtonHoverAnimationDuration);
+        public float GetButtonClickScale(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_ButtonClickScale.ResolveValue(m_ParentStyle?.GetButtonClickScale(semantic));
+        }
         
-        [SerializeField] private Overridable<float> m_ButtonClickAnimationDuration = new();
-        public float ButtonClickAnimationDuration => m_ButtonClickAnimationDuration.ResolveValue(m_ParentStyle?.m_ButtonClickAnimationDuration);
-        
-        [SerializeField] private Overridable<float> m_ButtonBackToNormalDuration = new();
-        public float ButtonBackToNormalDuration => m_ButtonBackToNormalDuration.ResolveValue(m_ParentStyle?.m_ButtonBackToNormalDuration);
+        public float GetButtonHoverAnimationDuration(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_ButtonHoverAnimationDuration.ResolveValue(m_ParentStyle?.GetButtonHoverAnimationDuration(semantic));
+        }
 
-        [Space]
-        [SerializeField] private Overridable<float> m_ColorAnimationDuration = new();
-        public float ColorAnimationDuration => m_ColorAnimationDuration.ResolveValue(m_ParentStyle?.m_ColorAnimationDuration);
+        public float GetButtonClickAnimationDuration(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_ButtonClickAnimationDuration.ResolveValue(m_ParentStyle?.GetButtonClickAnimationDuration(semantic));
+        }
+        
+        public float GetButtonBackToNormalAnimationDuration(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_ButtonBackToNormalDuration.ResolveValue(m_ParentStyle?.GetButtonBackToNormalAnimationDuration(semantic));
+        }
+        
+        public float GetColorAnimationDuration(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_ColorAnimationDuration.ResolveValue(m_ParentStyle?.GetColorAnimationDuration(semantic));
+        }
         
         // --- Text sizes ---
 

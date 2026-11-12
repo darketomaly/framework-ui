@@ -80,20 +80,20 @@ namespace Framework.UI
         public static void UpdateScale(RectTransform rt, ref Tween tween, ButtonState buttonState, UISemantic semantic)
         {
             var targetScaleMagnitude = 1f;
-            var duration = CurrentStyle.ButtonBackToNormalDuration;
+            var duration = CurrentStyle.GetButtonBackToNormalAnimationDuration(semantic);
             
             switch (buttonState)
             {
                 case ButtonState.Highlighted:
-                    duration = CurrentStyle.ButtonHoverAnimationDuration;
+                    duration = CurrentStyle.GetButtonHoverAnimationDuration(semantic);
                     targetScaleMagnitude = CurrentStyle.GetButtonHoverScale(semantic);
                     break;
                 case ButtonState.Pressed:
-                    duration = CurrentStyle.ButtonClickAnimationDuration;
-                    targetScaleMagnitude = CurrentStyle.ButtonClickScale;
+                    duration = CurrentStyle.GetButtonClickAnimationDuration(semantic);
+                    targetScaleMagnitude = CurrentStyle.GetButtonClickScale(semantic);
                     break;
                 case ButtonState.Selected:
-                    duration = CurrentStyle.ButtonClickAnimationDuration;
+                    duration = CurrentStyle.GetButtonClickAnimationDuration(semantic);
                     break;
             }
 
@@ -118,7 +118,7 @@ namespace Framework.UI
             txt.fontSize = size;
         }
         
-        public static void UpdateGraphicColor(Graphic graphic, Color targetColor, ref Tween tween, bool instant)
+        public static void UpdateGraphicColor(Graphic graphic, Color targetColor, ref Tween tween, bool instant, UISemantic semantic)
         {
             if (instant || !Application.isPlaying)
             {
@@ -133,7 +133,7 @@ namespace Framework.UI
                     () => graphic.color,    
                     x => graphic.color = x,   
                     targetColor,                 
-                    CurrentStyle.ColorAnimationDuration                       
+                    CurrentStyle.GetColorAnimationDuration(semantic)                       
                 );
                 #else
                 graphic.color = targetColor;

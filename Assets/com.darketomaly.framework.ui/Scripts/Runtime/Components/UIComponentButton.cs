@@ -116,7 +116,7 @@ namespace Framework.UI
                 {
                     var colorBlock = UIManager.Instance.GetColorBlock(type);
                     var color = colorSelector(colorBlock);
-                    UIManager.UpdateGraphicColor(graphic, color, ref targetGraphic.ColorTween, instant);
+                    UIManager.UpdateGraphicColor(graphic, color, ref targetGraphic.ColorTween, instant, m_Semantic);
                 }
             }
         }

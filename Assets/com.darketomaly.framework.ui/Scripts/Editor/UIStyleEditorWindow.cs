@@ -11,12 +11,12 @@ using Toggle = UnityEngine.UIElements.Toggle;
 
 namespace Framework.UI.Editor
 {
-    /*
     public class UIStyleEditorWindow : EditorWindow
     {
         private UIStyle m_TargetStyle;
         private UIStyle m_LastKnownParentStyle;
         private SerializedObject m_SerializedObject;
+        private int m_SelectedSemanticIndex = 0;
 
         // UI Toolkit Root & Layout
         private DropdownField m_StyleDropdown;
@@ -126,6 +126,7 @@ namespace Framework.UI.Editor
             if (m_SerializedObject != null && m_SerializedObject.targetObject != null)
             {
                 m_SerializedObject.Update();
+                BuildPropertiesUI();
                 UpdatePreview();
             }
         }
@@ -307,6 +308,347 @@ namespace Framework.UI.Editor
             return toolbar;
         }
 
+        #region Semantic Variants
+
+        private static UISemantic GetDefaultSemanticAsset()
+        {
+            var sem = AssetDatabase.LoadAssetAtPath<UISemantic>("Assets/Resources/Semantics/Default.asset");
+            if (sem != null) return sem;
+
+            sem = Resources.Load<UISemantic>("Semantics/Default");
+            if (sem != null) return sem;
+
+            string[] guids = AssetDatabase.FindAssets("Default t:UISemantic");
+            foreach (var guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                var loaded = AssetDatabase.LoadAssetAtPath<UISemantic>(path);
+                if (loaded != null && (loaded.name == "Default" || loaded.Name == "Default"))
+                {
+                    return loaded;
+                }
+            }
+
+            guids = AssetDatabase.FindAssets("t:UISemantic");
+            foreach (var guid in guids)
+            {
+                var loaded = AssetDatabase.LoadAssetAtPath<UISemantic>(AssetDatabase.GUIDToAssetPath(guid));
+                if (loaded != null) return loaded;
+            }
+
+            return null;
+        }
+
+        private static void EnsureDefaultSemantic(UIStyle style)
+        {
+            if (style == null) return;
+            if (style.m_StyleSemantics == null)
+            {
+                style.m_StyleSemantics = new List<StyleSemanticEntry>();
+            }
+
+            var defaultSem = GetDefaultSemanticAsset();
+            if (style.m_StyleSemantics.Count == 0)
+            {
+                style.m_StyleSemantics.Add(new StyleSemanticEntry
+                {
+                    Semantic = defaultSem
+                });
+                EditorUtility.SetDirty(style);
+                return;
+            }
+
+            bool hasDefault = false;
+            for (int i = 0; i < style.m_StyleSemantics.Count; i++)
+            {
+                if (style.m_StyleSemantics[i].Semantic == defaultSem)
+                {
+                    hasDefault = true;
+                    if (i != 0)
+                    {
+                        var entry = style.m_StyleSemantics[i];
+                        style.m_StyleSemantics.RemoveAt(i);
+                        style.m_StyleSemantics.Insert(0, entry);
+                        EditorUtility.SetDirty(style);
+                    }
+                    break;
+                }
+            }
+
+            if (!hasDefault)
+            {
+                if (style.m_StyleSemantics[0].Semantic == null)
+                {
+                    style.m_StyleSemantics[0].Semantic = defaultSem;
+                }
+                else
+                {
+                    style.m_StyleSemantics.Insert(0, new StyleSemanticEntry { Semantic = defaultSem });
+                }
+                EditorUtility.SetDirty(style);
+            }
+        }
+
+        private static List<UISemantic> FindAllSemanticAssets()
+        {
+            var list = new List<UISemantic>();
+            var set = new HashSet<UISemantic>();
+
+            var guids = AssetDatabase.FindAssets("t:UISemantic");
+            foreach (var guid in guids)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var sem = AssetDatabase.LoadAssetAtPath<UISemantic>(path);
+                if (sem != null && set.Add(sem))
+                {
+                    list.Add(sem);
+                }
+            }
+
+            return list;
+        }
+
+        private SerializedProperty GetSelectedSemanticEntryProp()
+        {
+            if (m_SerializedObject == null) return null;
+            var semanticsProp = m_SerializedObject.FindProperty("m_StyleSemantics");
+            if (semanticsProp == null || semanticsProp.arraySize == 0) return null;
+
+            int idx = Mathf.Clamp(m_SelectedSemanticIndex, 0, semanticsProp.arraySize - 1);
+            return semanticsProp.GetArrayElementAtIndex(idx);
+        }
+
+        private UISemantic GetSelectedSemantic()
+        {
+            if (m_TargetStyle == null || m_TargetStyle.m_StyleSemantics == null || m_TargetStyle.m_StyleSemantics.Count == 0)
+            {
+                return GetDefaultSemanticAsset();
+            }
+
+            if (m_SelectedSemanticIndex < 0 || m_SelectedSemanticIndex >= m_TargetStyle.m_StyleSemantics.Count)
+            {
+                m_SelectedSemanticIndex = 0;
+            }
+
+            return m_TargetStyle.m_StyleSemantics[m_SelectedSemanticIndex].Semantic ?? GetDefaultSemanticAsset();
+        }
+
+        private void AddSemanticManagementUI(VisualElement parent, SerializedProperty semanticsProp)
+        {
+            var row = new VisualElement();
+            row.style.flexDirection = FlexDirection.Row;
+            row.style.alignItems = Align.Center;
+            row.style.marginBottom = 6;
+
+            var choices = new List<string>();
+            for (int i = 0; i < semanticsProp.arraySize; i++)
+            {
+                var entry = semanticsProp.GetArrayElementAtIndex(i);
+                var sem = entry.FindPropertyRelative("Semantic").objectReferenceValue as UISemantic;
+                string semName = sem != null ? sem.name : $"(Unassigned {i})";
+                if (i == 0) semName += " [Default]";
+                choices.Add(semName);
+            }
+
+            int activeIndex = Mathf.Clamp(m_SelectedSemanticIndex, 0, Mathf.Max(0, choices.Count - 1));
+            var semanticDropdown = new DropdownField("Active Variant", choices, activeIndex);
+            semanticDropdown.style.flexGrow = 1;
+            semanticDropdown.style.marginLeft = 0;
+            semanticDropdown.style.marginBottom = 0;
+
+            semanticDropdown.RegisterValueChangedCallback(evt =>
+            {
+                int idx = semanticDropdown.choices.IndexOf(evt.newValue);
+                if (idx >= 0 && idx < semanticsProp.arraySize && idx != m_SelectedSemanticIndex)
+                {
+                    m_SelectedSemanticIndex = idx;
+                    BuildPropertiesUI();
+                    UpdatePreview();
+                }
+            });
+            row.Add(semanticDropdown);
+
+            var addBtn = new Button(ShowAddSemanticMenu)
+            {
+                text = "+ Add",
+                tooltip = "Add a new or existing semantic variant to this style"
+            };
+            addBtn.style.marginLeft = 4;
+            addBtn.style.paddingLeft = 8;
+            addBtn.style.paddingRight = 8;
+            addBtn.style.backgroundColor = new Color(0.22f, 0.45f, 0.70f, 1f);
+            addBtn.style.color = Color.white;
+            row.Add(addBtn);
+
+            if (m_SelectedSemanticIndex > 0)
+            {
+                var removeBtn = new Button(RemoveSelectedSemantic)
+                {
+                    text = "Remove",
+                    tooltip = "Remove this semantic variant from this style"
+                };
+                removeBtn.style.marginLeft = 4;
+                removeBtn.style.paddingLeft = 8;
+                removeBtn.style.paddingRight = 8;
+                removeBtn.style.backgroundColor = new Color(0.65f, 0.22f, 0.22f, 1f);
+                removeBtn.style.color = Color.white;
+                row.Add(removeBtn);
+            }
+
+            parent.Add(row);
+
+            // Detail row: reference field and Ping button
+            var currentEntry = semanticsProp.GetArrayElementAtIndex(m_SelectedSemanticIndex);
+            var semProp = currentEntry.FindPropertyRelative("Semantic");
+
+            var detailRow = new VisualElement();
+            detailRow.style.flexDirection = FlexDirection.Row;
+            detailRow.style.alignItems = Align.Center;
+            detailRow.style.marginTop = 2;
+
+            var semField = new PropertyField(semProp, "Semantic Asset");
+            semField.style.flexGrow = 1;
+            semField.style.marginLeft = 0;
+            semField.style.marginBottom = 0;
+            if (m_SelectedSemanticIndex == 0)
+            {
+                semField.SetEnabled(false);
+            }
+            semField.RegisterValueChangeCallback(evt =>
+            {
+                UpdatePreview();
+            });
+            detailRow.Add(semField);
+
+            var activeSemObj = semProp.objectReferenceValue as UISemantic;
+            if (activeSemObj != null)
+            {
+                var pingBtn = new Button(() => EditorGUIUtility.PingObject(activeSemObj))
+                {
+                    text = "Ping",
+                    tooltip = "Ping semantic asset in Project window"
+                };
+                pingBtn.style.marginLeft = 4;
+                pingBtn.style.paddingLeft = 8;
+                pingBtn.style.paddingRight = 8;
+                detailRow.Add(pingBtn);
+            }
+
+            parent.Add(detailRow);
+        }
+
+        private void ShowAddSemanticMenu()
+        {
+            if (m_TargetStyle == null) return;
+
+            var menu = new GenericMenu();
+            var allSemantics = FindAllSemanticAssets();
+            var existingSemantics = new HashSet<UISemantic>();
+
+            if (m_TargetStyle.m_StyleSemantics != null)
+            {
+                foreach (var entry in m_TargetStyle.m_StyleSemantics)
+                {
+                    if (entry.Semantic != null)
+                    {
+                        existingSemantics.Add(entry.Semantic);
+                    }
+                }
+            }
+
+            bool hasCandidates = false;
+            foreach (var sem in allSemantics)
+            {
+                if (!existingSemantics.Contains(sem))
+                {
+                    hasCandidates = true;
+                    menu.AddItem(new GUIContent($"Existing/{sem.name}"), false, () => AddSemanticToTargetStyle(sem));
+                }
+            }
+
+            if (!hasCandidates)
+            {
+                menu.AddDisabledItem(new GUIContent("Existing/No unassigned semantics found"));
+            }
+
+            menu.AddSeparator("");
+            menu.AddItem(new GUIContent("Create New Semantic..."), false, CreateAndAddSemantic);
+            menu.ShowAsContext();
+        }
+
+        private void AddSemanticToTargetStyle(UISemantic semantic)
+        {
+            if (m_TargetStyle == null || semantic == null) return;
+
+            Undo.RecordObject(m_TargetStyle, "Add Semantic Variant");
+
+            if (m_TargetStyle.m_StyleSemantics == null)
+            {
+                m_TargetStyle.m_StyleSemantics = new List<StyleSemanticEntry>();
+            }
+
+            var newEntry = new StyleSemanticEntry
+            {
+                Semantic = semantic
+            };
+
+            m_TargetStyle.m_StyleSemantics.Add(newEntry);
+            EditorUtility.SetDirty(m_TargetStyle);
+            AssetDatabase.SaveAssets();
+
+            m_SerializedObject.Update();
+            m_SelectedSemanticIndex = m_TargetStyle.m_StyleSemantics.Count - 1;
+            BuildPropertiesUI();
+            UpdatePreview();
+        }
+
+        private void CreateAndAddSemantic()
+        {
+            string folder = "Assets/Resources/Semantics";
+            if (!AssetDatabase.IsValidFolder("Assets/Resources"))
+            {
+                AssetDatabase.CreateFolder("Assets", "Resources");
+            }
+            if (!AssetDatabase.IsValidFolder("Assets/Resources/Semantics"))
+            {
+                AssetDatabase.CreateFolder("Assets/Resources", "Semantics");
+            }
+
+            string path = AssetDatabase.GenerateUniqueAssetPath($"{folder}/New Semantic.asset");
+            var newSemantic = CreateInstance<UISemantic>();
+            newSemantic.Name = System.IO.Path.GetFileNameWithoutExtension(path);
+            AssetDatabase.CreateAsset(newSemantic, path);
+            AssetDatabase.SaveAssets();
+
+            AddSemanticToTargetStyle(newSemantic);
+            Selection.activeObject = newSemantic;
+            EditorGUIUtility.PingObject(newSemantic);
+        }
+
+        private void RemoveSelectedSemantic()
+        {
+            if (m_TargetStyle == null || m_SelectedSemanticIndex <= 0) return;
+            if (m_TargetStyle.m_StyleSemantics == null || m_SelectedSemanticIndex >= m_TargetStyle.m_StyleSemantics.Count) return;
+
+            var sem = m_TargetStyle.m_StyleSemantics[m_SelectedSemanticIndex].Semantic;
+            string semName = sem != null ? sem.name : "this variant";
+
+            if (EditorUtility.DisplayDialog("Remove Semantic Variant", $"Are you sure you want to remove '{semName}' from {m_TargetStyle.name}?", "Remove", "Cancel"))
+            {
+                Undo.RecordObject(m_TargetStyle, "Remove Semantic Variant");
+                m_TargetStyle.m_StyleSemantics.RemoveAt(m_SelectedSemanticIndex);
+                m_SelectedSemanticIndex = Mathf.Clamp(m_SelectedSemanticIndex - 1, 0, Mathf.Max(0, m_TargetStyle.m_StyleSemantics.Count - 1));
+                EditorUtility.SetDirty(m_TargetStyle);
+                AssetDatabase.SaveAssets();
+
+                m_SerializedObject.Update();
+                BuildPropertiesUI();
+                UpdatePreview();
+            }
+        }
+
+        #endregion
+
         private void CreateNewStyleAsset()
         {
             string folder = "Assets";
@@ -340,13 +682,22 @@ namespace Framework.UI.Editor
             string path = AssetDatabase.GenerateUniqueAssetPath($"{folder}/New UI Style.asset");
 
             var newStyle = CreateInstance<UIStyle>();
+            var defaultSem = GetDefaultSemanticAsset();
+            newStyle.m_StyleSemantics = new List<StyleSemanticEntry>
+            {
+                new StyleSemanticEntry { Semantic = defaultSem }
+            };
             AssetDatabase.CreateAsset(newStyle, path);
 
             var so = new SerializedObject(newStyle);
+            var semanticsProp = so.FindProperty("m_StyleSemantics");
+            var entryProp = semanticsProp != null && semanticsProp.arraySize > 0
+                ? semanticsProp.GetArrayElementAtIndex(0)
+                : null;
 
             void SetColor(string name, Color color)
             {
-                var prop = so.FindProperty(name);
+                var prop = entryProp?.FindPropertyRelative(name) ?? so.FindProperty(name);
                 if (prop == null) return;
                 var isOverridden = prop.FindPropertyRelative("IsOverriden") ?? prop.FindPropertyRelative("IsOverridden");
                 if (isOverridden != null) isOverridden.boolValue = true;
@@ -356,7 +707,7 @@ namespace Framework.UI.Editor
 
             void SetFloat(string name, float value)
             {
-                var prop = so.FindProperty(name);
+                var prop = entryProp?.FindPropertyRelative(name) ?? so.FindProperty(name);
                 if (prop == null) return;
                 var isOverridden = prop.FindPropertyRelative("IsOverriden") ?? prop.FindPropertyRelative("IsOverridden");
                 if (isOverridden != null) isOverridden.boolValue = true;
@@ -366,7 +717,7 @@ namespace Framework.UI.Editor
 
             void SetColorBlock(string name, Color normal, Color highlighted, Color pressed, Color selected, Color disabled)
             {
-                var prop = so.FindProperty(name);
+                var prop = entryProp?.FindPropertyRelative(name) ?? so.FindProperty(name);
                 if (prop == null) return;
                 var isOverridden = prop.FindPropertyRelative("IsOverriden") ?? prop.FindPropertyRelative("IsOverridden");
                 if (isOverridden != null) isOverridden.boolValue = true;
@@ -443,10 +794,13 @@ namespace Framework.UI.Editor
             if (m_TargetStyle == null)
             {
                 m_LastKnownParentStyle = null;
+                m_SelectedSemanticIndex = 0;
                 ShowEmptyState();
             }
             else
             {
+                EnsureDefaultSemantic(m_TargetStyle);
+                m_SelectedSemanticIndex = 0;
                 m_SerializedObject = new SerializedObject(m_TargetStyle);
                 m_LastKnownParentStyle = GetParentStyle();
                 BuildPropertiesUI();
@@ -521,51 +875,79 @@ namespace Framework.UI.Editor
                 m_PreviewPanel.style.display = DisplayStyle.Flex;
             }
 
+            EnsureDefaultSemantic(m_TargetStyle);
+            m_SerializedObject.Update();
+
+            var semanticsProp = m_SerializedObject.FindProperty("m_StyleSemantics");
+            if (semanticsProp == null || semanticsProp.arraySize == 0)
+            {
+                EnsureDefaultSemantic(m_TargetStyle);
+                m_SerializedObject.Update();
+                semanticsProp = m_SerializedObject.FindProperty("m_StyleSemantics");
+            }
+
+            if (m_SelectedSemanticIndex < 0 || (semanticsProp != null && m_SelectedSemanticIndex >= semanticsProp.arraySize))
+            {
+                m_SelectedSemanticIndex = 0;
+            }
+
+            var currentEntryProp = semanticsProp != null && semanticsProp.arraySize > 0
+                ? semanticsProp.GetArrayElementAtIndex(m_SelectedSemanticIndex)
+                : null;
+
             // Section 0: Hierarchy & Inheritance
             var inheritanceCard = CreateSectionCard("Inheritance", new Color(0.20f, 0.70f, 0.85f, 1f));
             AddParentStyleField(inheritanceCard);
             m_LeftScrollView.Add(inheritanceCard);
 
+            // Section 0.5: Semantic Variants
+            if (semanticsProp != null)
+            {
+                var semanticCard = CreateSectionCard("Semantic Variants", new Color(0.35f, 0.80f, 0.35f, 1f));
+                AddSemanticManagementUI(semanticCard, semanticsProp);
+                m_LeftScrollView.Add(semanticCard);
+            }
+
             // Section 1: Sprites
             var spritesCard = CreateSectionCard("Sprites & Branding", new Color(0.25f, 0.60f, 0.95f, 1f));
-            AddPropertyField(spritesCard, "m_Logo", "Logo Sprite");
+            AddPropertyField(spritesCard, currentEntryProp, "m_Logo", "Logo Sprite");
             m_LeftScrollView.Add(spritesCard);
 
             // Section 2: Regular Colors
             var regularColorsCard = CreateSectionCard("Regular Colors", new Color(0.70f, 0.40f, 0.95f, 1f));
-            AddPropertyField(regularColorsCard, "m_LabelColor", "Label Color");
-            AddPropertyField(regularColorsCard, "m_Header1Color", "Header 1 Color");
-            AddPropertyField(regularColorsCard, "m_Header2Color", "Header 2 Color");
-            AddPropertyField(regularColorsCard, "m_Header3Color", "Header 3 Color");
-            AddPropertyField(regularColorsCard, "m_PanelColor", "Panel Color");
-            AddPropertyField(regularColorsCard, "m_PanelBorderColor", "Panel Border Color");
-            AddPropertyField(regularColorsCard, "m_PanelSeparatorColor", "Panel Separator Color");
+            AddPropertyField(regularColorsCard, currentEntryProp, "m_LabelColor", "Label Color");
+            AddPropertyField(regularColorsCard, currentEntryProp, "m_Header1Color", "Header 1 Color");
+            AddPropertyField(regularColorsCard, currentEntryProp, "m_Header2Color", "Header 2 Color");
+            AddPropertyField(regularColorsCard, currentEntryProp, "m_Header3Color", "Header 3 Color");
+            AddPropertyField(regularColorsCard, currentEntryProp, "m_PanelColor", "Panel Color");
+            AddPropertyField(regularColorsCard, currentEntryProp, "m_PanelBorderColor", "Panel Border Color");
+            AddPropertyField(regularColorsCard, currentEntryProp, "m_PanelSeparatorColor", "Panel Separator Color");
             m_LeftScrollView.Add(regularColorsCard);
 
             // Section 3: Button Color Blocks
             var colorBlocksCard = CreateSectionCard("Button Color Blocks", new Color(0.95f, 0.65f, 0.20f, 1f));
-            AddColorBlockField(colorBlocksCard, "m_ButtonColorBlock", "Button Background Colors");
-            AddColorBlockField(colorBlocksCard, "m_ButtonBorderColorBlock", "Button Border Colors");
-            AddColorBlockField(colorBlocksCard, "m_ButtonTextColorBlock", "Button Text Colors");
-            AddColorBlockField(colorBlocksCard, "m_ButtonIconColorBlock", "Button Icon Colors");
+            AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ButtonColorBlock", "Button Background Colors");
+            AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ButtonBorderColorBlock", "Button Border Colors");
+            AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ButtonTextColorBlock", "Button Text Colors");
+            AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ButtonIconColorBlock", "Button Icon Colors");
             m_LeftScrollView.Add(colorBlocksCard);
 
             // Section 4: Animations
             var animCard = CreateSectionCard("Animations & Scale", new Color(0.20f, 0.80f, 0.50f, 1f));
-            AddPropertyField(animCard, "m_ButtonHoverScale", "Hover Scale");
-            AddPropertyField(animCard, "m_ButtonClickScale", "Click Scale");
-            AddPropertyField(animCard, "m_ButtonHoverAnimationDuration", "Hover Animation Duration (s)");
-            AddPropertyField(animCard, "m_ButtonClickAnimationDuration", "Click Animation Duration (s)");
-            AddPropertyField(animCard, "m_ButtonBackToNormalDuration", "Return To Normal Duration (s)");
-            AddPropertyField(animCard, "m_ColorAnimationDuration", "Color Transition Duration (s)");
+            AddPropertyField(animCard, currentEntryProp, "m_ButtonHoverScale", "Hover Scale");
+            AddPropertyField(animCard, currentEntryProp, "m_ButtonClickScale", "Click Scale");
+            AddPropertyField(animCard, currentEntryProp, "m_ButtonHoverAnimationDuration", "Hover Animation Duration (s)");
+            AddPropertyField(animCard, currentEntryProp, "m_ButtonClickAnimationDuration", "Click Animation Duration (s)");
+            AddPropertyField(animCard, currentEntryProp, "m_ButtonBackToNormalDuration", "Return To Normal Duration (s)");
+            AddPropertyField(animCard, currentEntryProp, "m_ColorAnimationDuration", "Color Transition Duration (s)");
             m_LeftScrollView.Add(animCard);
 
             // Section 5: Text Sizes
             var textSizesCard = CreateSectionCard("Text Sizes", new Color(0.95f, 0.40f, 0.55f, 1f));
-            AddPropertyField(textSizesCard, "m_LabelFontSize", "Label Font Size");
-            AddPropertyField(textSizesCard, "m_Header1FontSize", "Header 1 Font Size");
-            AddPropertyField(textSizesCard, "m_Header2FontSize", "Header 2 Font Size");
-            AddPropertyField(textSizesCard, "m_Header3FontSize", "Header 3 Font Size");
+            AddPropertyField(textSizesCard, currentEntryProp, "m_LabelFontSize", "Label Font Size");
+            AddPropertyField(textSizesCard, currentEntryProp, "m_Header1FontSize", "Header 1 Font Size");
+            AddPropertyField(textSizesCard, currentEntryProp, "m_Header2FontSize", "Header 2 Font Size");
+            AddPropertyField(textSizesCard, currentEntryProp, "m_Header3FontSize", "Header 3 Font Size");
             m_LeftScrollView.Add(textSizesCard);
 
             // Bind the SerializedObject so undo/redo, auto-serialization, and dirty tracking work
@@ -824,9 +1206,9 @@ namespace Framework.UI.Editor
 
         #endregion
 
-        private void AddPropertyField(VisualElement parent, string propertyPath, string customLabel = null)
+        private void AddPropertyField(VisualElement parent, SerializedProperty entryProp, string propertyPath, string customLabel = null)
         {
-            var prop = m_SerializedObject.FindProperty(propertyPath);
+            var prop = entryProp != null ? entryProp.FindPropertyRelative(propertyPath) : m_SerializedObject.FindProperty(propertyPath);
             if (prop == null) return;
 
             var isOverriddenProp = prop.FindPropertyRelative("IsOverriden") ?? prop.FindPropertyRelative("IsOverridden");
@@ -919,9 +1301,9 @@ namespace Framework.UI.Editor
             parent.Add(row);
         }
 
-        private void AddColorBlockField(VisualElement parent, string propertyPath, string customLabel)
+        private void AddColorBlockField(VisualElement parent, SerializedProperty entryProp, string propertyPath, string customLabel)
         {
-            var blockProp = m_SerializedObject.FindProperty(propertyPath);
+            var blockProp = entryProp != null ? entryProp.FindPropertyRelative(propertyPath) : m_SerializedObject.FindProperty(propertyPath);
             if (blockProp == null) return;
 
             var isOverriddenProp = blockProp.FindPropertyRelative("IsOverriden") ?? blockProp.FindPropertyRelative("IsOverridden");
@@ -1473,7 +1855,7 @@ namespace Framework.UI.Editor
             }
         }
 
-        private Color GetResolvedColor(System.Func<Color> getter, string propertyPath)
+        private Color GetResolvedColor(System.Func<Color> getter, string propertyPath, Color fallback = default)
         {
             try
             {
@@ -1487,9 +1869,10 @@ namespace Framework.UI.Editor
                 // Fall back to serialized object if runtime property evaluation fails
             }
 
-            var prop = m_SerializedObject?.FindProperty(propertyPath);
+            var entryProp = GetSelectedSemanticEntryProp();
+            var prop = entryProp?.FindPropertyRelative(propertyPath) ?? m_SerializedObject?.FindProperty(propertyPath);
             var val = prop?.FindPropertyRelative("Value") ?? prop;
-            return val != null ? val.colorValue : default;
+            return val != null ? val.colorValue : fallback;
         }
 
         private float GetResolvedFloat(System.Func<float> getter, string propertyPath, float fallback = 1.0f)
@@ -1506,7 +1889,8 @@ namespace Framework.UI.Editor
                 // Fall back to serialized object if runtime property evaluation fails
             }
 
-            var prop = m_SerializedObject?.FindProperty(propertyPath);
+            var entryProp = GetSelectedSemanticEntryProp();
+            var prop = entryProp?.FindPropertyRelative(propertyPath) ?? m_SerializedObject?.FindProperty(propertyPath);
             var val = prop?.FindPropertyRelative("Value") ?? prop;
             return val != null ? val.floatValue : fallback;
         }
@@ -1525,7 +1909,8 @@ namespace Framework.UI.Editor
                 // Fall back to serialized object if runtime property evaluation fails
             }
 
-            var prop = m_SerializedObject?.FindProperty(propertyPath);
+            var entryProp = GetSelectedSemanticEntryProp();
+            var prop = entryProp?.FindPropertyRelative(propertyPath) ?? m_SerializedObject?.FindProperty(propertyPath);
             var val = prop?.FindPropertyRelative("Value") ?? prop;
             if (val != null)
             {
@@ -1557,7 +1942,8 @@ namespace Framework.UI.Editor
                 // Fall back to serialized object if runtime property evaluation fails
             }
 
-            var prop = m_SerializedObject?.FindProperty(propertyPath);
+            var entryProp = GetSelectedSemanticEntryProp();
+            var prop = entryProp?.FindPropertyRelative(propertyPath) ?? m_SerializedObject?.FindProperty(propertyPath);
             var isOverridden = prop?.FindPropertyRelative("IsOverriden") ?? prop?.FindPropertyRelative("IsOverridden");
             bool hasParent = GetParentStyle() != null;
             if (!hasParent || (isOverridden != null && isOverridden.boolValue))
@@ -1568,7 +1954,7 @@ namespace Framework.UI.Editor
             else if (hasParent)
             {
                 var parentStyle = GetParentStyle();
-                if (parentStyle != null) return parentStyle.Logo;
+                if (parentStyle != null) return parentStyle.GetLogo(GetSelectedSemantic());
             }
 
             var fallbackVal = prop?.FindPropertyRelative("Value") ?? prop;
@@ -1602,38 +1988,40 @@ namespace Framework.UI.Editor
                 }
             }
 
+            var sem = GetSelectedSemantic();
+
             // 1. Panel & Separator Colors
-            m_PreviewPanel.style.backgroundColor = GetResolvedColor(() => m_TargetStyle.PanelColor, "m_PanelColor");
-            m_PreviewPanel.style.borderTopColor = GetResolvedColor(() => m_TargetStyle.PanelBorderColor, "m_PanelBorderColor");
-            m_PreviewPanel.style.borderRightColor = GetResolvedColor(() => m_TargetStyle.PanelBorderColor, "m_PanelBorderColor");
-            m_PreviewPanel.style.borderBottomColor = GetResolvedColor(() => m_TargetStyle.PanelBorderColor, "m_PanelBorderColor");
-            m_PreviewPanel.style.borderLeftColor = GetResolvedColor(() => m_TargetStyle.PanelBorderColor, "m_PanelBorderColor");
+            m_PreviewPanel.style.backgroundColor = GetResolvedColor(() => m_TargetStyle.GetPanelColor(sem), "m_PanelColor");
+            m_PreviewPanel.style.borderTopColor = GetResolvedColor(() => m_TargetStyle.GetPanelBorderColor(sem), "m_PanelBorderColor");
+            m_PreviewPanel.style.borderRightColor = GetResolvedColor(() => m_TargetStyle.GetPanelBorderColor(sem), "m_PanelBorderColor");
+            m_PreviewPanel.style.borderBottomColor = GetResolvedColor(() => m_TargetStyle.GetPanelBorderColor(sem), "m_PanelBorderColor");
+            m_PreviewPanel.style.borderLeftColor = GetResolvedColor(() => m_TargetStyle.GetPanelBorderColor(sem), "m_PanelBorderColor");
 
             if (m_PreviewSeparator != null)
             {
-                m_PreviewSeparator.style.backgroundColor = GetResolvedColor(() => m_TargetStyle.PanelSeparatorColor, "m_PanelSeparatorColor");
+                m_PreviewSeparator.style.backgroundColor = GetResolvedColor(() => m_TargetStyle.GetPanelSeparatorColor(sem), "m_PanelSeparatorColor");
             }
 
             // 2. Regular Text Colors & Sizes
-            m_PreviewLabel.style.color = GetResolvedColor(() => m_TargetStyle.LabelColor, "m_LabelColor");
-            m_PreviewHeader1.style.color = GetResolvedColor(() => m_TargetStyle.Header1Color, "m_Header1Color");
-            m_PreviewHeader2.style.color = GetResolvedColor(() => m_TargetStyle.Header2Color, "m_Header2Color");
-            m_PreviewHeader3.style.color = GetResolvedColor(() => m_TargetStyle.Header3Color, "m_Header3Color");
+            m_PreviewLabel.style.color = GetResolvedColor(() => m_TargetStyle.GetLabelColor(sem), "m_LabelColor");
+            m_PreviewHeader1.style.color = GetResolvedColor(() => m_TargetStyle.GetHeader1Color(sem), "m_Header1Color");
+            m_PreviewHeader2.style.color = GetResolvedColor(() => m_TargetStyle.GetHeader2Color(sem), "m_Header2Color");
+            m_PreviewHeader3.style.color = GetResolvedColor(() => m_TargetStyle.GetHeader3Color(sem), "m_Header3Color");
 
-            float labelFontSize = GetResolvedFloat(() => m_TargetStyle.LabelFontSize, "m_LabelFontSize", 12f);
+            float labelFontSize = GetResolvedFloat(() => m_TargetStyle.GetLabelFontSize(sem), "m_LabelFontSize", 12f);
             m_PreviewLabel.style.fontSize = labelFontSize > 0 ? labelFontSize : 12f;
 
-            float h1FontSize = GetResolvedFloat(() => m_TargetStyle.Header1FontSize, "m_Header1FontSize", 18f);
+            float h1FontSize = GetResolvedFloat(() => m_TargetStyle.GetHeader1FontSize(sem), "m_Header1FontSize", 18f);
             m_PreviewHeader1.style.fontSize = h1FontSize > 0 ? h1FontSize : 18f;
 
-            float h2FontSize = GetResolvedFloat(() => m_TargetStyle.Header2FontSize, "m_Header2FontSize", 14f);
+            float h2FontSize = GetResolvedFloat(() => m_TargetStyle.GetHeader2FontSize(sem), "m_Header2FontSize", 14f);
             m_PreviewHeader2.style.fontSize = h2FontSize > 0 ? h2FontSize : 14f;
 
-            float h3FontSize = GetResolvedFloat(() => m_TargetStyle.Header3FontSize, "m_Header3FontSize", 12f);
+            float h3FontSize = GetResolvedFloat(() => m_TargetStyle.GetHeader3FontSize(sem), "m_Header3FontSize", 12f);
             m_PreviewHeader3.style.fontSize = h3FontSize > 0 ? h3FontSize : 12f;
 
             // 3. Logo Sprites
-            var logoSprite = GetResolvedSprite(() => m_TargetStyle.Logo, "m_Logo");
+            var logoSprite = GetResolvedSprite(() => m_TargetStyle.GetLogo(sem), "m_Logo");
             if (logoSprite != null)
             {
                 m_PreviewLogoImage.image = null;
@@ -1694,34 +2082,36 @@ namespace Framework.UI.Editor
         {
             if (m_TargetStyle == null || m_PreviewButton == null) return;
 
+            var sem = GetSelectedSemantic();
+
             // Compute colors from ColorBlocks for current state
-            Color bgColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.ButtonColorBlock, "m_ButtonColorBlock"), m_CurrentButtonState);
-            Color borderColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.ButtonBorderColorBlock, "m_ButtonBorderColorBlock"), m_CurrentButtonState);
-            Color textColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.ButtonTextColorBlock, "m_ButtonTextColorBlock"), m_CurrentButtonState);
-            Color iconColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.ButtonIconColorBlock, "m_ButtonIconColorBlock"), m_CurrentButtonState);
+            Color bgColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonColorBlock(sem), "m_ButtonColorBlock"), m_CurrentButtonState);
+            Color borderColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonBorderColorBlock(sem), "m_ButtonBorderColorBlock"), m_CurrentButtonState);
+            Color textColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonTextColorBlock(sem), "m_ButtonTextColorBlock"), m_CurrentButtonState);
+            Color iconColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonIconColorBlock(sem), "m_ButtonIconColorBlock"), m_CurrentButtonState);
 
             // Compute Scale and Animation Duration
             float targetScale = 1.0f;
-            float animDuration = GetResolvedFloat(() => m_TargetStyle.ButtonBackToNormalDuration, "m_ButtonBackToNormalDuration", 0.5f);
+            float animDuration = GetResolvedFloat(() => m_TargetStyle.GetButtonBackToNormalAnimationDuration(sem), "m_ButtonBackToNormalDuration", 0.5f);
 
             switch (m_CurrentButtonState)
             {
                 case ButtonState.Highlighted:
-                    targetScale = GetResolvedFloat(() => m_TargetStyle.ButtonHoverScale, "m_ButtonHoverScale", 1.0f);
-                    animDuration = GetResolvedFloat(() => m_TargetStyle.ButtonHoverAnimationDuration, "m_ButtonHoverAnimationDuration", 0.5f);
+                    targetScale = GetResolvedFloat(() => m_TargetStyle.GetButtonHoverScale(sem), "m_ButtonHoverScale", 1.0f);
+                    animDuration = GetResolvedFloat(() => m_TargetStyle.GetButtonHoverAnimationDuration(sem), "m_ButtonHoverAnimationDuration", 0.5f);
                     break;
                 case ButtonState.Pressed:
-                    targetScale = GetResolvedFloat(() => m_TargetStyle.ButtonClickScale, "m_ButtonClickScale", 1.0f);
-                    animDuration = GetResolvedFloat(() => m_TargetStyle.ButtonClickAnimationDuration, "m_ButtonClickAnimationDuration", 0.25f);
+                    targetScale = GetResolvedFloat(() => m_TargetStyle.GetButtonClickScale(sem), "m_ButtonClickScale", 1.0f);
+                    animDuration = GetResolvedFloat(() => m_TargetStyle.GetButtonClickAnimationDuration(sem), "m_ButtonClickAnimationDuration", 0.25f);
                     break;
                 case ButtonState.Selected:
-                    targetScale = GetResolvedFloat(() => m_TargetStyle.ButtonClickScale, "m_ButtonClickScale", 1.0f);
-                    animDuration = GetResolvedFloat(() => m_TargetStyle.ButtonClickAnimationDuration, "m_ButtonClickAnimationDuration", 0.25f);
+                    targetScale = GetResolvedFloat(() => m_TargetStyle.GetButtonClickScale(sem), "m_ButtonClickScale", 1.0f);
+                    animDuration = GetResolvedFloat(() => m_TargetStyle.GetButtonClickAnimationDuration(sem), "m_ButtonClickAnimationDuration", 0.25f);
                     break;
             }
 
             // Apply transition durations
-            float colorDuration = GetResolvedFloat(() => m_TargetStyle.ColorAnimationDuration, "m_ColorAnimationDuration", 0.5f);
+            float colorDuration = GetResolvedFloat(() => m_TargetStyle.GetColorAnimationDuration(sem), "m_ColorAnimationDuration", 0.5f);
             m_PreviewButton.style.transitionDuration = new List<TimeValue>
             {
                 new TimeValue(animDuration, TimeUnit.Second),
@@ -1749,7 +2139,8 @@ namespace Framework.UI.Editor
             // Status message
             if (m_StateInfoLabel != null)
             {
-                m_StateInfoLabel.text = $"State: {m_CurrentButtonState}  |  Scale: {targetScale:F2}x ({animDuration:F2}s)  |  Zoom: {m_PreviewScale * 100:F0}%  |  Color Transition: {colorDuration:F2}s" +
+                string semName = sem != null ? sem.name : "Default";
+                m_StateInfoLabel.text = $"Variant: {semName}  |  State: {m_CurrentButtonState}  |  Scale: {targetScale:F2}x ({animDuration:F2}s)  |  Zoom: {m_PreviewScale * 100:F0}%  |  Color Transition: {colorDuration:F2}s" +
                     (m_IsInteractive ? "  [Interactive Mode]" : "  [Fixed State Preview]");
             }
         }
@@ -1758,10 +2149,12 @@ namespace Framework.UI.Editor
         {
             if (m_TargetStyle == null || m_DisabledPreviewButton == null) return;
 
-            Color bgColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.ButtonColorBlock, "m_ButtonColorBlock"), ButtonState.Disabled);
-            Color borderColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.ButtonBorderColorBlock, "m_ButtonBorderColorBlock"), ButtonState.Disabled);
-            Color textColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.ButtonTextColorBlock, "m_ButtonTextColorBlock"), ButtonState.Disabled);
-            Color iconColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.ButtonIconColorBlock, "m_ButtonIconColorBlock"), ButtonState.Disabled);
+            var sem = GetSelectedSemantic();
+
+            Color bgColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonColorBlock(sem), "m_ButtonColorBlock"), ButtonState.Disabled);
+            Color borderColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonBorderColorBlock(sem), "m_ButtonBorderColorBlock"), ButtonState.Disabled);
+            Color textColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonTextColorBlock(sem), "m_ButtonTextColorBlock"), ButtonState.Disabled);
+            Color iconColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonIconColorBlock(sem), "m_ButtonIconColorBlock"), ButtonState.Disabled);
 
             m_DisabledPreviewButton.style.backgroundColor = bgColor;
             m_DisabledPreviewButton.style.borderTopColor = borderColor;
@@ -2033,5 +2426,4 @@ namespace Framework.UI.Editor
 
         #endregion
     }
-*/
 }

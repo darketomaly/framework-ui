@@ -77,7 +77,7 @@ namespace Framework.UI
             return CurrentStyle.GetSprite(uiType, semantic);
         }
 
-        public static void UpdateScale(RectTransform rt, ref Tween tween, ButtonState buttonState)
+        public static void UpdateScale(RectTransform rt, ref Tween tween, ButtonState buttonState, UISemantic semantic)
         {
             var targetScaleMagnitude = 1f;
             var duration = CurrentStyle.ButtonBackToNormalDuration;
@@ -86,7 +86,7 @@ namespace Framework.UI
             {
                 case ButtonState.Highlighted:
                     duration = CurrentStyle.ButtonHoverAnimationDuration;
-                    targetScaleMagnitude = CurrentStyle.ButtonHoverScale;
+                    targetScaleMagnitude = CurrentStyle.GetButtonHoverScale(semantic);
                     break;
                 case ButtonState.Pressed:
                     duration = CurrentStyle.ButtonClickAnimationDuration;

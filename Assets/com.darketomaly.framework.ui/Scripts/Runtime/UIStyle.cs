@@ -21,6 +21,9 @@ namespace Framework.UI
         public Overridable<Color> m_PanelBorderColor = new();
         public Overridable<Color> m_PanelSeparatorColor = new();
         
+        [Header("Animations")] 
+        public Overridable<float> m_ButtonHoverScale = new();
+        
         [Header("Text sizes")]
         public Overridable<float> m_LabelFontSize = new();
         public Overridable<float> m_Header1FontSize = new();
@@ -143,9 +146,12 @@ namespace Framework.UI
         [SerializeField] private Overridable<ColorBlock> m_ButtonIconColorBlock = new();
         public ColorBlock ButtonIconColorBlock => m_ButtonIconColorBlock.ResolveValue(m_ParentStyle?.m_ButtonIconColorBlock);
 
-        [Header("Animations")] 
-        [SerializeField] private Overridable<float> m_ButtonHoverScale = new();
-        public float ButtonHoverScale => m_ButtonHoverScale.ResolveValue(m_ParentStyle?.m_ButtonHoverScale);
+        // --- Animations ---
+
+        public float GetButtonHoverScale(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_ButtonHoverScale.ResolveValue(m_ParentStyle?.GetButtonHoverScale(semantic));
+        }
         
         [SerializeField] private Overridable<float> m_ButtonClickScale = new();
         public float ButtonClickScale => m_ButtonClickScale.ResolveValue(m_ParentStyle?.m_ButtonClickScale);

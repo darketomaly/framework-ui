@@ -19,6 +19,8 @@ namespace Framework.UI
     [RequireComponent(typeof(ButtonEvents))]
     public class UIComponentButton : MonoBehaviour
     {
+        public UISemantic m_Semantic;
+        
         public TargetGraphic[] m_TargetGraphics;
 
         private ButtonEvents m_buttonEvents;
@@ -100,7 +102,7 @@ namespace Framework.UI
             var state = m_buttonEvents.CurrentState;
             var rt = m_button.transform as RectTransform;
                     
-            UIManager.UpdateScale(rt, ref m_scaleTween, state);
+            UIManager.UpdateScale(rt, ref m_scaleTween, state, m_Semantic);
         }
         
         private void ApplyStateColor(System.Func<ColorBlock, Color> colorSelector, bool instant)

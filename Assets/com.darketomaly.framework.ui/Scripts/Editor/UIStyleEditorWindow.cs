@@ -721,7 +721,7 @@ namespace Framework.UI.Editor
                 var prop = entryProp?.FindPropertyRelative(name) ?? so.FindProperty(name);
                 if (prop == null) return;
                 var isOverridden = prop.FindPropertyRelative("IsOverriden") ?? prop.FindPropertyRelative("IsOverridden");
-                if (isOverridden != null) isOverridden.boolValue = true;
+                if (isOverridden != null) isOverridden.boolValue = false;
                 var val = prop.FindPropertyRelative("Value") ?? prop;
                 val.colorValue = color;
             }
@@ -731,7 +731,7 @@ namespace Framework.UI.Editor
                 var prop = entryProp?.FindPropertyRelative(name) ?? so.FindProperty(name);
                 if (prop == null) return;
                 var isOverridden = prop.FindPropertyRelative("IsOverriden") ?? prop.FindPropertyRelative("IsOverridden");
-                if (isOverridden != null) isOverridden.boolValue = true;
+                if (isOverridden != null) isOverridden.boolValue = false;
                 var val = prop.FindPropertyRelative("Value") ?? prop;
                 val.floatValue = value;
             }
@@ -741,7 +741,7 @@ namespace Framework.UI.Editor
                 var prop = entryProp?.FindPropertyRelative(name) ?? so.FindProperty(name);
                 if (prop == null) return;
                 var isOverridden = prop.FindPropertyRelative("IsOverriden") ?? prop.FindPropertyRelative("IsOverridden");
-                if (isOverridden != null) isOverridden.boolValue = true;
+                if (isOverridden != null) isOverridden.boolValue = false;
                 var val = prop.FindPropertyRelative("Value") ?? prop;
                 var n = val.FindPropertyRelative("m_NormalColor"); if (n != null) n.colorValue = normal;
                 var h = val.FindPropertyRelative("m_HighlightedColor"); if (h != null) h.colorValue = highlighted;

@@ -1971,21 +1971,69 @@ namespace Framework.UI.Editor
 
         #region Inherited Value Resolution for Un-overridden Fields
 
+        private UIStyle GetParentStyleOf(UIStyle style)
+        {
+            if (style == null) return null;
+            if (style == m_TargetStyle) return GetParentStyle();
+            var so = new SerializedObject(style);
+            return so.FindProperty("m_ParentStyle")?.objectReferenceValue as UIStyle;
+        }
+
+        private bool IsPropertyOverriddenOnDefaultEntry(UIStyle style, string propertyPath)
+        {
+            if (style == null) return false;
+            var so = (style == m_TargetStyle && m_SerializedObject != null) ? m_SerializedObject : new SerializedObject(style);
+            var semantics = so.FindProperty("m_StyleSemantics");
+            if (semantics != null && semantics.arraySize > 0)
+            {
+                var defaultEntry = semantics.GetArrayElementAtIndex(0);
+                var prop = defaultEntry.FindPropertyRelative(propertyPath);
+                var isOverriddenProp = prop?.FindPropertyRelative("IsOverriden") ?? prop?.FindPropertyRelative("IsOverridden");
+                if (isOverriddenProp != null)
+                {
+                    return isOverriddenProp.boolValue;
+                }
+            }
+            return true;
+        }
+
+        private UIStyle ResolveInheritanceTargetStyle(UIStyle style, string propertyPath)
+        {
+            if (style == null) return null;
+            var current = style;
+            var visited = new HashSet<UIStyle>();
+            while (current != null && visited.Add(current))
+            {
+                var parentOfCurrent = GetParentStyleOf(current);
+                if (parentOfCurrent != null && !IsPropertyOverriddenOnDefaultEntry(current, propertyPath))
+                {
+                    current = parentOfCurrent;
+                    continue;
+                }
+
+                break;
+            }
+
+            return current ?? style;
+        }
+
         private Color GetColorForPropertyOnStyle(UIStyle style, UISemantic semantic, string propertyPath)
         {
             if (style == null) return default;
-            EnsureDefaultSemantic(style);
+            var target = ResolveInheritanceTargetStyle(style, propertyPath);
+            if (target == null) return default;
+            EnsureDefaultSemantic(target);
             try
             {
                 switch (propertyPath)
                 {
-                    case "m_LabelColor": return style.GetLabelColor(semantic);
-                    case "m_Header1Color": return style.GetHeader1Color(semantic);
-                    case "m_Header2Color": return style.GetHeader2Color(semantic);
-                    case "m_Header3Color": return style.GetHeader3Color(semantic);
-                    case "m_PanelColor": return style.GetPanelColor(semantic);
-                    case "m_PanelBorderColor": return style.GetPanelBorderColor(semantic);
-                    case "m_PanelSeparatorColor": return style.GetPanelSeparatorColor(semantic);
+                    case "m_LabelColor": return target.GetLabelColor(semantic);
+                    case "m_Header1Color": return target.GetHeader1Color(semantic);
+                    case "m_Header2Color": return target.GetHeader2Color(semantic);
+                    case "m_Header3Color": return target.GetHeader3Color(semantic);
+                    case "m_PanelColor": return target.GetPanelColor(semantic);
+                    case "m_PanelBorderColor": return target.GetPanelBorderColor(semantic);
+                    case "m_PanelSeparatorColor": return target.GetPanelSeparatorColor(semantic);
                 }
             }
             catch
@@ -1993,7 +2041,7 @@ namespace Framework.UI.Editor
                 // Fall back to serialized property
             }
 
-            var so = new SerializedObject(style);
+            var so = (target == m_TargetStyle && m_SerializedObject != null) ? m_SerializedObject : new SerializedObject(target);
             var semantics = so.FindProperty("m_StyleSemantics");
             if (semantics != null && semantics.arraySize > 0)
             {
@@ -2008,21 +2056,23 @@ namespace Framework.UI.Editor
         private float GetFloatForPropertyOnStyle(UIStyle style, UISemantic semantic, string propertyPath, float fallback)
         {
             if (style == null) return fallback;
-            EnsureDefaultSemantic(style);
+            var target = ResolveInheritanceTargetStyle(style, propertyPath);
+            if (target == null) return fallback;
+            EnsureDefaultSemantic(target);
             try
             {
                 switch (propertyPath)
                 {
-                    case "m_ButtonHoverScale": return style.GetButtonHoverScale(semantic);
-                    case "m_ButtonClickScale": return style.GetButtonClickScale(semantic);
-                    case "m_ButtonHoverAnimationDuration": return style.GetButtonHoverAnimationDuration(semantic);
-                    case "m_ButtonClickAnimationDuration": return style.GetButtonClickAnimationDuration(semantic);
-                    case "m_ButtonBackToNormalDuration": return style.GetButtonBackToNormalAnimationDuration(semantic);
-                    case "m_ColorAnimationDuration": return style.GetColorAnimationDuration(semantic);
-                    case "m_LabelFontSize": return style.GetLabelFontSize(semantic);
-                    case "m_Header1FontSize": return style.GetHeader1FontSize(semantic);
-                    case "m_Header2FontSize": return style.GetHeader2FontSize(semantic);
-                    case "m_Header3FontSize": return style.GetHeader3FontSize(semantic);
+                    case "m_ButtonHoverScale": return target.GetButtonHoverScale(semantic);
+                    case "m_ButtonClickScale": return target.GetButtonClickScale(semantic);
+                    case "m_ButtonHoverAnimationDuration": return target.GetButtonHoverAnimationDuration(semantic);
+                    case "m_ButtonClickAnimationDuration": return target.GetButtonClickAnimationDuration(semantic);
+                    case "m_ButtonBackToNormalDuration": return target.GetButtonBackToNormalAnimationDuration(semantic);
+                    case "m_ColorAnimationDuration": return target.GetColorAnimationDuration(semantic);
+                    case "m_LabelFontSize": return target.GetLabelFontSize(semantic);
+                    case "m_Header1FontSize": return target.GetHeader1FontSize(semantic);
+                    case "m_Header2FontSize": return target.GetHeader2FontSize(semantic);
+                    case "m_Header3FontSize": return target.GetHeader3FontSize(semantic);
                 }
             }
             catch
@@ -2030,7 +2080,7 @@ namespace Framework.UI.Editor
                 // Fall back to serialized property
             }
 
-            var so = new SerializedObject(style);
+            var so = (target == m_TargetStyle && m_SerializedObject != null) ? m_SerializedObject : new SerializedObject(target);
             var semantics = so.FindProperty("m_StyleSemantics");
             if (semantics != null && semantics.arraySize > 0)
             {
@@ -2045,15 +2095,17 @@ namespace Framework.UI.Editor
         private ColorBlock GetColorBlockForPropertyOnStyle(UIStyle style, UISemantic semantic, string propertyPath)
         {
             if (style == null) return default;
-            EnsureDefaultSemantic(style);
+            var target = ResolveInheritanceTargetStyle(style, propertyPath);
+            if (target == null) return default;
+            EnsureDefaultSemantic(target);
             try
             {
                 switch (propertyPath)
                 {
-                    case "m_ButtonColorBlock": return style.GetButtonColorBlock(semantic);
-                    case "m_ButtonBorderColorBlock": return style.GetButtonBorderColorBlock(semantic);
-                    case "m_ButtonTextColorBlock": return style.GetButtonTextColorBlock(semantic);
-                    case "m_ButtonIconColorBlock": return style.GetButtonIconColorBlock(semantic);
+                    case "m_ButtonColorBlock": return target.GetButtonColorBlock(semantic);
+                    case "m_ButtonBorderColorBlock": return target.GetButtonBorderColorBlock(semantic);
+                    case "m_ButtonTextColorBlock": return target.GetButtonTextColorBlock(semantic);
+                    case "m_ButtonIconColorBlock": return target.GetButtonIconColorBlock(semantic);
                 }
             }
             catch
@@ -2061,7 +2113,7 @@ namespace Framework.UI.Editor
                 // Fall back to serialized property
             }
 
-            var so = new SerializedObject(style);
+            var so = (target == m_TargetStyle && m_SerializedObject != null) ? m_SerializedObject : new SerializedObject(target);
             var semantics = so.FindProperty("m_StyleSemantics");
             if (semantics != null && semantics.arraySize > 0)
             {
@@ -2087,12 +2139,14 @@ namespace Framework.UI.Editor
         private Sprite GetSpriteForPropertyOnStyle(UIStyle style, UISemantic semantic, string propertyPath)
         {
             if (style == null) return null;
-            EnsureDefaultSemantic(style);
+            var target = ResolveInheritanceTargetStyle(style, propertyPath);
+            if (target == null) return null;
+            EnsureDefaultSemantic(target);
             try
             {
                 if (propertyPath == "m_Logo")
                 {
-                    var logo = style.GetLogo(semantic);
+                    var logo = target.GetLogo(semantic);
                     if (logo != null) return logo;
                 }
             }
@@ -2101,7 +2155,7 @@ namespace Framework.UI.Editor
                 // Fall back to serialized property
             }
 
-            var so = new SerializedObject(style);
+            var so = (target == m_TargetStyle && m_SerializedObject != null) ? m_SerializedObject : new SerializedObject(target);
             var semantics = so.FindProperty("m_StyleSemantics");
             if (semantics != null && semantics.arraySize > 0)
             {

@@ -86,6 +86,8 @@ namespace Framework.UI
 
         private StyleSemanticEntry GetSemanticEntry(UISemantic semantic)
         {
+            this.Log($"Getting semantic entry of {name}. Semantics: {m_StyleSemantics.Count}");
+            
             // Always default to the default semantic
             StyleSemanticEntry semanticEntry = m_StyleSemantics[0];
             
@@ -111,7 +113,14 @@ namespace Framework.UI
         
         public Color GetLabelColor(UISemantic semantic)
         {
-            return GetSemanticEntry(semantic).m_LabelColor.ResolveValue(m_ParentStyle?.GetLabelColor(semantic));
+            var semanticEntry = GetSemanticEntry(semantic);
+            
+            if (semanticEntry != m_StyleSemantics[0] && !semanticEntry.m_LabelColor.IsOverriden)
+            {
+                return GetLabelColor(m_StyleSemantics[0].Semantic);
+            }
+            
+            return semanticEntry.m_LabelColor.ResolveValue(m_ParentStyle?.GetLabelColor(semantic));
         }
 
         public Color GetHeader1Color(UISemantic semantic)

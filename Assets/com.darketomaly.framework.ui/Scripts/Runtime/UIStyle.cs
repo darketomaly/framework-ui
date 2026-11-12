@@ -23,6 +23,9 @@ namespace Framework.UI
         
         [Header("Color blocks")]
         public Overridable<ColorBlock> m_ButtonColorBlock = new();
+        public Overridable<ColorBlock> m_ButtonBorderColorBlock = new();
+        public Overridable<ColorBlock> m_ButtonTextColorBlock = new();
+        public Overridable<ColorBlock> m_ButtonIconColorBlock = new();
         
         [Header("Animations")] 
         public Overridable<float> m_ButtonHoverScale = new();
@@ -148,14 +151,20 @@ namespace Framework.UI
             return GetSemanticEntry(semantic).m_ButtonColorBlock.ResolveValue(m_ParentStyle?.GetButtonColorBlock(semantic));
         }
         
-        [SerializeField] private Overridable<ColorBlock> m_ButtonBorderColorBlock = new();
-        public ColorBlock ButtonBorderColorBlock => m_ButtonBorderColorBlock.ResolveValue(m_ParentStyle?.m_ButtonBorderColorBlock);
-
-        [SerializeField] private Overridable<ColorBlock> m_ButtonTextColorBlock = new();
-        public ColorBlock ButtonTextColorBlock => m_ButtonTextColorBlock.ResolveValue(m_ParentStyle?.m_ButtonTextColorBlock);
-
-        [SerializeField] private Overridable<ColorBlock> m_ButtonIconColorBlock = new();
-        public ColorBlock ButtonIconColorBlock => m_ButtonIconColorBlock.ResolveValue(m_ParentStyle?.m_ButtonIconColorBlock);
+        public ColorBlock GetButtonBorderColorBlock(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_ButtonBorderColorBlock.ResolveValue(m_ParentStyle?.GetButtonBorderColorBlock(semantic));
+        }
+        
+        public ColorBlock GetButtonTextColorBlock(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_ButtonTextColorBlock.ResolveValue(m_ParentStyle?.GetButtonTextColorBlock(semantic));
+        }
+        
+        public ColorBlock GetButtonIconColorBlock(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_ButtonIconColorBlock.ResolveValue(m_ParentStyle?.GetButtonIconColorBlock(semantic));
+        }
 
         // --- Animations ---
 

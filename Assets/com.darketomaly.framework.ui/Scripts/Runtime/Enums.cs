@@ -46,9 +46,9 @@ namespace Framework.UI
             return uiType switch
             {
                 UIType.ButtonBackground => uiStyle.GetButtonColorBlock(semantic),
-                UIType.ButtonBorder => uiStyle.ButtonBorderColorBlock,
-                UIType.ButtonText => uiStyle.ButtonTextColorBlock,
-                UIType.ButtonIcon => uiStyle.ButtonIconColorBlock,
+                UIType.ButtonBorder => uiStyle.GetButtonBorderColorBlock(semantic),
+                UIType.ButtonText => uiStyle.GetButtonTextColorBlock(semantic),
+                UIType.ButtonIcon => uiStyle.GetButtonIconColorBlock(semantic),
                 _ => default
             };
         }

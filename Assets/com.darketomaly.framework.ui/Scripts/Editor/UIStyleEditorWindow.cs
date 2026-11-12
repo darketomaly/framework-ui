@@ -270,20 +270,17 @@ namespace Framework.UI.Editor
             toolbar.Add(m_StyleDropdown);
             RefreshTopToolbarDropdown();
 
-            var spacer = new VisualElement();
-            spacer.style.flexGrow = 1;
-            toolbar.Add(spacer);
-
-            var createNewButton = new Button(CreateNewStyleAsset)
+            var newStyleButton = new Button(CreateNewStyleAsset)
             {
-                text = "+ Create New Style"
+                text = "+ New",
+                tooltip = "Create a new UI Style asset"
             };
-            createNewButton.style.backgroundColor = new Color(0.22f, 0.45f, 0.70f, 1f);
-            createNewButton.style.color = Color.white;
-            createNewButton.style.unityFontStyleAndWeight = FontStyle.Bold;
-            createNewButton.style.paddingLeft = 12;
-            createNewButton.style.paddingRight = 12;
-            toolbar.Add(createNewButton);
+            newStyleButton.style.marginLeft = 4;
+            newStyleButton.style.paddingLeft = 8;
+            newStyleButton.style.paddingRight = 8;
+            newStyleButton.style.backgroundColor = new Color(0.22f, 0.45f, 0.70f, 1f);
+            newStyleButton.style.color = Color.white;
+            toolbar.Add(newStyleButton);
 
             return toolbar;
         }

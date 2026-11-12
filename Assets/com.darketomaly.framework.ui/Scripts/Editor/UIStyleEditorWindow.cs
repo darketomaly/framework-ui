@@ -51,13 +51,11 @@ namespace Framework.UI.Editor
         // Status & State
         private Label m_StateInfoLabel;
         private ButtonState m_CurrentButtonState = ButtonState.Normal;
-        private bool m_IsInteractive = true;
         private int m_BackgroundThemeIndex = 0; // 0 = Dark, 1 = Light, 2 = Checkered
         private float m_PreviewScale = 1f;
 
         // State Buttons
         private Dictionary<ButtonState, Button> m_StateButtons = new Dictionary<ButtonState, Button>();
-        private Button m_InteractiveToggleButton;
 
         [MenuItem("Window/Framework/UI Style Editor", false, 100)]
         [MenuItem("Framework/UI Style Editor", false, 100)]
@@ -1386,29 +1384,6 @@ namespace Framework.UI.Editor
             toolbar.style.borderBottomColor = new Color(0.11f, 0.11f, 0.11f, 1f);
             toolbar.style.backgroundColor = new Color(0.18f, 0.18f, 0.18f, 1f);
 
-            var previewTitle = new Label("LIVE PREVIEW");
-            previewTitle.style.unityFontStyleAndWeight = FontStyle.Bold;
-            previewTitle.style.fontSize = 12;
-            previewTitle.style.color = new Color(0.85f, 0.85f, 0.85f, 1f);
-            previewTitle.style.marginRight = 16;
-            toolbar.Add(previewTitle);
-
-            // Interactive Mode Toggle Button
-            m_InteractiveToggleButton = new Button(() =>
-            {
-                SetInteractiveMode(!m_IsInteractive);
-            })
-            {
-                text = "Interactive: ON"
-            };
-            m_InteractiveToggleButton.style.paddingLeft = 10;
-            m_InteractiveToggleButton.style.paddingRight = 10;
-            m_InteractiveToggleButton.style.marginRight = 8;
-            m_InteractiveToggleButton.style.backgroundColor = new Color(0.20f, 0.50f, 0.35f, 1f);
-            m_InteractiveToggleButton.style.color = Color.white;
-            m_InteractiveToggleButton.style.unityFontStyleAndWeight = FontStyle.Bold;
-            toolbar.Add(m_InteractiveToggleButton);
-
             // State Preview Buttons
             var statesLabel = new Label("State:");
             statesLabel.style.fontSize = 11;
@@ -1425,7 +1400,6 @@ namespace Framework.UI.Editor
             {
                 var stateBtn = new Button(() =>
                 {
-                    SetInteractiveMode(false);
                     SetButtonState(state);
                 })
                 {
@@ -1680,46 +1654,34 @@ namespace Framework.UI.Editor
                 // Mouse Event Handlers for Live Interactive Hover and Click Scaling
                 btn.RegisterCallback<PointerEnterEvent>(evt =>
                 {
-                    if (m_IsInteractive)
-                    {
-                        SetButtonState(ButtonState.Highlighted);
-                    }
+                    SetButtonState(ButtonState.Highlighted);
                 });
 
                 btn.RegisterCallback<PointerLeaveEvent>(evt =>
                 {
-                    if (m_IsInteractive)
-                    {
-                        SetButtonState(ButtonState.Normal);
-                    }
+                    SetButtonState(ButtonState.Normal);
                 });
 
                 btn.RegisterCallback<PointerDownEvent>(evt =>
                 {
-                    if (m_IsInteractive)
-                    {
-                        btn.CapturePointer(evt.pointerId);
-                        SetButtonState(ButtonState.Pressed);
-                    }
+                    btn.CapturePointer(evt.pointerId);
+                    SetButtonState(ButtonState.Pressed);
                 });
 
                 btn.RegisterCallback<PointerUpEvent>(evt =>
                 {
-                    if (m_IsInteractive)
+                    if (btn.HasPointerCapture(evt.pointerId))
                     {
-                        if (btn.HasPointerCapture(evt.pointerId))
-                        {
-                            btn.ReleasePointer(evt.pointerId);
-                        }
+                        btn.ReleasePointer(evt.pointerId);
+                    }
 
-                        if (btn.worldBound.Contains(evt.position))
-                        {
-                            SetButtonState(ButtonState.Highlighted);
-                        }
-                        else
-                        {
-                            SetButtonState(ButtonState.Normal);
-                        }
+                    if (btn.worldBound.Contains(evt.position))
+                    {
+                        SetButtonState(ButtonState.Highlighted);
+                    }
+                    else
+                    {
+                        SetButtonState(ButtonState.Normal);
                     }
                 });
             }
@@ -1730,23 +1692,6 @@ namespace Framework.UI.Editor
         #endregion
 
         #region Preview Update Logic
-
-        private void SetInteractiveMode(bool interactive)
-        {
-            m_IsInteractive = interactive;
-            if (m_InteractiveToggleButton != null)
-            {
-                m_InteractiveToggleButton.text = m_IsInteractive ? "Interactive: ON" : "Interactive: OFF";
-                m_InteractiveToggleButton.style.backgroundColor = m_IsInteractive
-                    ? new Color(0.20f, 0.50f, 0.35f, 1f)
-                    : new Color(0.40f, 0.40f, 0.40f, 1f);
-            }
-
-            if (m_IsInteractive)
-            {
-                SetButtonState(ButtonState.Normal);
-            }
-        }
 
         private void SetButtonState(ButtonState state)
         {
@@ -2059,8 +2004,7 @@ namespace Framework.UI.Editor
             if (m_StateInfoLabel != null)
             {
                 string semName = sem != null ? sem.name : "Default";
-                m_StateInfoLabel.text = $"Variant: {semName}  |  State: {m_CurrentButtonState}  |  Scale: {targetScale:F2}x ({animDuration:F2}s)  |  Zoom: {m_PreviewScale * 100:F0}%  |  Color Transition: {colorDuration:F2}s" +
-                    (m_IsInteractive ? "  [Interactive Mode]" : "  [Fixed State Preview]");
+                m_StateInfoLabel.text = $"Variant: {semName}  |  State: {m_CurrentButtonState}  |  Scale: {targetScale:F2}x ({animDuration:F2}s)  |  Zoom: {m_PreviewScale * 100:F0}%  |  Color Transition: {colorDuration:F2}s";
             }
         }
 

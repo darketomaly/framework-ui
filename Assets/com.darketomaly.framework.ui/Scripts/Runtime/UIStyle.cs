@@ -62,16 +62,6 @@ namespace Framework.UI
             Value = value, 
             IsOverriden = true 
         };
-        
-        public T ResolveValue(Overridable<T> parent)
-        {
-            if (IsOverriden || parent == null)
-            {
-                return Value;
-            }
-
-            return parent.Value;
-        }
     }
     
     [CreateAssetMenu(fileName = "UI Style", menuName = "Framework/UI Style")]
@@ -86,7 +76,11 @@ namespace Framework.UI
 
         private StyleSemanticEntry GetSemanticEntry(UISemantic semantic)
         {
-            this.Log($"Getting semantic entry of {name}. Semantics: {m_StyleSemantics.Count}");
+            if (m_StyleSemantics == null || m_StyleSemantics.Count == 0)
+            {
+                this.LogError("Style has no semantics, this should not happen. It should always have at least the default semantic");
+                return null;
+            }
             
             // Always default to the default semantic
             StyleSemanticEntry semanticEntry = m_StyleSemantics[0];
@@ -96,6 +90,7 @@ namespace Framework.UI
                 if (entry.Semantic == semantic)
                 {
                     semanticEntry = entry;
+                    break;
                 }
             }
 
@@ -105,7 +100,23 @@ namespace Framework.UI
         private T Resolve<T>(UISemantic semantic, System.Func<StyleSemanticEntry, Overridable<T>> selector)
         {
             var entry = GetSemanticEntry(semantic);
+            
+            if (entry == null)
+            {
+                this.LogError("Semantic entry not found. This should not happen");
+                return default;
+            }
+            
             var field = selector(entry);
+            
+            if (field == null)
+            {
+                this.LogError("Overridable field not found. This should not happen");
+                return default;
+            }
+            
+            // If there's no override on the semantic, grab the default semantic
+            // The default semantic may or may not have an override itself for the style
 
             if (entry != m_StyleSemantics[0] && !field.IsOverriden)
             {
@@ -128,110 +139,50 @@ namespace Framework.UI
         
         public Color GetLabelColor(UISemantic semantic) => Resolve(semantic, e => e.m_LabelColor);
 
-        public Color GetHeader1Color(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_Header1Color.ResolveValue(m_ParentStyle?.GetHeader1Color(semantic));
-        }
+        public Color GetHeader1Color(UISemantic semantic) => Resolve(semantic, e=> e.m_Header1Color);
 
-        public Color GetHeader2Color(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_Header2Color.ResolveValue(m_ParentStyle?.GetHeader2Color(semantic));
-        }
+        public Color GetHeader2Color(UISemantic semantic) => Resolve(semantic, e => e.m_Header2Color);
 
-        public Color GetHeader3Color(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_Header3Color.ResolveValue(m_ParentStyle?.GetHeader3Color(semantic));
-        }
+        public Color GetHeader3Color(UISemantic semantic) => Resolve(semantic, e => e.m_Header3Color);
 
-        public Color GetPanelColor(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_PanelColor.ResolveValue(m_ParentStyle?.GetPanelColor(semantic));
-        }
+        public Color GetPanelColor(UISemantic semantic) => Resolve(semantic, e => e.m_PanelColor);
 
-        public Color GetPanelBorderColor(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_PanelBorderColor.ResolveValue(m_ParentStyle?.GetPanelBorderColor(semantic));
-        }
+        public Color GetPanelBorderColor(UISemantic semantic) => Resolve(semantic, e => e.m_PanelBorderColor);
 
-        public Color GetPanelSeparatorColor(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_PanelSeparatorColor.ResolveValue(m_ParentStyle?.GetPanelSeparatorColor(semantic));
-        }
+        public Color GetPanelSeparatorColor(UISemantic semantic) => Resolve(semantic, e => e.m_PanelSeparatorColor);
         
         // --- Color blocks ---
 
-        public ColorBlock GetButtonColorBlock(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_ButtonColorBlock.ResolveValue(m_ParentStyle?.GetButtonColorBlock(semantic));
-        }
-        
-        public ColorBlock GetButtonBorderColorBlock(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_ButtonBorderColorBlock.ResolveValue(m_ParentStyle?.GetButtonBorderColorBlock(semantic));
-        }
-        
-        public ColorBlock GetButtonTextColorBlock(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_ButtonTextColorBlock.ResolveValue(m_ParentStyle?.GetButtonTextColorBlock(semantic));
-        }
-        
-        public ColorBlock GetButtonIconColorBlock(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_ButtonIconColorBlock.ResolveValue(m_ParentStyle?.GetButtonIconColorBlock(semantic));
-        }
+        public ColorBlock GetButtonColorBlock(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonColorBlock);
+
+        public ColorBlock GetButtonBorderColorBlock(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonBorderColorBlock);
+
+        public ColorBlock GetButtonTextColorBlock(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonTextColorBlock);
+
+        public ColorBlock GetButtonIconColorBlock(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonIconColorBlock);
 
         // --- Animations ---
 
-        public float GetButtonHoverScale(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_ButtonHoverScale.ResolveValue(m_ParentStyle?.GetButtonHoverScale(semantic));
-        }
+        public float GetButtonHoverScale(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonHoverScale);
 
-        public float GetButtonClickScale(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_ButtonClickScale.ResolveValue(m_ParentStyle?.GetButtonClickScale(semantic));
-        }
-        
-        public float GetButtonHoverAnimationDuration(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_ButtonHoverAnimationDuration.ResolveValue(m_ParentStyle?.GetButtonHoverAnimationDuration(semantic));
-        }
+        public float GetButtonClickScale(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonClickScale);
 
-        public float GetButtonClickAnimationDuration(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_ButtonClickAnimationDuration.ResolveValue(m_ParentStyle?.GetButtonClickAnimationDuration(semantic));
-        }
+        public float GetButtonHoverAnimationDuration(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonHoverAnimationDuration);
+
+        public float GetButtonClickAnimationDuration(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonClickAnimationDuration);
         
-        public float GetButtonBackToNormalAnimationDuration(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_ButtonBackToNormalDuration.ResolveValue(m_ParentStyle?.GetButtonBackToNormalAnimationDuration(semantic));
-        }
+        public float GetButtonBackToNormalAnimationDuration(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonBackToNormalDuration);
         
-        public float GetColorAnimationDuration(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_ColorAnimationDuration.ResolveValue(m_ParentStyle?.GetColorAnimationDuration(semantic));
-        }
+        public float GetColorAnimationDuration(UISemantic semantic) => Resolve(semantic, e => e.m_ColorAnimationDuration);
         
         // --- Text sizes ---
 
-        public float GetLabelFontSize(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_LabelFontSize.ResolveValue(m_ParentStyle?.GetLabelFontSize(semantic));
-        }
+        public float GetLabelFontSize(UISemantic semantic) => Resolve(semantic, e => e.m_LabelFontSize);
 
-        public float GetHeader1FontSize(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_Header1FontSize.ResolveValue(m_ParentStyle?.GetHeader1FontSize(semantic));
-        }
+        public float GetHeader1FontSize(UISemantic semantic) => Resolve(semantic, e => e.m_Header1FontSize);
 
-        public float GetHeader2FontSize(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_Header2FontSize.ResolveValue(m_ParentStyle?.GetHeader2FontSize(semantic));
-        }
+        public float GetHeader2FontSize(UISemantic semantic) => Resolve(semantic, e => e.m_Header2FontSize);
         
-        public float GetHeader3FontSize(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_Header3FontSize.ResolveValue(m_ParentStyle?.GetHeader3FontSize(semantic));
-        }
+        public float GetHeader3FontSize(UISemantic semantic) => Resolve(semantic, e => e.m_Header3FontSize);
     }
 }

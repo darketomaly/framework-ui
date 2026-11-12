@@ -20,7 +20,7 @@ MonoBehaviour:
       Value: {fileID: 0}
     m_LabelColor:
       IsOverriden: 1
-      Value: {r: 0.6457691, g: 0, b: 1, a: 1}
+      Value: {r: 1, g: 0, b: 0, a: 1}
     m_Header1Color:
       IsOverriden: 0
       Value: {r: 1, g: 1, b: 1, a: 1}
@@ -32,7 +32,7 @@ MonoBehaviour:
       Value: {r: 0.75, g: 0.75, b: 0.75, a: 1}
     m_PanelColor:
       IsOverriden: 0
-      Value: {r: 0, g: 0, b: 0, a: 1}
+      Value: {r: 0.18, g: 0.22, b: 0.28, a: 1}
     m_PanelBorderColor:
       IsOverriden: 0
       Value: {r: 0.28, g: 0.52, b: 0.8, a: 1}
@@ -107,7 +107,7 @@ MonoBehaviour:
       IsOverriden: 0
       Value: 14
     m_Header3FontSize:
-      IsOverriden: 1
+      IsOverriden: 0
       Value: 12
   - Semantic: {fileID: 11400000, guid: 694fd63c2cea30f4f8502367a3da3d63, type: 2}
     m_Logo:
@@ -115,7 +115,7 @@ MonoBehaviour:
       Value: {fileID: 0}
     m_LabelColor:
       IsOverriden: 0
-      Value: {r: 1, g: 0, b: 0, a: 1}
+      Value: {r: 0.9857934, g: 0, b: 0.9924528, a: 1}
     m_Header1Color:
       IsOverriden: 0
       Value: {r: 1, g: 1, b: 1, a: 1}

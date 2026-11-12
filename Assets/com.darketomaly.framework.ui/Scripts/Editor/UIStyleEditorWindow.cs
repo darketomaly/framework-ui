@@ -25,8 +25,6 @@ namespace Framework.UI.Editor
         private VisualElement m_RightPreviewPane;
         private ScrollView m_PreviewViewport;
         private GridBackground m_GridBackground;
-        private bool m_ShowGrid = true;
-        private Button m_GridToggleButton;
         private VisualElement m_EmptyStateContainer;
         private VisualElement m_EditorContainer;
 
@@ -274,22 +272,6 @@ namespace Framework.UI.Editor
             toolbar.Add(m_StyleDropdown);
             RefreshTopToolbarDropdown();
 
-            var pingButton = new Button(() =>
-            {
-                if (m_TargetStyle != null)
-                {
-                    EditorGUIUtility.PingObject(m_TargetStyle);
-                    Selection.activeObject = m_TargetStyle;
-                }
-            })
-            {
-                text = "Ping"
-            };
-            pingButton.style.marginLeft = 6;
-            pingButton.style.paddingLeft = 10;
-            pingButton.style.paddingRight = 10;
-            toolbar.Add(pingButton);
-
             var spacer = new VisualElement();
             spacer.style.flexGrow = 1;
             toolbar.Add(spacer);
@@ -438,7 +420,7 @@ namespace Framework.UI.Editor
             var row = new VisualElement();
             row.style.flexDirection = FlexDirection.Row;
             row.style.alignItems = Align.Center;
-            row.style.marginBottom = 6;
+            row.style.marginBottom = 0;
 
             var choices = new List<string>();
             for (int i = 0; i < semanticsProp.arraySize; i++)
@@ -496,45 +478,6 @@ namespace Framework.UI.Editor
             }
 
             parent.Add(row);
-
-            // Detail row: reference field and Ping button
-            var currentEntry = semanticsProp.GetArrayElementAtIndex(m_SelectedSemanticIndex);
-            var semProp = currentEntry.FindPropertyRelative("Semantic");
-
-            var detailRow = new VisualElement();
-            detailRow.style.flexDirection = FlexDirection.Row;
-            detailRow.style.alignItems = Align.Center;
-            detailRow.style.marginTop = 2;
-
-            var semField = new PropertyField(semProp, "Semantic Asset");
-            semField.style.flexGrow = 1;
-            semField.style.marginLeft = 0;
-            semField.style.marginBottom = 0;
-            if (m_SelectedSemanticIndex == 0)
-            {
-                semField.SetEnabled(false);
-            }
-            semField.RegisterValueChangeCallback(evt =>
-            {
-                UpdatePreview();
-            });
-            detailRow.Add(semField);
-
-            var activeSemObj = semProp.objectReferenceValue as UISemantic;
-            if (activeSemObj != null)
-            {
-                var pingBtn = new Button(() => EditorGUIUtility.PingObject(activeSemObj))
-                {
-                    text = "Ping",
-                    tooltip = "Ping semantic asset in Project window"
-                };
-                pingBtn.style.marginLeft = 4;
-                pingBtn.style.paddingLeft = 8;
-                pingBtn.style.paddingRight = 8;
-                detailRow.Add(pingBtn);
-            }
-
-            parent.Add(detailRow);
         }
 
         private void ShowAddSemanticMenu()
@@ -1187,20 +1130,6 @@ namespace Framework.UI.Editor
             });
 
             row.Add(parentDropdown);
-
-            if (currentParent != null)
-            {
-                var pingBtn = new Button(() => EditorGUIUtility.PingObject(currentParent))
-                {
-                    text = "Ping",
-                    tooltip = "Ping parent style asset in Project window"
-                };
-                pingBtn.style.marginLeft = 4;
-                pingBtn.style.paddingLeft = 8;
-                pingBtn.style.paddingRight = 8;
-                row.Add(pingBtn);
-            }
-
             parent.Add(row);
         }
 
@@ -1529,17 +1458,7 @@ namespace Framework.UI.Editor
             bgBtn.style.fontSize = 10;
             bgBtn.style.paddingLeft = 8;
             bgBtn.style.paddingRight = 8;
-            bgBtn.style.marginRight = 6;
             toolbar.Add(bgBtn);
-
-            m_GridToggleButton = new Button(ToggleGridVisibility)
-            {
-                text = "Grid: ON"
-            };
-            m_GridToggleButton.style.fontSize = 10;
-            m_GridToggleButton.style.paddingLeft = 8;
-            m_GridToggleButton.style.paddingRight = 8;
-            toolbar.Add(m_GridToggleButton);
 
             pane.Add(toolbar);
 
@@ -2182,19 +2101,6 @@ namespace Framework.UI.Editor
         #endregion
 
         #region Background Themes & Grid
-
-        private void ToggleGridVisibility()
-        {
-            m_ShowGrid = !m_ShowGrid;
-            if (m_GridToggleButton != null)
-            {
-                m_GridToggleButton.text = m_ShowGrid ? "Grid: ON" : "Grid: OFF";
-            }
-            if (m_GridBackground != null)
-            {
-                m_GridBackground.ShowGrid = m_ShowGrid;
-            }
-        }
 
         private void ToggleBackgroundTheme()
         {

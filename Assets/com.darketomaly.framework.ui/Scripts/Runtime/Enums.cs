@@ -62,11 +62,11 @@ namespace Framework.UI
             };
         }
         
-        public static float GetTextSize(this UIStyle uiStyle, UIType uiType)
+        public static float GetTextSize(this UIStyle uiStyle, UIType uiType, UISemantic semantic)
         {
             return uiType switch
             {
-                UIType.Label => uiStyle.LabelFontSize,
+                UIType.Label => uiStyle.GetLabelFontSize(semantic),
                 UIType.Header1 => uiStyle.Header1FontSize,
                 UIType.Header2 => uiStyle.Header2FontSize,
                 UIType.Header3 => uiStyle.Header3FontSize,

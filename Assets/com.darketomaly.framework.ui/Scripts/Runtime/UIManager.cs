@@ -112,9 +112,9 @@ namespace Framework.UI
             image.sprite = CurrentStyle.GetSprite(uiType, semantic);
         }
 
-        public static void UpdateTextSize(TextMeshProUGUI txt, UIType uiType)
+        public static void UpdateTextSize(TextMeshProUGUI txt, UIType uiType, UISemantic semantic)
         {
-            var size = CurrentStyle.GetTextSize(uiType);
+            var size = CurrentStyle.GetTextSize(uiType, semantic);
             txt.fontSize = size;
         }
         

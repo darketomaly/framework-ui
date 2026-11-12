@@ -20,6 +20,9 @@ namespace Framework.UI
         public Overridable<Color> m_PanelColor = new();
         public Overridable<Color> m_PanelBorderColor = new();
         public Overridable<Color> m_PanelSeparatorColor = new();
+        
+        [Header("Text sizes")]
+        public Overridable<float> m_LabelFontSize = new();
     }
     
     [System.Serializable]
@@ -80,10 +83,14 @@ namespace Framework.UI
 
         // ---
         
+        // --- Sprites ---
+        
         public Sprite GetLogo(UISemantic semantic)
         {
             return GetSemanticEntry(semantic).m_Logo.ResolveValue(m_ParentStyle?.GetLogo(semantic));
         }
+        
+        // --- Colors ---
         
         public Color GetLabelColor(UISemantic semantic)
         {
@@ -154,9 +161,12 @@ namespace Framework.UI
         [SerializeField] private Overridable<float> m_ColorAnimationDuration = new();
         public float ColorAnimationDuration => m_ColorAnimationDuration.ResolveValue(m_ParentStyle?.m_ColorAnimationDuration);
         
-        [Header("Text sizes")]
-        [SerializeField] private Overridable<float> m_LabelFontSize = new();
-        public float LabelFontSize => m_LabelFontSize.ResolveValue(m_ParentStyle?.m_LabelFontSize);
+        // --- Text sizes ---
+
+        public float GetLabelFontSize(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_LabelFontSize.ResolveValue(m_ParentStyle?.GetLabelFontSize(semantic));
+        }
         
         [SerializeField] private Overridable<float> m_Header1FontSize = new();
         public float Header1FontSize => m_Header1FontSize.ResolveValue(m_ParentStyle?.m_Header1FontSize);

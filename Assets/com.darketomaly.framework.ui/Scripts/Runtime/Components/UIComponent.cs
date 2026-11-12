@@ -61,7 +61,7 @@ namespace Framework.UI
 
             if (m_Type.IsText())
             {
-                UIManager.UpdateTextSize(m_text, m_Type);
+                UIManager.UpdateTextSize(m_text, m_Type, m_Semantic);
             }
         }
         
@@ -80,7 +80,7 @@ namespace Framework.UI
             
             if (m_Type.IsText())
             {
-                UIManager.UpdateTextSize(m_text, m_Type);
+                UIManager.UpdateTextSize(m_text, m_Type, m_Semantic);
             }
         }
         
@@ -112,7 +112,7 @@ namespace Framework.UI
                 if (m_Type.IsText())
                 {
                     var txt = GetComponent<TextMeshProUGUI>();
-                    UIManager.UpdateTextSize(txt, m_Type);
+                    UIManager.UpdateTextSize(txt, m_Type, m_Semantic);
                 }
                 
                 graphic.SetAllDirty();

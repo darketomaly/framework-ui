@@ -14,6 +14,12 @@ namespace Framework.UI
         
         [Header("Regular colors")]
         public Overridable<Color> m_LabelColor = new();
+        public Overridable<Color> m_Header1Color = new();
+        public Overridable<Color> m_Header2Color = new();
+        public Overridable<Color> m_Header3Color = new();
+        public Overridable<Color> m_PanelColor = new();
+        public Overridable<Color> m_PanelBorderColor = new();
+        public Overridable<Color> m_PanelSeparatorColor = new();
     }
     
     [System.Serializable]
@@ -83,24 +89,36 @@ namespace Framework.UI
         {
             return GetSemanticEntry(semantic).m_LabelColor.ResolveValue(m_ParentStyle?.GetLabelColor(semantic));
         }
-        
-        [SerializeField] private Overridable<Color> m_Header1Color = new();
-        public Color Header1Color => m_Header1Color.ResolveValue(m_ParentStyle?.m_Header1Color);
-        
-        [SerializeField] private Overridable<Color> m_Header2Color = new();
-        public Color Header2Color => m_Header2Color.ResolveValue(m_ParentStyle?.m_Header2Color);
-        
-        [SerializeField] private Overridable<Color> m_Header3Color = new();
-        public Color Header3Color => m_Header3Color.ResolveValue(m_ParentStyle?.m_Header3Color);
-        
-        [SerializeField] private Overridable<Color> m_PanelColor = new();
-        public Color PanelColor => m_PanelColor.ResolveValue(m_ParentStyle?.m_PanelColor);
-        
-        [SerializeField] private Overridable<Color> m_PanelBorderColor = new();
-        public Color PanelBorderColor => m_PanelBorderColor.ResolveValue(m_ParentStyle?.m_PanelBorderColor);
-        
-        [SerializeField] private Overridable<Color> m_PanelSeparatorColor = new();
-        public Color PanelSeparatorColor => m_PanelSeparatorColor.ResolveValue(m_ParentStyle?.m_PanelSeparatorColor);
+
+        public Color GetHeader1Color(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_Header1Color.ResolveValue(m_ParentStyle?.GetHeader1Color(semantic));
+        }
+
+        public Color GetHeader2Color(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_Header2Color.ResolveValue(m_ParentStyle?.GetHeader2Color(semantic));
+        }
+
+        public Color GetHeader3Color(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_Header3Color.ResolveValue(m_ParentStyle?.GetHeader3Color(semantic));
+        }
+
+        public Color GetPanelColor(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_PanelColor.ResolveValue(m_ParentStyle?.GetPanelColor(semantic));
+        }
+
+        public Color GetPanelBorderColor(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_PanelBorderColor.ResolveValue(m_ParentStyle?.GetPanelBorderColor(semantic));
+        }
+
+        public Color GetPanelSeparatorColor(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_PanelSeparatorColor.ResolveValue(m_ParentStyle?.GetPanelSeparatorColor(semantic));
+        }
         
         [Header("Color blocks")]
         [SerializeField] private Overridable<ColorBlock> m_ButtonColorBlock = new();

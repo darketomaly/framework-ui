@@ -31,12 +31,12 @@ namespace Framework.UI
             return uiType switch
             {
                 UIType.Label => uiStyle.GetLabelColor(semantic),
-                UIType.Header1 => uiStyle.Header1Color,
-                UIType.Header2 => uiStyle.Header2Color,
-                UIType.Header3 => uiStyle.Header3Color,
-                UIType.Panel =>  uiStyle.PanelColor,
-                UIType.PanelBorder => uiStyle.PanelBorderColor,
-                UIType.PanelSeparator => uiStyle.PanelSeparatorColor,
+                UIType.Header1 => uiStyle.GetHeader1Color(semantic),
+                UIType.Header2 => uiStyle.GetHeader2Color(semantic),
+                UIType.Header3 => uiStyle.GetHeader3Color(semantic),
+                UIType.Panel =>  uiStyle.GetPanelColor(semantic),
+                UIType.PanelBorder => uiStyle.GetPanelBorderColor(semantic),
+                UIType.PanelSeparator => uiStyle.GetPanelSeparatorColor(semantic),
                 _ => default
             };
         }

@@ -21,6 +21,24 @@ MonoBehaviour:
     m_LabelColor:
       IsOverriden: 0
       Value: {r: 0.25067383, g: 0.25067383, b: 0.25067383, a: 1}
+    m_Header1Color:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_Header2Color:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_Header3Color:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_PanelColor:
+      IsOverriden: 0
+      Value: {r: 1, g: 1, b: 1, a: 1}
+    m_PanelBorderColor:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_PanelSeparatorColor:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
   - Semantic: {fileID: 11400000, guid: fe30d1c80e60c9547aee3cf37847e639, type: 2}
     m_Logo:
       IsOverriden: 1
@@ -28,24 +46,24 @@ MonoBehaviour:
     m_LabelColor:
       IsOverriden: 0
       Value: {r: 0.9529412, g: 0.060297072, b: 0, a: 1}
-  m_Header1Color:
-    IsOverriden: 0
-    Value: {r: 1, g: 0.5001972, b: 0, a: 1}
-  m_Header2Color:
-    IsOverriden: 0
-    Value: {r: 0.554717, g: 0.366669, b: 0.19990745, a: 1}
-  m_Header3Color:
-    IsOverriden: 0
-    Value: {r: 0.5529412, g: 0.36862746, b: 0.2, a: 1}
-  m_PanelColor:
-    IsOverriden: 0
-    Value: {r: 0.10943389, g: 0.10943389, b: 0.10943389, a: 1}
-  m_PanelBorderColor:
-    IsOverriden: 0
-    Value: {r: 0.2905661, g: 0.2905661, b: 0.2905661, a: 1}
-  m_PanelSeparatorColor:
-    IsOverriden: 0
-    Value: {r: 0.4339623, g: 0.4339623, b: 0.4339623, a: 1}
+    m_Header1Color:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_Header2Color:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_Header3Color:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_PanelColor:
+      IsOverriden: 0
+      Value: {r: 0, g: 0.7411196, b: 1, a: 1}
+    m_PanelBorderColor:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
+    m_PanelSeparatorColor:
+      IsOverriden: 0
+      Value: {r: 0, g: 0, b: 0, a: 0}
   m_ButtonColorBlock:
     IsOverriden: 0
     Value:

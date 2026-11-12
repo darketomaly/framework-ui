@@ -1,13 +1,8 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Framework.UI
 {
-    // To do
-    // Should be able to have Label 1, Label 2, Label 3 etc
-    // Without having to re-define the enums or the extensions
-    
     public enum UIType
     {
         // Colors (100–199)
@@ -58,11 +53,11 @@ namespace Framework.UI
             };
         }
 
-        public static Sprite GetSprite(this UIStyle uiStyle, UIType uiType)
+        public static Sprite GetSprite(this UIStyle uiStyle, UIType uiType, UISemantic semantic)
         {
             return uiType switch
             {
-                UIType.Logo => uiStyle.Logo,
+                UIType.Logo => uiStyle.GetLogo(semantic),
                 _ => null
             };
         }

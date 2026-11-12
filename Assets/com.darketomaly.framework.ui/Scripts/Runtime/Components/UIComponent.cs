@@ -14,6 +14,9 @@ namespace Framework.UI
         [SerializeField]
         private UIType m_Type;
 
+        [SerializeField] 
+        private UISemantic m_Semantic;
+
         #if DOTWEEN
         private Tween m_tween;
         #endif
@@ -48,7 +51,7 @@ namespace Framework.UI
             if (m_Type.IsSprite())
             {
                 var img = m_graphic as Image;
-                img.sprite = UIManager.Instance.GetSprite(m_Type);
+                img.sprite = UIManager.Instance.GetSprite(m_Type, m_Semantic);
             }
             
             if (m_Type.IsColor())
@@ -67,7 +70,7 @@ namespace Framework.UI
             if (m_Type.IsSprite())
             {
                 var img = m_graphic as Image;
-                img.sprite = UIManager.Instance.GetSprite(m_Type);
+                img.sprite = UIManager.Instance.GetSprite(m_Type, m_Semantic);
             }
             
             if (m_Type.IsColor())
@@ -95,14 +98,20 @@ namespace Framework.UI
             {
                 var graphic = GetComponent<Graphic>();
                 
-                UIManager.UpdateGraphicColor
-                (graphic, 
-                    UIManager.GetColor(m_Type), 
-                    ref m_tween, 
-                    false);
-
-                if (TryGetComponent<TextMeshProUGUI>(out var txt))
+                if (m_Type.IsSprite())
                 {
+                    var img = graphic as Image;
+                    UIManager.UpdateSprite(img, m_Type, m_Semantic);
+                }
+                
+                if (m_Type.IsColor())
+                {
+                    UIManager.UpdateGraphicColor(graphic, GetColor, ref m_tween, true);
+                }
+            
+                if (m_Type.IsText())
+                {
+                    var txt = GetComponent<TextMeshProUGUI>();
                     UIManager.UpdateTextSize(txt, m_Type);
                 }
                 

@@ -4,6 +4,7 @@ using UnityEngine.UIElements;
 
 namespace Framework.UI.Editor
 {
+    /*
     [CustomEditor(typeof(UIStyle))]
     public class UIStyleCustomEditor : UnityEditor.Editor
     {
@@ -40,4 +41,6 @@ namespace Framework.UI.Editor
             return root;
         }
     }
+    
+    */
 }

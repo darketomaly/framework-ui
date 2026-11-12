@@ -72,9 +72,9 @@ namespace Framework.UI
             return CurrentStyle.GetColorBlock(uiType);
         }
 
-        public Sprite GetSprite(UIType uiType)
+        public Sprite GetSprite(UIType uiType, UISemantic semantic)
         {
-            return CurrentStyle.GetSprite(uiType);
+            return CurrentStyle.GetSprite(uiType, semantic);
         }
 
         public static void UpdateScale(RectTransform rt, ref Tween tween, ButtonState buttonState)
@@ -105,6 +105,11 @@ namespace Framework.UI
             #else
             rt.localScale = targetScaleMagnitude * Vector3.one;
             #endif
+        }
+
+        public static void UpdateSprite(Image image, UIType uiType, UISemantic semantic)
+        {
+            image.sprite = CurrentStyle.GetSprite(uiType, semantic);
         }
 
         public static void UpdateTextSize(TextMeshProUGUI txt, UIType uiType)

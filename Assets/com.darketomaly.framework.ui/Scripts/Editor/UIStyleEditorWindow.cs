@@ -11,6 +11,7 @@ using Toggle = UnityEngine.UIElements.Toggle;
 
 namespace Framework.UI.Editor
 {
+    /*
     public class UIStyleEditorWindow : EditorWindow
     {
         private UIStyle m_TargetStyle;
@@ -2032,4 +2033,5 @@ namespace Framework.UI.Editor
 
         #endregion
     }
+*/
 }

@@ -1,14 +1,23 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Framework.UI
 {
     [System.Serializable]
+    public class SemanticEntry<T>
+    {
+        public UISemantic Semantic;
+        public Overridable<T> OverridableValue;
+    }
+    
+    [System.Serializable]
     public class Overridable<T>
     {
         public bool IsOverriden;
         
-        public T Value;
+        [SerializeField]
+        private T Value;
         
         // Implicit conversion from Overridable<T> to T
         public static implicit operator T(Overridable<T> overridable)
@@ -39,10 +48,32 @@ namespace Framework.UI
     {
         [SerializeField] 
         private UIStyle m_ParentStyle;
+
+        // ---
         
         [Header("Sprites")] 
-        [SerializeField] private Overridable<Sprite> m_Logo = new();
-        public Sprite Logo => m_Logo.ResolveValue(m_ParentStyle?.m_Logo);
+        public List<SemanticEntry<Sprite>> m_Logos = new();
+        public Sprite GetLogo(UISemantic semantic)
+        {
+            foreach (var semanticEntry in m_Logos)
+            {
+                bool matches = semanticEntry.Semantic == semantic 
+                               || (semanticEntry.Semantic != null && semantic != null && semanticEntry.Semantic.name == semantic.name);
+
+                this.Log($"[GetLogo] Entry '{semanticEntry.Semantic?.name}' vs Query '{semantic?.name}' -> Match: {matches}, Overridden: {semanticEntry.OverridableValue?.IsOverriden}, StoredValue: {semanticEntry.OverridableValue?.ResolveValue(default(Overridable<Sprite>))}");
+
+                if (matches)
+                {
+                    var parentValue = m_ParentStyle != null ? m_ParentStyle.GetLogo(semantic) : default;
+                    var result = semanticEntry.OverridableValue.ResolveValue(parentValue);
+                    this.Log($"[GetLogo] Matched! ParentValue: '{parentValue?.name}', Returning Result: '{result?.name}'");
+                    return result;
+                }
+            }
+
+            this.Log($"[GetLogo] No match found in {name}, checking parent...");
+            return m_ParentStyle != null ? m_ParentStyle.GetLogo(semantic) : default;
+        }
         
         [Header("Regular colors")]
         [SerializeField] private Overridable<Color> m_LabelColor = new();

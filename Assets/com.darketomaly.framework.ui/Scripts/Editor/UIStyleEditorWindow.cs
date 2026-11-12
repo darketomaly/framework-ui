@@ -57,8 +57,7 @@ namespace Framework.UI.Editor
         // State Buttons
         private Dictionary<ButtonState, Button> m_StateButtons = new Dictionary<ButtonState, Button>();
 
-        [MenuItem("Window/Framework/UI Style Editor", false, 100)]
-        [MenuItem("Framework/UI Style Editor", false, 100)]
+        [MenuItem("Tools/Framework/UI Style Editor", false, 100)]
         public static void OpenWindow()
         {
             var window = GetWindow<UIStyleEditorWindow>();

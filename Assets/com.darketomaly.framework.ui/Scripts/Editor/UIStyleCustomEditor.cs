@@ -15,6 +15,12 @@ namespace Framework.UI.Editor
             root.style.paddingLeft = 4;
             root.style.paddingRight = 4;
 
+            var helpBox = new HelpBox(
+                "UI Styles define the visual theme (colors, sprites, text sizes, and animations) for UI components, with support for semantic variants and parent style inheritance.\n\nClick below to open the dedicated editor window with live preview.",
+                HelpBoxMessageType.Info);
+            helpBox.style.marginBottom = 8;
+            root.Add(helpBox);
+
             var openButton = new Button(() =>
             {
                 UIStyleEditorWindow.OpenWindowWithTarget(target as UIStyle);

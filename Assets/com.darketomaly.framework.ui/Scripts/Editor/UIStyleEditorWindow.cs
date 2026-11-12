@@ -672,7 +672,7 @@ namespace Framework.UI.Editor
 
         private void CreateNewStyleAsset()
         {
-            string folder = "Assets";
+            string folder = null;
             if (m_TargetStyle != null)
             {
                 string targetPath = AssetDatabase.GetAssetPath(m_TargetStyle);
@@ -692,13 +692,23 @@ namespace Framework.UI.Editor
                         folder = System.IO.Path.GetDirectoryName(existingPath)?.Replace('\\', '/');
                     }
                 }
-                else if (AssetDatabase.IsValidFolder("Assets/Resources/Styles"))
+            }
+
+            if (string.IsNullOrEmpty(folder))
+            {
+                if (AssetDatabase.IsValidFolder("Assets/Resources/Styles"))
                 {
                     folder = "Assets/Resources/Styles";
                 }
+                else
+                {
+                    if (!AssetDatabase.IsValidFolder("Assets/Resources"))
+                    {
+                        AssetDatabase.CreateFolder("Assets", "Resources");
+                    }
+                    folder = "Assets/Resources";
+                }
             }
-
-            if (string.IsNullOrEmpty(folder)) folder = "Assets";
 
             string path = AssetDatabase.GenerateUniqueAssetPath($"{folder}/New UI Style.asset");
 

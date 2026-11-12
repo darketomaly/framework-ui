@@ -72,7 +72,7 @@ namespace Framework.UI
             return CurrentStyle.GetColorBlock(uiType, semantic);
         }
 
-        public Sprite GetSprite(UIType uiType, UISemantic semantic)
+        public static Sprite GetSprite(UIType uiType, UISemantic semantic)
         {
             return CurrentStyle.GetSprite(uiType, semantic);
         }

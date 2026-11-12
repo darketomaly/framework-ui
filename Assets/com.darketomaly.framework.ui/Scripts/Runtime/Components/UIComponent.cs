@@ -39,11 +39,11 @@ namespace Framework.UI
         {
             m_graphic = GetComponent<Graphic>();
             m_text = GetComponent<TextMeshProUGUI>();
-
+            
             if (m_Type.IsSprite())
             {
                 var img = m_graphic as Image;
-                img.sprite = UIManager.Instance.GetSprite(m_Type, m_Semantic);
+                img.sprite = UIManager.GetSprite(m_Type, m_Semantic);
             }
             
             if (m_Type.IsColor())
@@ -62,7 +62,7 @@ namespace Framework.UI
             if (m_Type.IsSprite())
             {
                 var img = m_graphic as Image;
-                img.sprite = UIManager.Instance.GetSprite(m_Type, m_Semantic);
+                img.sprite = UIManager.GetSprite(m_Type, m_Semantic);
             }
             
             if (m_Type.IsColor())
@@ -86,27 +86,11 @@ namespace Framework.UI
         [DarkButton("Refresh")]
         private void Refresh()
         {
-            if (!Application.isPlaying)
+            if (!Application.isPlaying && !UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
             {
                 var graphic = GetComponent<Graphic>();
                 
-                if (m_Type.IsSprite())
-                {
-                    var img = graphic as Image;
-                    UIManager.UpdateSprite(img, m_Type, m_Semantic);
-                }
-                
-                if (m_Type.IsColor())
-                {
-                    UIManager.UpdateGraphicColor(graphic, GetColor, true, m_Semantic);
-                }
-            
-                if (m_Type.IsText())
-                {
-                    var txt = GetComponent<TextMeshProUGUI>();
-                    UIManager.UpdateTextSize(txt, m_Type, m_Semantic);
-                }
-                
+                Initialize();
                 graphic.SetAllDirty();
             }
         }

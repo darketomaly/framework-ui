@@ -119,13 +119,10 @@ namespace Framework.UI
 
         private void OnValidate()
         {
-            Refresh();
-        }
-
-        [DarkButton("Refresh")]
-        public void Refresh()
-        {
-            ApplyStateColor(block => block.normalColor, true);
+            if (!Application.isPlaying && !UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                ApplyStateColor(block => block.normalColor, true);
+            }
         }
         
         #endif

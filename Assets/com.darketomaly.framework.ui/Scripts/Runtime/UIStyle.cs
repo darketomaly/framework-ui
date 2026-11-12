@@ -5,10 +5,12 @@ using UnityEngine.UI;
 namespace Framework.UI
 {
     [System.Serializable]
-    public class SemanticEntry<T>
+    public class StyleSemanticEntry
     {
         public UISemantic Semantic;
-        public Overridable<T> OverridableValue;
+        
+        [Header("Sprites")] 
+        public Overridable<Sprite> m_Logo = new();
     }
     
     [System.Serializable]
@@ -31,7 +33,7 @@ namespace Framework.UI
             Value = value, 
             IsOverriden = true 
         };
-
+        
         public T ResolveValue(Overridable<T> parent)
         {
             if (IsOverriden || parent == null)
@@ -48,31 +50,23 @@ namespace Framework.UI
     {
         [SerializeField] 
         private UIStyle m_ParentStyle;
+        
+        public List<StyleSemanticEntry> m_StyleSemantics = new();
 
         // ---
         
-        [Header("Sprites")] 
-        public List<SemanticEntry<Sprite>> m_Logos = new();
         public Sprite GetLogo(UISemantic semantic)
         {
-            foreach (var semanticEntry in m_Logos)
+            foreach (var semanticEntry in m_StyleSemantics)
             {
-                bool matches = semanticEntry.Semantic == semantic 
-                               || (semanticEntry.Semantic != null && semantic != null && semanticEntry.Semantic.name == semantic.name);
-
-                this.Log($"[GetLogo] Entry '{semanticEntry.Semantic?.name}' vs Query '{semantic?.name}' -> Match: {matches}, Overridden: {semanticEntry.OverridableValue?.IsOverriden}, StoredValue: {semanticEntry.OverridableValue?.ResolveValue(default(Overridable<Sprite>))}");
-
-                if (matches)
+                if (semanticEntry.Semantic == semantic)
                 {
-                    var parentValue = m_ParentStyle != null ? m_ParentStyle.GetLogo(semantic) : default;
-                    var result = semanticEntry.OverridableValue.ResolveValue(parentValue);
-                    this.Log($"[GetLogo] Matched! ParentValue: '{parentValue?.name}', Returning Result: '{result?.name}'");
-                    return result;
+                    Debug.Log("Found a match, I should resolve the style");
+                    return semanticEntry.m_Logo.ResolveValue(m_ParentStyle?.GetLogo(semantic));
                 }
             }
 
-            this.Log($"[GetLogo] No match found in {name}, checking parent...");
-            return m_ParentStyle != null ? m_ParentStyle.GetLogo(semantic) : default;
+            return default;
         }
         
         [Header("Regular colors")]

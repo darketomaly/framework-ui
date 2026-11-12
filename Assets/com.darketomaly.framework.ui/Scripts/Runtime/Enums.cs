@@ -67,9 +67,9 @@ namespace Framework.UI
             return uiType switch
             {
                 UIType.Label => uiStyle.GetLabelFontSize(semantic),
-                UIType.Header1 => uiStyle.Header1FontSize,
-                UIType.Header2 => uiStyle.Header2FontSize,
-                UIType.Header3 => uiStyle.Header3FontSize,
+                UIType.Header1 => uiStyle.GetHeader1FontSize(semantic),
+                UIType.Header2 => uiStyle.GetHeader2FontSize(semantic),
+                UIType.Header3 => uiStyle.GetHeader3FontSize(semantic),
                 _ => 0
             };
         }

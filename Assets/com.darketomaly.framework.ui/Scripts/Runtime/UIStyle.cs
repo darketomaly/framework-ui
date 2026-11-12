@@ -23,6 +23,9 @@ namespace Framework.UI
         
         [Header("Text sizes")]
         public Overridable<float> m_LabelFontSize = new();
+        public Overridable<float> m_Header1FontSize = new();
+        public Overridable<float> m_Header2FontSize = new();
+        public Overridable<float> m_Header3FontSize = new();
     }
     
     [System.Serializable]
@@ -167,14 +170,20 @@ namespace Framework.UI
         {
             return GetSemanticEntry(semantic).m_LabelFontSize.ResolveValue(m_ParentStyle?.GetLabelFontSize(semantic));
         }
+
+        public float GetHeader1FontSize(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_Header1FontSize.ResolveValue(m_ParentStyle?.GetHeader1FontSize(semantic));
+        }
+
+        public float GetHeader2FontSize(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_Header2FontSize.ResolveValue(m_ParentStyle?.GetHeader2FontSize(semantic));
+        }
         
-        [SerializeField] private Overridable<float> m_Header1FontSize = new();
-        public float Header1FontSize => m_Header1FontSize.ResolveValue(m_ParentStyle?.m_Header1FontSize);
-        
-        [SerializeField] private Overridable<float> m_Header2FontSize = new();
-        public float Header2FontSize => m_Header2FontSize.ResolveValue(m_ParentStyle?.m_Header2FontSize);
-        
-        [SerializeField] private Overridable<float> m_Header3FontSize = new();
-        public float Header3FontSize => m_Header3FontSize.ResolveValue(m_ParentStyle?.m_Header3FontSize);
+        public float GetHeader3FontSize(UISemantic semantic)
+        {
+            return GetSemanticEntry(semantic).m_Header3FontSize.ResolveValue(m_ParentStyle?.GetHeader3FontSize(semantic));
+        }
     }
 }

@@ -101,27 +101,32 @@ namespace Framework.UI
 
             return semanticEntry;
         }
+        
+        private T Resolve<T>(UISemantic semantic, System.Func<StyleSemanticEntry, Overridable<T>> selector)
+        {
+            var entry = GetSemanticEntry(semantic);
+            var field = selector(entry);
+
+            if (entry != m_StyleSemantics[0] && !field.IsOverriden)
+            {
+                return Resolve(m_StyleSemantics[0].Semantic, selector);
+            }
+
+            if (field.IsOverriden || m_ParentStyle == null)
+            {
+                return field;
+            }
+
+            return m_ParentStyle.Resolve(semantic, selector);
+        }
 
         // --- Sprites ---
-        
-        public Sprite GetLogo(UISemantic semantic)
-        {
-            return GetSemanticEntry(semantic).m_Logo.ResolveValue(m_ParentStyle?.GetLogo(semantic));
-        }
+
+        public Sprite GetLogo(UISemantic semantic) => Resolve(semantic, e => e.m_Logo);
         
         // --- Colors ---
         
-        public Color GetLabelColor(UISemantic semantic)
-        {
-            var semanticEntry = GetSemanticEntry(semantic);
-            
-            if (semanticEntry != m_StyleSemantics[0] && !semanticEntry.m_LabelColor.IsOverriden)
-            {
-                return GetLabelColor(m_StyleSemantics[0].Semantic);
-            }
-            
-            return semanticEntry.m_LabelColor.ResolveValue(m_ParentStyle?.GetLabelColor(semantic));
-        }
+        public Color GetLabelColor(UISemantic semantic) => Resolve(semantic, e => e.m_LabelColor);
 
         public Color GetHeader1Color(UISemantic semantic)
         {

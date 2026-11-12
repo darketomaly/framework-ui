@@ -97,8 +97,6 @@ namespace Framework.UI
                     break;
             }
 
-            Instance.Log($"{buttonState}, Changing scale to {targetScaleMagnitude}");
-            
             #if DOTWEEN
             rt.DOKill();
             rt.DOScale(targetScaleMagnitude * Vector3.one, duration);

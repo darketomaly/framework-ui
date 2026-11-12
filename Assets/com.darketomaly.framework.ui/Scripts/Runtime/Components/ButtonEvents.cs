@@ -23,12 +23,10 @@ public class ButtonEvents : MonoBehaviour,
 
     [Header("Debug")]
     [Tooltip("Check this box to print state changes to the Console.")]
-    public bool showDebugLogs = true;
+    public bool showDebugLogs;
 
-    // Current state property (read-only from outside)
     public ButtonState CurrentState { get; private set; } = ButtonState.Normal;
 
-    // C# Actions for code subscription
     public event Action OnNormal;
     public event Action OnHighlighted;
     public event Action OnPressed;

@@ -1,5 +1,3 @@
-using System;
-using DG.Tweening;
 using Framework.Events;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,9 +9,6 @@ namespace Framework.UI
     {
         public Graphic Graphic;
         public UIType Type;
-
-        [NonSerialized] 
-        public Tween ColorTween;
     }
     
     [RequireComponent(typeof(ButtonEvents))]
@@ -25,7 +20,6 @@ namespace Framework.UI
 
         private ButtonEvents m_buttonEvents;
         private Button m_button;
-        private Tween m_scaleTween;
         
         private void Awake()
         {
@@ -102,7 +96,7 @@ namespace Framework.UI
             var state = m_buttonEvents.CurrentState;
             var rt = m_button.transform as RectTransform;
                     
-            UIManager.UpdateScale(rt, ref m_scaleTween, state, m_Semantic);
+            UIManager.UpdateScale(rt, state, m_Semantic);
         }
         
         private void ApplyStateColor(System.Func<ColorBlock, Color> colorSelector, bool instant)
@@ -116,7 +110,7 @@ namespace Framework.UI
                 {
                     var colorBlock = UIManager.Instance.GetColorBlock(type, m_Semantic);
                     var color = colorSelector(colorBlock);
-                    UIManager.UpdateGraphicColor(graphic, color, ref targetGraphic.ColorTween, instant, m_Semantic);
+                    UIManager.UpdateGraphicColor(graphic, color, instant, m_Semantic);
                 }
             }
         }

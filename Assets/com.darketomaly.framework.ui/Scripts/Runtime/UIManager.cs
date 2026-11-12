@@ -77,7 +77,7 @@ namespace Framework.UI
             return CurrentStyle.GetSprite(uiType, semantic);
         }
 
-        public static void UpdateScale(RectTransform rt, ref Tween tween, ButtonState buttonState, UISemantic semantic)
+        public static void UpdateScale(RectTransform rt, ButtonState buttonState, UISemantic semantic)
         {
             var targetScaleMagnitude = 1f;
             var duration = CurrentStyle.GetButtonBackToNormalAnimationDuration(semantic);
@@ -100,8 +100,11 @@ namespace Framework.UI
             Instance.Log($"{buttonState}, Changing scale to {targetScaleMagnitude}");
             
             #if DOTWEEN
-            tween?.Kill();
-            tween = rt.DOScale(targetScaleMagnitude * Vector3.one, duration);
+            rt.DOKill();
+            rt.DOScale(targetScaleMagnitude * Vector3.one, duration);
+            #elif PRIMETWEEN
+            PrimeTween.Tween.StopAll(rt);
+            PrimeTween.Tween.Scale(rt, targetScaleMagnitude * Vector3.one, duration);
             #else
             rt.localScale = targetScaleMagnitude * Vector3.one;
             #endif
@@ -118,23 +121,27 @@ namespace Framework.UI
             txt.fontSize = size;
         }
         
-        public static void UpdateGraphicColor(Graphic graphic, Color targetColor, ref Tween tween, bool instant, UISemantic semantic)
+        public static void UpdateGraphicColor(Graphic graphic, Color targetColor, bool instant, UISemantic semantic)
         {
+            if (graphic == null) return;
+
+            #if DOTWEEN
+            graphic.DOKill();
+            #elif PRIMETWEEN
+            PrimeTween.Tween.StopAll(graphic);
+            #endif
+
             if (instant || !Application.isPlaying)
             {
                 graphic.color = targetColor;
             }
             else
             {
+                var duration = CurrentStyle.GetColorAnimationDuration(semantic);
                 #if DOTWEEN
-                tween?.Kill();
-                
-                tween = DOTween.To(
-                    () => graphic.color,    
-                    x => graphic.color = x,   
-                    targetColor,                 
-                    CurrentStyle.GetColorAnimationDuration(semantic)                       
-                );
+                DOTween.To(() => graphic.color, x => graphic.color = x, targetColor, duration).SetTarget(graphic);
+                #elif PRIMETWEEN
+                PrimeTween.Tween.Color(graphic, targetColor, duration);
                 #else
                 graphic.color = targetColor;
                 #endif

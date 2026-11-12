@@ -3,10 +3,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-#if DOTWEEN
-using DG.Tweening;
-#endif
-
 namespace Framework.UI
 {
     public class UIComponent : MonoBehaviour
@@ -16,10 +12,6 @@ namespace Framework.UI
 
         [SerializeField] 
         private UISemantic m_Semantic;
-
-        #if DOTWEEN
-        private Tween m_tween;
-        #endif
 
         private Graphic m_graphic;
         private TextMeshProUGUI m_text;
@@ -56,7 +48,7 @@ namespace Framework.UI
             
             if (m_Type.IsColor())
             {
-                UIManager.UpdateGraphicColor(m_graphic, GetColor, ref m_tween, true, m_Semantic);
+                UIManager.UpdateGraphicColor(m_graphic, GetColor, true, m_Semantic);
             }
 
             if (m_Type.IsText())
@@ -75,7 +67,7 @@ namespace Framework.UI
             
             if (m_Type.IsColor())
             {
-                UIManager.UpdateGraphicColor(m_graphic, GetColor, ref m_tween, false, m_Semantic);
+                UIManager.UpdateGraphicColor(m_graphic, GetColor , false, m_Semantic);
             }
             
             if (m_Type.IsText())
@@ -106,7 +98,7 @@ namespace Framework.UI
                 
                 if (m_Type.IsColor())
                 {
-                    UIManager.UpdateGraphicColor(graphic, GetColor, ref m_tween, true, m_Semantic);
+                    UIManager.UpdateGraphicColor(graphic, GetColor, true, m_Semantic);
                 }
             
                 if (m_Type.IsText())

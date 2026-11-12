@@ -41,11 +41,11 @@ namespace Framework.UI
             };
         }
 
-        public static ColorBlock GetColorBlock(this UIStyle uiStyle, UIType uiType)
+        public static ColorBlock GetColorBlock(this UIStyle uiStyle, UIType uiType, UISemantic semantic)
         {
             return uiType switch
             {
-                UIType.ButtonBackground => uiStyle.ButtonColorBlock,
+                UIType.ButtonBackground => uiStyle.GetButtonColorBlock(semantic),
                 UIType.ButtonBorder => uiStyle.ButtonBorderColorBlock,
                 UIType.ButtonText => uiStyle.ButtonTextColorBlock,
                 UIType.ButtonIcon => uiStyle.ButtonIconColorBlock,

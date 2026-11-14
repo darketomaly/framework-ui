@@ -3062,7 +3062,7 @@ namespace Framework.UI.Editor
             if (s_CachedBrandIcon != null) return s_CachedBrandIcon;
 
             // 1. Try finding asset by search in AssetDatabase
-            var guids = AssetDatabase.FindAssets("darketomaly_icon t:Texture2D");
+            var guids = AssetDatabase.FindAssets("icon_framework.ui t:Texture2D");
             if (guids != null && guids.Length > 0)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guids[0]);
@@ -3073,8 +3073,8 @@ namespace Framework.UI.Editor
             // 2. Try direct package / project paths
             string[] directPaths = new[]
             {
-                "Assets/com.darketomaly.framework.ui/Scripts/Editor/Icons/darketomaly_icon.png",
-                "Packages/com.darketomaly.framework.ui/Scripts/Editor/Icons/darketomaly_icon.png"
+                "Assets/com.darketomaly.framework.ui/Scripts/Editor/icon_framework.ui.png",
+                "Packages/com.darketomaly.framework.ui/Scripts/Editor/icon_framework.ui.png"
             };
             foreach (var p in directPaths)
             {

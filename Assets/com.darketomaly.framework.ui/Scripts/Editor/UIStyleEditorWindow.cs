@@ -1982,6 +1982,8 @@ namespace Framework.UI.Editor
         {
             var toggle = new Toggle(isDisabledToggle ? "Disabled Toggle" : "Interactive Toggle");
             toggle.value = !isDisabledToggle;
+            toggle.focusable = false;
+            toggle.delegatesFocus = false;
             toggle.style.alignItems = Align.Center;
             toggle.style.justifyContent = Justify.FlexStart;
             toggle.style.paddingLeft = 10;
@@ -2001,9 +2003,16 @@ namespace Framework.UI.Editor
             var input = toggle.Q(className: "unity-toggle__input");
             if (input != null)
             {
+                input.focusable = false;
                 input.style.width = 16;
                 input.style.height = 16;
                 input.style.marginRight = 8;
+                input.style.paddingLeft = 0;
+                input.style.paddingRight = 0;
+                input.style.paddingTop = 0;
+                input.style.paddingBottom = 0;
+                input.style.justifyContent = Justify.Center;
+                input.style.alignItems = Align.Center;
                 input.style.borderTopWidth = 2;
                 input.style.borderRightWidth = 2;
                 input.style.borderBottomWidth = 2;
@@ -2025,6 +2034,13 @@ namespace Framework.UI.Editor
             var checkmark = toggle.Q(className: "unity-toggle__checkmark");
             if (checkmark != null)
             {
+                checkmark.style.width = 10;
+                checkmark.style.height = 10;
+                checkmark.style.marginLeft = 0;
+                checkmark.style.marginRight = 0;
+                checkmark.style.marginTop = 0;
+                checkmark.style.marginBottom = 0;
+                checkmark.style.alignSelf = Align.Center;
                 checkmark.style.transitionProperty = new List<StylePropertyName>
                 {
                     new StylePropertyName("color")
@@ -2067,7 +2083,7 @@ namespace Framework.UI.Editor
                 {
                     toggle.CapturePointer(evt.pointerId);
                     SetToggleState(SelectableState.Pressed);
-                });
+                }, TrickleDown.TrickleDown);
 
                 toggle.RegisterCallback<PointerUpEvent>(evt =>
                 {
@@ -2084,7 +2100,7 @@ namespace Framework.UI.Editor
                     {
                         SetToggleState(SelectableState.Normal);
                     }
-                });
+                }, TrickleDown.TrickleDown);
             }
 
             return toggle;

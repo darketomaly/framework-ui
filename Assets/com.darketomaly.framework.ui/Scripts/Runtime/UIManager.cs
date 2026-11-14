@@ -2,6 +2,7 @@
 using DG.Tweening;
 #endif
 
+using System;
 using Framework.Events;
 using TMPro;
 using UnityEngine;
@@ -24,7 +25,14 @@ namespace Framework.UI
 
                 if (!Application.isPlaying)
                 {
-                    currentStyle = Resources.LoadAll<UIStyle>("")[0];
+                    var foundStyles = Resources.LoadAll<UIStyle>("");
+
+                    if (foundStyles == null || foundStyles.IsFixedSize)
+                    {
+                        throw  new Exception("<color=red>[UIManager]</color> No found styles. Make sure your styles are on a resources folder.");;
+                    }
+                    
+                    currentStyle = foundStyles[0];
                 }
             
                 #endif

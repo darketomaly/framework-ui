@@ -54,18 +54,15 @@ namespace Framework.UI
                 [UIType.PanelBorder]   = e => e.m_PanelBorderColor,
                 [UIType.PanelSeparator]   = e => e.m_PanelSeparatorColor,
             };
-
-        public static ColorBlock GetColorBlock(this UIStyle uiStyle, UIType uiType, UISemantic semantic)
-        {
-            return uiType switch
+        
+        public static readonly IReadOnlyDictionary<UIType, Func<StyleSemanticEntry, Overridable<ColorBlock>>> s_ColorBlockSelectors
+            = new Dictionary<UIType, Func<StyleSemanticEntry, Overridable<ColorBlock>>>
             {
-                UIType.ButtonBackground => uiStyle.GetButtonColorBlock(semantic),
-                UIType.ButtonBorder => uiStyle.GetButtonBorderColorBlock(semantic),
-                UIType.ButtonText => uiStyle.GetButtonTextColorBlock(semantic),
-                UIType.ButtonIcon => uiStyle.GetButtonIconColorBlock(semantic),
-                _ => default
+                [UIType.ButtonBackground]   = e => e.m_ButtonColorBlock,
+                [UIType.ButtonBorder]   = e => e.m_ButtonBorderColorBlock,
+                [UIType.ButtonText]   = e => e.m_ButtonTextColorBlock,
+                [UIType.ButtonIcon]   = e => e.m_ButtonIconColorBlock,
             };
-        }
         
         public static bool IsColor(this UIType type) => type.HasAttribute<ColorAttribute>();
 

@@ -2112,10 +2112,10 @@ namespace Framework.UI.Editor
             {
                 switch (propertyPath)
                 {
-                    case "m_ButtonColorBlock": return target.GetButtonColorBlock(semantic);
-                    case "m_ButtonBorderColorBlock": return target.GetButtonBorderColorBlock(semantic);
-                    case "m_ButtonTextColorBlock": return target.GetButtonTextColorBlock(semantic);
-                    case "m_ButtonIconColorBlock": return target.GetButtonIconColorBlock(semantic);
+                    case "m_ButtonColorBlock": return target.GetColorBlock(UIType.ButtonBackground, semantic);
+                    case "m_ButtonBorderColorBlock": return target.GetColorBlock(UIType.ButtonBorder, semantic);
+                    case "m_ButtonTextColorBlock": return target.GetColorBlock(UIType.ButtonText, semantic);
+                    case "m_ButtonIconColorBlock": return target.GetColorBlock(UIType.ButtonIcon, semantic);
                 }
             }
             catch
@@ -2488,10 +2488,10 @@ namespace Framework.UI.Editor
             var sem = GetSelectedSemantic();
 
             // Compute colors from ColorBlocks for current state
-            Color bgColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonColorBlock(GetEffectiveSemanticForProperty("m_ButtonColorBlock")), "m_ButtonColorBlock"), m_CurrentButtonState);
-            Color borderColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonBorderColorBlock(GetEffectiveSemanticForProperty("m_ButtonBorderColorBlock")), "m_ButtonBorderColorBlock"), m_CurrentButtonState);
-            Color textColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonTextColorBlock(GetEffectiveSemanticForProperty("m_ButtonTextColorBlock")), "m_ButtonTextColorBlock"), m_CurrentButtonState);
-            Color iconColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonIconColorBlock(GetEffectiveSemanticForProperty("m_ButtonIconColorBlock")), "m_ButtonIconColorBlock"), m_CurrentButtonState);
+            Color bgColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ButtonBackground, GetEffectiveSemanticForProperty("m_ButtonColorBlock")), "m_ButtonColorBlock"), m_CurrentButtonState);
+            Color borderColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ButtonBorder, GetEffectiveSemanticForProperty("m_ButtonBorderColorBlock")), "m_ButtonBorderColorBlock"), m_CurrentButtonState);
+            Color textColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ButtonText, GetEffectiveSemanticForProperty("m_ButtonTextColorBlock")), "m_ButtonTextColorBlock"), m_CurrentButtonState);
+            Color iconColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ButtonIcon, GetEffectiveSemanticForProperty("m_ButtonIconColorBlock")), "m_ButtonIconColorBlock"), m_CurrentButtonState);
 
             // Compute Scale and Animation Duration
             float targetScale = 1.0f;
@@ -2551,10 +2551,10 @@ namespace Framework.UI.Editor
         {
             if (m_TargetStyle == null || m_DisabledPreviewButton == null) return;
 
-            Color bgColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonColorBlock(GetEffectiveSemanticForProperty("m_ButtonColorBlock")), "m_ButtonColorBlock"), SelectableState.Disabled);
-            Color borderColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonBorderColorBlock(GetEffectiveSemanticForProperty("m_ButtonBorderColorBlock")), "m_ButtonBorderColorBlock"), SelectableState.Disabled);
-            Color textColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonTextColorBlock(GetEffectiveSemanticForProperty("m_ButtonTextColorBlock")), "m_ButtonTextColorBlock"), SelectableState.Disabled);
-            Color iconColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonIconColorBlock(GetEffectiveSemanticForProperty("m_ButtonIconColorBlock")), "m_ButtonIconColorBlock"), SelectableState.Disabled);
+            Color bgColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ButtonBackground, GetEffectiveSemanticForProperty("m_ButtonColorBlock")), "m_ButtonColorBlock"), SelectableState.Disabled);
+            Color borderColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ButtonBorder, GetEffectiveSemanticForProperty("m_ButtonBorderColorBlock")), "m_ButtonBorderColorBlock"), SelectableState.Disabled);
+            Color textColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ButtonText, GetEffectiveSemanticForProperty("m_ButtonTextColorBlock")), "m_ButtonTextColorBlock"), SelectableState.Disabled);
+            Color iconColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ButtonIcon, GetEffectiveSemanticForProperty("m_ButtonIconColorBlock")), "m_ButtonIconColorBlock"), SelectableState.Disabled);
 
             m_DisabledPreviewButton.style.backgroundColor = bgColor;
             m_DisabledPreviewButton.style.borderTopColor = borderColor;

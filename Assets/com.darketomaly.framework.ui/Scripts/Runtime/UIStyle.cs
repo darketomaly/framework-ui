@@ -123,14 +123,17 @@ namespace Framework.UI
         }
         
         // --- Color blocks ---
+        
+        public ColorBlock GetColorBlock(UIType uiType, UISemantic semantic)
+        {
+            if (!UITypeExtensions.s_ColorBlockSelectors.TryGetValue(uiType, out var selector))
+            {
+                this.LogError($"No color block mapping for {uiType}");
+                return default;
+            }
 
-        public ColorBlock GetButtonColorBlock(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonColorBlock);
-
-        public ColorBlock GetButtonBorderColorBlock(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonBorderColorBlock);
-
-        public ColorBlock GetButtonTextColorBlock(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonTextColorBlock);
-
-        public ColorBlock GetButtonIconColorBlock(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonIconColorBlock);
+            return Resolve(semantic, selector);
+        }
 
         // --- Animations ---
 
@@ -194,6 +197,5 @@ namespace Framework.UI
         
                     return m_ParentStyle.Resolve(semantic, selector);
                 }
-        
     }
 }

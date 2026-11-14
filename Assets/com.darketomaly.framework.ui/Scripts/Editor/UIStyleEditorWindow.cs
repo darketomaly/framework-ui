@@ -2079,10 +2079,10 @@ namespace Framework.UI.Editor
                     case "m_ButtonClickAnimationDuration": return target.GetButtonClickAnimationDuration(semantic);
                     case "m_ButtonBackToNormalDuration": return target.GetButtonBackToNormalAnimationDuration(semantic);
                     case "m_ColorAnimationDuration": return target.GetColorAnimationDuration(semantic);
-                    case "m_LabelFontSize": return target.GetLabelFontSize(semantic);
-                    case "m_Header1FontSize": return target.GetHeader1FontSize(semantic);
-                    case "m_Header2FontSize": return target.GetHeader2FontSize(semantic);
-                    case "m_Header3FontSize": return target.GetHeader3FontSize(semantic);
+                    case "m_LabelFontSize": return target.GetTextSize(UIType.Label, semantic);
+                    case "m_Header1FontSize": return target.GetTextSize(UIType.Header1, semantic);
+                    case "m_Header2FontSize": return target.GetTextSize(UIType.Header2, semantic);
+                    case "m_Header3FontSize": return target.GetTextSize(UIType.Header3, semantic);
                 }
             }
             catch
@@ -2411,16 +2411,16 @@ namespace Framework.UI.Editor
             m_PreviewHeader2.style.color = GetResolvedColor(() => m_TargetStyle.GetHeader2Color(GetEffectiveSemanticForProperty("m_Header2Color")), "m_Header2Color");
             m_PreviewHeader3.style.color = GetResolvedColor(() => m_TargetStyle.GetHeader3Color(GetEffectiveSemanticForProperty("m_Header3Color")), "m_Header3Color");
 
-            float labelFontSize = GetResolvedFloat(() => m_TargetStyle.GetLabelFontSize(GetEffectiveSemanticForProperty("m_LabelFontSize")), "m_LabelFontSize", 12f);
+            float labelFontSize = GetResolvedFloat(() => m_TargetStyle.GetTextSize(UIType.Label, GetEffectiveSemanticForProperty("m_LabelFontSize")), "m_LabelFontSize", 12f);
             m_PreviewLabel.style.fontSize = labelFontSize > 0 ? labelFontSize : 12f;
 
-            float h1FontSize = GetResolvedFloat(() => m_TargetStyle.GetHeader1FontSize(GetEffectiveSemanticForProperty("m_Header1FontSize")), "m_Header1FontSize", 18f);
+            float h1FontSize = GetResolvedFloat(() => m_TargetStyle.GetTextSize(UIType.Header1, GetEffectiveSemanticForProperty("m_Header1FontSize")), "m_Header1FontSize", 18f);
             m_PreviewHeader1.style.fontSize = h1FontSize > 0 ? h1FontSize : 18f;
 
-            float h2FontSize = GetResolvedFloat(() => m_TargetStyle.GetHeader2FontSize(GetEffectiveSemanticForProperty("m_Header2FontSize")), "m_Header2FontSize", 14f);
+            float h2FontSize = GetResolvedFloat(() => m_TargetStyle.GetTextSize(UIType.Header2, GetEffectiveSemanticForProperty("m_Header2FontSize")), "m_Header2FontSize", 14f);
             m_PreviewHeader2.style.fontSize = h2FontSize > 0 ? h2FontSize : 14f;
 
-            float h3FontSize = GetResolvedFloat(() => m_TargetStyle.GetHeader3FontSize(GetEffectiveSemanticForProperty("m_Header3FontSize")), "m_Header3FontSize", 12f);
+            float h3FontSize = GetResolvedFloat(() => m_TargetStyle.GetTextSize(UIType.Header3, GetEffectiveSemanticForProperty("m_Header3FontSize")), "m_Header3FontSize", 12f);
             m_PreviewHeader3.style.fontSize = h3FontSize > 0 ? h3FontSize : 12f;
 
             // 3. Logo Sprites

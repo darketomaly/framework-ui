@@ -176,12 +176,15 @@ namespace Framework.UI
         
         // --- Text sizes ---
 
-        public float GetLabelFontSize(UISemantic semantic) => Resolve(semantic, e => e.m_LabelFontSize);
+        public float GetTextSize(UIType uiType, UISemantic semantic)
+        {
+            if (!UITypeExtensions.s_TextSizeSelectors.TryGetValue(uiType, out var selector))
+            {
+                this.LogError($"No text size mapping for {uiType}");
+                return 0f;
+            }
 
-        public float GetHeader1FontSize(UISemantic semantic) => Resolve(semantic, e => e.m_Header1FontSize);
-
-        public float GetHeader2FontSize(UISemantic semantic) => Resolve(semantic, e => e.m_Header2FontSize);
-        
-        public float GetHeader3FontSize(UISemantic semantic) => Resolve(semantic, e => e.m_Header3FontSize);
+            return Resolve(semantic, selector);
+        }
     }
 }

@@ -1,21 +1,10 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Framework.UI
 {
-    [AttributeUsage(AttributeTargets.Field)]
-    public class ColorAttribute : PropertyAttribute { }
-    
-    [AttributeUsage(AttributeTargets.Field)]
-    public class ColorBlockAttribute : PropertyAttribute { }
-    
-    [AttributeUsage(AttributeTargets.Field)]
-    public class SpriteAttribute : PropertyAttribute { }
-    
-    [AttributeUsage(AttributeTargets.Field)]
-    public class TextAttribute : PropertyAttribute { }
-    
     public enum UIType
     {
         // Colors (100–199)
@@ -39,6 +28,15 @@ namespace Framework.UI
 
     public static class UITypeExtensions
     {
+        public static readonly IReadOnlyDictionary<UIType, Func<StyleSemanticEntry, Overridable<float>>> s_TextSizeSelectors
+            = new Dictionary<UIType, Func<StyleSemanticEntry, Overridable<float>>>
+            {
+                [UIType.Label]   = e => e.m_LabelFontSize,
+                [UIType.Header1] = e => e.m_Header1FontSize,
+                [UIType.Header2] = e => e.m_Header2FontSize,
+                [UIType.Header3] = e => e.m_Header3FontSize,
+            };
+        
         public static Color GetColor(this UIStyle uiStyle, UIType uiType, UISemantic semantic)
         {
             return uiType switch
@@ -77,28 +75,7 @@ namespace Framework.UI
         
         public static float GetTextSize(this UIStyle uiStyle, UIType uiType, UISemantic semantic)
         {
-            return uiType switch
-            {
-                UIType.Label => uiStyle.GetLabelFontSize(semantic),
-                UIType.Header1 => uiStyle.GetHeader1FontSize(semantic),
-                UIType.Header2 => uiStyle.GetHeader2FontSize(semantic),
-                UIType.Header3 => uiStyle.GetHeader3FontSize(semantic),
-                _ => 0
-            };
-        }
-
-        private static bool HasAttribute<T>(this UIType type) where T : Attribute
-        {
-            // Get the field info for the specific enum value
-            var field = typeof(UIType).GetField(type.ToString());
-        
-            if (field == null)
-            {
-                return false;
-            }
-
-            // Check if the attribute is defined on that field
-            return Attribute.IsDefined(field, typeof(T));
+            return uiStyle.GetTextSize(uiType, semantic);
         }
         
         public static bool IsColor(this UIType type) => type.HasAttribute<ColorAttribute>();
@@ -108,6 +85,20 @@ namespace Framework.UI
         public static bool IsSprite(this UIType type) =>  type.HasAttribute<SpriteAttribute>();
 
         public static bool IsText(this UIType type) =>  type.HasAttribute<TextAttribute>();
+        
+        private static bool HasAttribute<T>(this UIType type) where T : Attribute
+                {
+                    // Get the field info for the specific enum value
+                    var field = typeof(UIType).GetField(type.ToString());
+                
+                    if (field == null)
+                    {
+                        return false;
+                    }
+        
+                    // Check if the attribute is defined on that field
+                    return Attribute.IsDefined(field, typeof(T));
+                }
     }
     
     public enum UIEvents
@@ -115,4 +106,16 @@ namespace Framework.UI
         ManagerInitialized,
         OnThemeChanged
     }
+    
+    [AttributeUsage(AttributeTargets.Field)]
+    public class ColorAttribute : PropertyAttribute { }
+    
+    [AttributeUsage(AttributeTargets.Field)]
+    public class ColorBlockAttribute : PropertyAttribute { }
+    
+    [AttributeUsage(AttributeTargets.Field)]
+    public class SpriteAttribute : PropertyAttribute { }
+    
+    [AttributeUsage(AttributeTargets.Field)]
+    public class TextAttribute : PropertyAttribute { }
 }

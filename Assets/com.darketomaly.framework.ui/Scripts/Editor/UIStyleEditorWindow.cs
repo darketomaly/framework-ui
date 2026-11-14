@@ -991,19 +991,23 @@ namespace Framework.UI.Editor
             AddPropertyField(regularColorsCard, currentEntryProp, "m_PanelSeparatorColor", "Panel Separator Color");
             m_LeftScrollView.Add(regularColorsCard);
 
-            // Section 3: Selectable Color Blocks
-            var colorBlocksCard = CreateSectionCard("Selectable Color Blocks", new Color(0.95f, 0.65f, 0.20f, 1f));
-            AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ButtonColorBlock", "Button Background Colors");
-            AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ButtonBorderColorBlock", "Button Border Colors");
-            AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ButtonTextColorBlock", "Button Text Colors");
-            AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ButtonIconColorBlock", "Button Icon Colors");
-            AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ToggleColorBlock", "Toggle Background Colors");
-            AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ToggleBorderColorBlock", "Toggle Border Colors");
-            AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ToggleTextColorBlock", "Toggle Text Colors");
-            AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ToggleIconColorBlock", "Toggle Icon Colors");
-            m_LeftScrollView.Add(colorBlocksCard);
+            // Section 3: Button Color Blocks
+            var buttonColorBlocksCard = CreateSectionCard("Button Color Blocks", new Color(0.95f, 0.65f, 0.20f, 1f));
+            AddColorBlockField(buttonColorBlocksCard, currentEntryProp, "m_ButtonColorBlock", "Button Background Colors");
+            AddColorBlockField(buttonColorBlocksCard, currentEntryProp, "m_ButtonBorderColorBlock", "Button Border Colors");
+            AddColorBlockField(buttonColorBlocksCard, currentEntryProp, "m_ButtonTextColorBlock", "Button Text Colors");
+            AddColorBlockField(buttonColorBlocksCard, currentEntryProp, "m_ButtonIconColorBlock", "Button Icon Colors");
+            m_LeftScrollView.Add(buttonColorBlocksCard);
 
-            // Section 4: Animations
+            // Section 4: Toggle Color Blocks
+            var toggleColorBlocksCard = CreateSectionCard("Toggle Color Blocks", new Color(0.95f, 0.65f, 0.20f, 1f));
+            AddColorBlockField(toggleColorBlocksCard, currentEntryProp, "m_ToggleColorBlock", "Toggle Background Colors");
+            AddColorBlockField(toggleColorBlocksCard, currentEntryProp, "m_ToggleBorderColorBlock", "Toggle Border Colors");
+            AddColorBlockField(toggleColorBlocksCard, currentEntryProp, "m_ToggleTextColorBlock", "Toggle Text Colors");
+            AddColorBlockField(toggleColorBlocksCard, currentEntryProp, "m_ToggleIconColorBlock", "Toggle Icon Colors");
+            m_LeftScrollView.Add(toggleColorBlocksCard);
+
+            // Section 5: Animations
             var animCard = CreateSectionCard("Animations & Scale", new Color(0.20f, 0.80f, 0.50f, 1f));
             AddPropertyField(animCard, currentEntryProp, "m_SelectableHoverScale", "Hover Scale");
             AddPropertyField(animCard, currentEntryProp, "m_SelectableClickScale", "Click Scale");
@@ -1013,7 +1017,7 @@ namespace Framework.UI.Editor
             AddPropertyField(animCard, currentEntryProp, "m_ColorAnimationDuration", "Color Transition Duration (s)");
             m_LeftScrollView.Add(animCard);
 
-            // Section 5: Text Sizes
+            // Section 6: Text Sizes
             var textSizesCard = CreateSectionCard("Text Sizes", new Color(0.95f, 0.40f, 0.55f, 1f));
             AddPropertyField(textSizesCard, currentEntryProp, "m_LabelFontSize", "Label Font Size");
             AddPropertyField(textSizesCard, currentEntryProp, "m_Header1FontSize", "Header 1 Font Size");

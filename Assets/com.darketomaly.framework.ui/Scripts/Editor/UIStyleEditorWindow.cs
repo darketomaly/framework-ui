@@ -47,10 +47,21 @@ namespace Framework.UI.Editor
         private VisualElement m_DisabledPreviewButton;
         private Image m_DisabledPreviewButtonIcon;
         private Label m_DisabledPreviewButtonText;
+        
+        // Preview Toggles (Interactive / Disabled)
+        private Toggle m_PreviewToggle;
+        private VisualElement m_PreviewToggleInput;
+        private VisualElement m_PreviewToggleCheckmark;
+        private Label m_PreviewToggleText;
+        private Toggle m_DisabledPreviewToggle;
+        private VisualElement m_DisabledPreviewToggleInput;
+        private VisualElement m_DisabledPreviewToggleCheckmark;
+        private Label m_DisabledPreviewToggleText;
 
         // Status & State
         private Label m_StateInfoLabel;
         private SelectableState m_CurrentButtonState = SelectableState.Normal;
+        private SelectableState m_CurrentToggleState = SelectableState.Normal;
         private int m_BackgroundThemeIndex = 0; // 0 = Dark, 1 = Light, 2 = Checkered
         private float m_PreviewScale = 1f;
 
@@ -798,11 +809,39 @@ namespace Framework.UI.Editor
                 Color.white,
                 new Color(0.6f, 0.6f, 0.6f, 1f));
 
-            SetFloat("m_ButtonHoverScale", 1.05f);
-            SetFloat("m_ButtonClickScale", 0.95f);
-            SetFloat("m_ButtonHoverAnimationDuration", 0.2f);
-            SetFloat("m_ButtonClickAnimationDuration", 0.1f);
-            SetFloat("m_ButtonBackToNormalDuration", 0.2f);
+            SetColorBlock("m_ToggleColorBlock",
+                new Color(0.20f, 0.38f, 0.58f, 1f),
+                new Color(0.28f, 0.50f, 0.76f, 1f),
+                new Color(0.16f, 0.30f, 0.48f, 1f),
+                new Color(0.26f, 0.46f, 0.72f, 1f),
+                new Color(0.22f, 0.22f, 0.22f, 0.6f));
+
+            SetColorBlock("m_ToggleBorderColorBlock",
+                new Color(0.40f, 0.65f, 0.95f, 1f),
+                new Color(0.60f, 0.80f, 1f, 1f),
+                new Color(0.25f, 0.45f, 0.75f, 1f),
+                new Color(0.50f, 0.75f, 1f, 1f),
+                new Color(0.35f, 0.35f, 0.35f, 0.4f));
+
+            SetColorBlock("m_ToggleTextColorBlock",
+                Color.white,
+                Color.white,
+                new Color(0.9f, 0.9f, 0.9f, 1f),
+                Color.white,
+                new Color(0.6f, 0.6f, 0.6f, 1f));
+
+            SetColorBlock("m_ToggleIconColorBlock",
+                Color.white,
+                Color.white,
+                new Color(0.9f, 0.9f, 0.9f, 1f),
+                Color.white,
+                new Color(0.6f, 0.6f, 0.6f, 1f));
+
+            SetFloat("m_SelectableHoverScale", 1.05f);
+            SetFloat("m_SelectableClickScale", 0.95f);
+            SetFloat("m_SelectableHoverAnimationDuration", 0.2f);
+            SetFloat("m_SelectableClickAnimationDuration", 0.1f);
+            SetFloat("m_SelectableBackToNormalDuration", 0.2f);
             SetFloat("m_ColorAnimationDuration", 0.2f);
 
             SetFloat("m_LabelFontSize", 12f);
@@ -955,21 +994,25 @@ namespace Framework.UI.Editor
             AddPropertyField(regularColorsCard, currentEntryProp, "m_PanelSeparatorColor", "Panel Separator Color");
             m_LeftScrollView.Add(regularColorsCard);
 
-            // Section 3: Button Color Blocks
-            var colorBlocksCard = CreateSectionCard("Button Color Blocks", new Color(0.95f, 0.65f, 0.20f, 1f));
+            // Section 3: Selectable Color Blocks
+            var colorBlocksCard = CreateSectionCard("Selectable Color Blocks", new Color(0.95f, 0.65f, 0.20f, 1f));
             AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ButtonColorBlock", "Button Background Colors");
             AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ButtonBorderColorBlock", "Button Border Colors");
             AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ButtonTextColorBlock", "Button Text Colors");
             AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ButtonIconColorBlock", "Button Icon Colors");
+            AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ToggleColorBlock", "Toggle Background Colors");
+            AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ToggleBorderColorBlock", "Toggle Border Colors");
+            AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ToggleTextColorBlock", "Toggle Text Colors");
+            AddColorBlockField(colorBlocksCard, currentEntryProp, "m_ToggleIconColorBlock", "Toggle Icon Colors");
             m_LeftScrollView.Add(colorBlocksCard);
 
             // Section 4: Animations
             var animCard = CreateSectionCard("Animations & Scale", new Color(0.20f, 0.80f, 0.50f, 1f));
-            AddPropertyField(animCard, currentEntryProp, "m_ButtonHoverScale", "Hover Scale");
-            AddPropertyField(animCard, currentEntryProp, "m_ButtonClickScale", "Click Scale");
-            AddPropertyField(animCard, currentEntryProp, "m_ButtonHoverAnimationDuration", "Hover Animation Duration (s)");
-            AddPropertyField(animCard, currentEntryProp, "m_ButtonClickAnimationDuration", "Click Animation Duration (s)");
-            AddPropertyField(animCard, currentEntryProp, "m_ButtonBackToNormalDuration", "Return To Normal Duration (s)");
+            AddPropertyField(animCard, currentEntryProp, "m_SelectableHoverScale", "Hover Scale");
+            AddPropertyField(animCard, currentEntryProp, "m_SelectableClickScale", "Click Scale");
+            AddPropertyField(animCard, currentEntryProp, "m_SelectableHoverAnimationDuration", "Hover Animation Duration (s)");
+            AddPropertyField(animCard, currentEntryProp, "m_SelectableClickAnimationDuration", "Click Animation Duration (s)");
+            AddPropertyField(animCard, currentEntryProp, "m_SelectableBackToNormalDuration", "Return To Normal Duration (s)");
             AddPropertyField(animCard, currentEntryProp, "m_ColorAnimationDuration", "Color Transition Duration (s)");
             m_LeftScrollView.Add(animCard);
 
@@ -1616,7 +1659,7 @@ namespace Framework.UI.Editor
             toolbar.style.backgroundColor = new Color(0.18f, 0.18f, 0.18f, 1f);
 
             // State Preview Buttons
-            var statesLabel = new Label("State:");
+            var statesLabel = new Label("Button State:");
             statesLabel.style.fontSize = 11;
             statesLabel.style.color = new Color(0.7f, 0.7f, 0.7f, 1f);
             statesLabel.style.marginRight = 4;
@@ -1723,7 +1766,7 @@ namespace Framework.UI.Editor
             statusBar.style.borderTopColor = new Color(0.11f, 0.11f, 0.11f, 1f);
             statusBar.style.backgroundColor = new Color(0.12f, 0.12f, 0.12f, 1f);
 
-            m_StateInfoLabel = new Label("State: Normal | Hover / Click button for live animations | Mouse wheel to zoom.");
+            m_StateInfoLabel = new Label("Button: Normal | Toggle: Normal | Hover/select preview controls for live animations | Mouse wheel to zoom.");
             m_StateInfoLabel.style.fontSize = 11;
             m_StateInfoLabel.style.color = new Color(0.6f, 0.75f, 0.9f, 1f);
             statusBar.Add(m_StateInfoLabel);
@@ -1822,6 +1865,21 @@ namespace Framework.UI.Editor
             buttonsRow.Add(m_DisabledPreviewButton);
 
             buttonsContainer.Add(buttonsRow);
+            
+            var togglesRow = new VisualElement();
+            togglesRow.style.flexDirection = FlexDirection.Row;
+            togglesRow.style.alignItems = Align.Center;
+            togglesRow.style.justifyContent = Justify.Center;
+            togglesRow.style.marginTop = 10;
+
+            m_PreviewToggle = CreatePreviewToggleElement(false);
+            togglesRow.Add(m_PreviewToggle);
+
+            m_DisabledPreviewToggle = CreatePreviewToggleElement(true);
+            m_DisabledPreviewToggle.style.marginLeft = 12;
+            togglesRow.Add(m_DisabledPreviewToggle);
+
+            buttonsContainer.Add(togglesRow);
 
             panel.Add(buttonsContainer);
 
@@ -1919,6 +1977,118 @@ namespace Framework.UI.Editor
 
             return btn;
         }
+        
+        private Toggle CreatePreviewToggleElement(bool isDisabledToggle)
+        {
+            var toggle = new Toggle(isDisabledToggle ? "Disabled Toggle" : "Interactive Toggle");
+            toggle.value = !isDisabledToggle;
+            toggle.style.alignItems = Align.Center;
+            toggle.style.justifyContent = Justify.FlexStart;
+            toggle.style.paddingLeft = 10;
+            toggle.style.paddingRight = 10;
+            toggle.style.paddingTop = 8;
+            toggle.style.paddingBottom = 8;
+            toggle.style.borderTopLeftRadius = 6;
+            toggle.style.borderTopRightRadius = 6;
+            toggle.style.borderBottomLeftRadius = 6;
+            toggle.style.borderBottomRightRadius = 6;
+            toggle.style.transformOrigin = new TransformOrigin(Length.Percent(50), Length.Percent(50));
+            toggle.style.transitionProperty = new List<StylePropertyName>
+            {
+                new StylePropertyName("scale")
+            };
+
+            var input = toggle.Q(className: "unity-toggle__input");
+            if (input != null)
+            {
+                input.style.width = 16;
+                input.style.height = 16;
+                input.style.marginRight = 8;
+                input.style.borderTopWidth = 2;
+                input.style.borderRightWidth = 2;
+                input.style.borderBottomWidth = 2;
+                input.style.borderLeftWidth = 2;
+                input.style.borderTopLeftRadius = 3;
+                input.style.borderTopRightRadius = 3;
+                input.style.borderBottomLeftRadius = 3;
+                input.style.borderBottomRightRadius = 3;
+                input.style.transitionProperty = new List<StylePropertyName>
+                {
+                    new StylePropertyName("background-color"),
+                    new StylePropertyName("border-top-color"),
+                    new StylePropertyName("border-right-color"),
+                    new StylePropertyName("border-bottom-color"),
+                    new StylePropertyName("border-left-color")
+                };
+            }
+
+            var checkmark = toggle.Q(className: "unity-toggle__checkmark");
+            if (checkmark != null)
+            {
+                checkmark.style.transitionProperty = new List<StylePropertyName>
+                {
+                    new StylePropertyName("color")
+                };
+            }
+
+            var text = toggle.Q<Label>(className: "unity-toggle__text") ?? toggle.Q<Label>();
+            if (text != null)
+            {
+                text.style.fontSize = 13;
+                text.style.unityFontStyleAndWeight = FontStyle.Bold;
+            }
+
+            if (isDisabledToggle)
+            {
+                toggle.SetEnabled(false);
+                m_DisabledPreviewToggle = toggle;
+                m_DisabledPreviewToggleInput = input;
+                m_DisabledPreviewToggleCheckmark = checkmark;
+                m_DisabledPreviewToggleText = text;
+            }
+            else
+            {
+                m_PreviewToggle = toggle;
+                m_PreviewToggleInput = input;
+                m_PreviewToggleCheckmark = checkmark;
+                m_PreviewToggleText = text;
+
+                toggle.RegisterCallback<PointerEnterEvent>(evt =>
+                {
+                    SetToggleState(SelectableState.Highlighted);
+                });
+
+                toggle.RegisterCallback<PointerLeaveEvent>(evt =>
+                {
+                    SetToggleState(SelectableState.Normal);
+                });
+
+                toggle.RegisterCallback<PointerDownEvent>(evt =>
+                {
+                    toggle.CapturePointer(evt.pointerId);
+                    SetToggleState(SelectableState.Pressed);
+                });
+
+                toggle.RegisterCallback<PointerUpEvent>(evt =>
+                {
+                    if (toggle.HasPointerCapture(evt.pointerId))
+                    {
+                        toggle.ReleasePointer(evt.pointerId);
+                    }
+
+                    if (toggle.worldBound.Contains(evt.position))
+                    {
+                        SetToggleState(SelectableState.Highlighted);
+                    }
+                    else
+                    {
+                        SetToggleState(SelectableState.Normal);
+                    }
+                });
+            }
+
+            return toggle;
+        }
 
         #endregion
 
@@ -1929,6 +2099,14 @@ namespace Framework.UI.Editor
             m_CurrentButtonState = state;
             UpdateStateButtonVisuals();
             UpdatePreviewButtonVisuals();
+            UpdateStateInfoLabel();
+        }
+        
+        private void SetToggleState(SelectableState state)
+        {
+            m_CurrentToggleState = state;
+            UpdatePreviewToggleVisuals();
+            UpdateStateInfoLabel();
         }
 
         private void UpdateStateButtonVisuals()
@@ -1948,6 +2126,12 @@ namespace Framework.UI.Editor
                     kvp.Value.style.unityFontStyleAndWeight = FontStyle.Normal;
                 }
             }
+        }
+        
+        private void UpdateStateInfoLabel()
+        {
+            if (m_StateInfoLabel == null) return;
+            m_StateInfoLabel.text = $"Button: {m_CurrentButtonState}  |  Toggle: {m_CurrentToggleState}  |  Zoom: {m_PreviewScale * 100:F0}%";
         }
 
         private bool IsPropertyOverriddenInCurrentContext(string propertyPath)
@@ -2073,11 +2257,11 @@ namespace Framework.UI.Editor
             {
                 switch (propertyPath)
                 {
-                    case "m_ButtonHoverScale": return target.GetButtonHoverScale(semantic);
-                    case "m_ButtonClickScale": return target.GetButtonClickScale(semantic);
-                    case "m_ButtonHoverAnimationDuration": return target.GetButtonHoverAnimationDuration(semantic);
-                    case "m_ButtonClickAnimationDuration": return target.GetButtonClickAnimationDuration(semantic);
-                    case "m_ButtonBackToNormalDuration": return target.GetButtonBackToNormalAnimationDuration(semantic);
+                    case "m_SelectableHoverScale": return target.GetSelectableHoverScale(semantic);
+                    case "m_SelectableClickScale": return target.GetSelectableClickScale(semantic);
+                    case "m_SelectableHoverAnimationDuration": return target.GetSelectableHoverAnimationDuration(semantic);
+                    case "m_SelectableClickAnimationDuration": return target.GetSelectableClickAnimationDuration(semantic);
+                    case "m_SelectableBackToNormalDuration": return target.GetSelectableBackToNormalAnimationDuration(semantic);
                     case "m_ColorAnimationDuration": return target.GetColorAnimationDuration(semantic);
                     case "m_LabelFontSize": return target.GetTextSize(UIType.Label, semantic);
                     case "m_Header1FontSize": return target.GetTextSize(UIType.Header1, semantic);
@@ -2116,6 +2300,10 @@ namespace Framework.UI.Editor
                     case "m_ButtonBorderColorBlock": return target.GetColorBlock(UIType.ButtonBorder, semantic);
                     case "m_ButtonTextColorBlock": return target.GetColorBlock(UIType.ButtonText, semantic);
                     case "m_ButtonIconColorBlock": return target.GetColorBlock(UIType.ButtonIcon, semantic);
+                    case "m_ToggleColorBlock": return target.GetColorBlock(UIType.ToggleBackground, semantic);
+                    case "m_ToggleBorderColorBlock": return target.GetColorBlock(UIType.ToggleBorder, semantic);
+                    case "m_ToggleTextColorBlock": return target.GetColorBlock(UIType.ToggleText, semantic);
+                    case "m_ToggleIconColorBlock": return target.GetColorBlock(UIType.ToggleIcon, semantic);
                 }
             }
             catch
@@ -2391,8 +2579,6 @@ namespace Framework.UI.Editor
                 }
             }
 
-            var sem = GetSelectedSemantic();
-
             // 1. Panel & Separator Colors
             m_PreviewPanel.style.backgroundColor = GetResolvedColor(() => m_TargetStyle.GetColor(UIType.Panel, GetEffectiveSemanticForProperty("m_PanelColor")), "m_PanelColor");
             m_PreviewPanel.style.borderTopColor = GetResolvedColor(() => m_TargetStyle.GetColor(UIType.PanelBorder, GetEffectiveSemanticForProperty("m_PanelBorderColor")), "m_PanelBorderColor");
@@ -2438,6 +2624,7 @@ namespace Framework.UI.Editor
                 m_DisabledPreviewButtonIcon.image = null;
                 m_DisabledPreviewButtonIcon.sprite = logoSprite;
                 m_DisabledPreviewButtonIcon.style.display = DisplayStyle.Flex;
+
             }
             else
             {
@@ -2456,6 +2643,7 @@ namespace Framework.UI.Editor
                     m_DisabledPreviewButtonIcon.sprite = null;
                     m_DisabledPreviewButtonIcon.image = defaultIcon;
                     m_DisabledPreviewButtonIcon.style.display = DisplayStyle.Flex;
+
                 }
                 else
                 {
@@ -2464,9 +2652,11 @@ namespace Framework.UI.Editor
                 }
             }
 
-            // 4. Update Button Visuals (Interactive Button and Disabled Button)
+            // 4. Update Selectable Visuals
             UpdatePreviewButtonVisuals();
             UpdateDisabledButtonVisuals();
+            UpdatePreviewToggleVisuals();
+            UpdateDisabledToggleVisuals();
             ApplyPreviewScale();
         }
 
@@ -2479,13 +2669,12 @@ namespace Framework.UI.Editor
             }
 
             UpdatePreviewButtonVisuals();
+            UpdatePreviewToggleVisuals();
         }
 
         private void UpdatePreviewButtonVisuals()
         {
             if (m_TargetStyle == null || m_PreviewButton == null) return;
-
-            var sem = GetSelectedSemantic();
 
             // Compute colors from ColorBlocks for current state
             Color bgColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ButtonBackground, GetEffectiveSemanticForProperty("m_ButtonColorBlock")), "m_ButtonColorBlock"), m_CurrentButtonState);
@@ -2493,28 +2682,7 @@ namespace Framework.UI.Editor
             Color textColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ButtonText, GetEffectiveSemanticForProperty("m_ButtonTextColorBlock")), "m_ButtonTextColorBlock"), m_CurrentButtonState);
             Color iconColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ButtonIcon, GetEffectiveSemanticForProperty("m_ButtonIconColorBlock")), "m_ButtonIconColorBlock"), m_CurrentButtonState);
 
-            // Compute Scale and Animation Duration
-            float targetScale = 1.0f;
-            float animDuration = GetResolvedFloat(() => m_TargetStyle.GetButtonBackToNormalAnimationDuration(GetEffectiveSemanticForProperty("m_ButtonBackToNormalDuration")), "m_ButtonBackToNormalDuration", 0.5f);
-
-            switch (m_CurrentButtonState)
-            {
-                case SelectableState.Highlighted:
-                    targetScale = GetResolvedFloat(() => m_TargetStyle.GetButtonHoverScale(GetEffectiveSemanticForProperty("m_ButtonHoverScale")), "m_ButtonHoverScale", 1.0f);
-                    animDuration = GetResolvedFloat(() => m_TargetStyle.GetButtonHoverAnimationDuration(GetEffectiveSemanticForProperty("m_ButtonHoverAnimationDuration")), "m_ButtonHoverAnimationDuration", 0.5f);
-                    break;
-                case SelectableState.Pressed:
-                    targetScale = GetResolvedFloat(() => m_TargetStyle.GetButtonClickScale(GetEffectiveSemanticForProperty("m_ButtonClickScale")), "m_ButtonClickScale", 1.0f);
-                    animDuration = GetResolvedFloat(() => m_TargetStyle.GetButtonClickAnimationDuration(GetEffectiveSemanticForProperty("m_ButtonClickAnimationDuration")), "m_ButtonClickAnimationDuration", 0.25f);
-                    break;
-                case SelectableState.Selected:
-                    targetScale = GetResolvedFloat(() => m_TargetStyle.GetButtonClickScale(GetEffectiveSemanticForProperty("m_ButtonClickScale")), "m_ButtonClickScale", 1.0f);
-                    animDuration = GetResolvedFloat(() => m_TargetStyle.GetButtonClickAnimationDuration(GetEffectiveSemanticForProperty("m_ButtonClickAnimationDuration")), "m_ButtonClickAnimationDuration", 0.25f);
-                    break;
-            }
-
-            // Apply transition durations
-            float colorDuration = GetResolvedFloat(() => m_TargetStyle.GetColorAnimationDuration(GetEffectiveSemanticForProperty("m_ColorAnimationDuration")), "m_ColorAnimationDuration", 0.5f);
+            ResolveSelectableAnimation(m_CurrentButtonState, out float targetScale, out float animDuration, out float colorDuration);
             m_PreviewButton.style.transitionDuration = new List<TimeValue>
             {
                 new TimeValue(animDuration, TimeUnit.Second),
@@ -2539,11 +2707,67 @@ namespace Framework.UI.Editor
             m_PreviewButtonText.style.color = textColor;
             m_PreviewButtonIcon.tintColor = iconColor;
 
-            // Status message
-            if (m_StateInfoLabel != null)
+            UpdateStateInfoLabel();
+        }
+        
+        private void UpdatePreviewToggleVisuals()
+        {
+            if (m_TargetStyle == null || m_PreviewToggle == null) return;
+            
+            Color bgColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ToggleBackground, GetEffectiveSemanticForProperty("m_ToggleColorBlock")), "m_ToggleColorBlock"), m_CurrentToggleState);
+            Color borderColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ToggleBorder, GetEffectiveSemanticForProperty("m_ToggleBorderColorBlock")), "m_ToggleBorderColorBlock"), m_CurrentToggleState);
+            Color textColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ToggleText, GetEffectiveSemanticForProperty("m_ToggleTextColorBlock")), "m_ToggleTextColorBlock"), m_CurrentToggleState);
+            Color iconColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ToggleIcon, GetEffectiveSemanticForProperty("m_ToggleIconColorBlock")), "m_ToggleIconColorBlock"), m_CurrentToggleState);
+            
+            ResolveSelectableAnimation(m_CurrentToggleState, out float targetScale, out float animDuration, out float colorDuration);
+            m_PreviewToggle.style.transitionDuration = new List<TimeValue>
             {
-                string semName = sem != null ? sem.name : "Default";
-                m_StateInfoLabel.text = $"Variant: {semName}  |  State: {m_CurrentButtonState}  |  Scale: {targetScale:F2}x ({animDuration:F2}s)  |  Zoom: {m_PreviewScale * 100:F0}%  |  Color Transition: {colorDuration:F2}s";
+                new TimeValue(animDuration, TimeUnit.Second),
+                new TimeValue(colorDuration, TimeUnit.Second),
+                new TimeValue(colorDuration, TimeUnit.Second),
+                new TimeValue(colorDuration, TimeUnit.Second),
+                new TimeValue(colorDuration, TimeUnit.Second),
+                new TimeValue(colorDuration, TimeUnit.Second),
+                new TimeValue(colorDuration, TimeUnit.Second)
+            };
+            if (m_PreviewToggleInput != null)
+            {
+                m_PreviewToggleInput.style.transitionDuration = new List<TimeValue>
+                {
+                    new TimeValue(colorDuration, TimeUnit.Second),
+                    new TimeValue(colorDuration, TimeUnit.Second),
+                    new TimeValue(colorDuration, TimeUnit.Second),
+                    new TimeValue(colorDuration, TimeUnit.Second),
+                    new TimeValue(colorDuration, TimeUnit.Second)
+                };
+            }
+
+            if (m_PreviewToggleCheckmark != null)
+            {
+                m_PreviewToggleCheckmark.style.transitionDuration = new List<TimeValue>
+                {
+                    new TimeValue(colorDuration, TimeUnit.Second)
+                };
+            }
+            
+            m_PreviewToggle.style.scale = new Scale(new Vector3(targetScale, targetScale, 1f));
+            if (m_PreviewToggleInput != null)
+            {
+                m_PreviewToggleInput.style.backgroundColor = bgColor;
+                m_PreviewToggleInput.style.borderTopColor = borderColor;
+                m_PreviewToggleInput.style.borderRightColor = borderColor;
+                m_PreviewToggleInput.style.borderBottomColor = borderColor;
+                m_PreviewToggleInput.style.borderLeftColor = borderColor;
+            }
+
+            if (m_PreviewToggleText != null)
+            {
+                m_PreviewToggleText.style.color = textColor;
+            }
+
+            if (m_PreviewToggleCheckmark != null)
+            {
+                m_PreviewToggleCheckmark.style.color = iconColor;
             }
         }
 
@@ -2564,6 +2788,56 @@ namespace Framework.UI.Editor
 
             m_DisabledPreviewButtonText.style.color = textColor;
             m_DisabledPreviewButtonIcon.tintColor = iconColor;
+        }
+        
+        private void UpdateDisabledToggleVisuals()
+        {
+            if (m_TargetStyle == null || m_DisabledPreviewToggle == null) return;
+            
+            Color bgColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ToggleBackground, GetEffectiveSemanticForProperty("m_ToggleColorBlock")), "m_ToggleColorBlock"), SelectableState.Disabled);
+            Color borderColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ToggleBorder, GetEffectiveSemanticForProperty("m_ToggleBorderColorBlock")), "m_ToggleBorderColorBlock"), SelectableState.Disabled);
+            Color textColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ToggleText, GetEffectiveSemanticForProperty("m_ToggleTextColorBlock")), "m_ToggleTextColorBlock"), SelectableState.Disabled);
+            Color iconColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetColorBlock(UIType.ToggleIcon, GetEffectiveSemanticForProperty("m_ToggleIconColorBlock")), "m_ToggleIconColorBlock"), SelectableState.Disabled);
+            
+            if (m_DisabledPreviewToggleInput != null)
+            {
+                m_DisabledPreviewToggleInput.style.backgroundColor = bgColor;
+                m_DisabledPreviewToggleInput.style.borderTopColor = borderColor;
+                m_DisabledPreviewToggleInput.style.borderRightColor = borderColor;
+                m_DisabledPreviewToggleInput.style.borderBottomColor = borderColor;
+                m_DisabledPreviewToggleInput.style.borderLeftColor = borderColor;
+            }
+
+            if (m_DisabledPreviewToggleText != null)
+            {
+                m_DisabledPreviewToggleText.style.color = textColor;
+            }
+
+            if (m_DisabledPreviewToggleCheckmark != null)
+            {
+                m_DisabledPreviewToggleCheckmark.style.color = iconColor;
+            }
+        }
+        
+        private void ResolveSelectableAnimation(SelectableState state, out float targetScale, out float animDuration, out float colorDuration)
+        {
+            targetScale = 1.0f;
+            animDuration = GetResolvedFloat(() => m_TargetStyle.GetSelectableBackToNormalAnimationDuration(GetEffectiveSemanticForProperty("m_SelectableBackToNormalDuration")), "m_SelectableBackToNormalDuration", 0.5f);
+
+            switch (state)
+            {
+                case SelectableState.Highlighted:
+                    targetScale = GetResolvedFloat(() => m_TargetStyle.GetSelectableHoverScale(GetEffectiveSemanticForProperty("m_SelectableHoverScale")), "m_SelectableHoverScale", 1.0f);
+                    animDuration = GetResolvedFloat(() => m_TargetStyle.GetSelectableHoverAnimationDuration(GetEffectiveSemanticForProperty("m_SelectableHoverAnimationDuration")), "m_SelectableHoverAnimationDuration", 0.5f);
+                    break;
+                case SelectableState.Pressed:
+                case SelectableState.Selected:
+                    targetScale = GetResolvedFloat(() => m_TargetStyle.GetSelectableClickScale(GetEffectiveSemanticForProperty("m_SelectableClickScale")), "m_SelectableClickScale", 1.0f);
+                    animDuration = GetResolvedFloat(() => m_TargetStyle.GetSelectableClickAnimationDuration(GetEffectiveSemanticForProperty("m_SelectableClickAnimationDuration")), "m_SelectableClickAnimationDuration", 0.25f);
+                    break;
+            }
+
+            colorDuration = GetResolvedFloat(() => m_TargetStyle.GetColorAnimationDuration(GetEffectiveSemanticForProperty("m_ColorAnimationDuration")), "m_ColorAnimationDuration", 0.5f);
         }
 
         private static Color GetEffectiveColor(ColorBlock block, SelectableState state)

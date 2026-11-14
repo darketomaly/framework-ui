@@ -80,20 +80,20 @@ namespace Framework.UI
         public static void UpdateScale(RectTransform rt, SelectableState selectableState, UISemantic semantic)
         {
             var targetScaleMagnitude = 1f;
-            var duration = CurrentStyle.GetButtonBackToNormalAnimationDuration(semantic);
+            var duration = CurrentStyle.GetSelectableBackToNormalAnimationDuration(semantic);
 
             switch (selectableState)
             {
                 case SelectableState.Highlighted:
-                    duration = CurrentStyle.GetButtonHoverAnimationDuration(semantic);
-                    targetScaleMagnitude = CurrentStyle.GetButtonHoverScale(semantic);
+                    duration = CurrentStyle.GetSelectableHoverAnimationDuration(semantic);
+                    targetScaleMagnitude = CurrentStyle.GetSelectableHoverScale(semantic);
                     break;
                 case SelectableState.Pressed:
-                    duration = CurrentStyle.GetButtonClickAnimationDuration(semantic);
-                    targetScaleMagnitude = CurrentStyle.GetButtonClickScale(semantic);
+                    duration = CurrentStyle.GetSelectableClickAnimationDuration(semantic);
+                    targetScaleMagnitude = CurrentStyle.GetSelectableClickScale(semantic);
                     break;
                 case SelectableState.Selected:
-                    duration = CurrentStyle.GetButtonClickAnimationDuration(semantic);
+                    duration = CurrentStyle.GetSelectableClickAnimationDuration(semantic);
                     break;
             }
 

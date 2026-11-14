@@ -33,11 +33,11 @@ namespace Framework.UI
         public Overridable<ColorBlock> m_ToggleIconColorBlock = new();
         
         [Header("Animations")] 
-        public Overridable<float> m_ButtonHoverScale = new();
-        public Overridable<float> m_ButtonClickScale = new();
-        public Overridable<float> m_ButtonHoverAnimationDuration = new();
-        public Overridable<float> m_ButtonClickAnimationDuration = new();
-        public Overridable<float> m_ButtonBackToNormalDuration = new();
+        public Overridable<float> m_SelectableHoverScale = new();
+        public Overridable<float> m_SelectableClickScale = new();
+        public Overridable<float> m_SelectableHoverAnimationDuration = new();
+        public Overridable<float> m_SelectableClickAnimationDuration = new();
+        public Overridable<float> m_SelectableBackToNormalDuration = new();
         public Overridable<float> m_ColorAnimationDuration = new();
         
         [Header("Text sizes")]
@@ -95,19 +95,19 @@ namespace Framework.UI
             return Resolve(semantic, selector);
         }
 
-        // --- Button scales ---
+        // --- Selectable scales ---
         
-        public float GetButtonHoverScale(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonHoverScale);
+        public float GetSelectableHoverScale(UISemantic semantic) => Resolve(semantic, e => e.m_SelectableHoverScale);
 
-        public float GetButtonClickScale(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonClickScale);
+        public float GetSelectableClickScale(UISemantic semantic) => Resolve(semantic, e => e.m_SelectableClickScale);
         
         // --- Animations ---
 
-        public float GetButtonHoverAnimationDuration(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonHoverAnimationDuration);
+        public float GetSelectableHoverAnimationDuration(UISemantic semantic) => Resolve(semantic, e => e.m_SelectableHoverAnimationDuration);
 
-        public float GetButtonClickAnimationDuration(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonClickAnimationDuration);
+        public float GetSelectableClickAnimationDuration(UISemantic semantic) => Resolve(semantic, e => e.m_SelectableClickAnimationDuration);
         
-        public float GetButtonBackToNormalAnimationDuration(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonBackToNormalDuration);
+        public float GetSelectableBackToNormalAnimationDuration(UISemantic semantic) => Resolve(semantic, e => e.m_SelectableBackToNormalDuration);
         
         public float GetColorAnimationDuration(UISemantic semantic) => Resolve(semantic, e => e.m_ColorAnimationDuration);
         

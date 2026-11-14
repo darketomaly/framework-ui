@@ -1,27 +1,40 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Framework.UI
 {
+    [AttributeUsage(AttributeTargets.Field)]
+    public class ColorAttribute : PropertyAttribute { }
+    
+    [AttributeUsage(AttributeTargets.Field)]
+    public class ColorBlockAttribute : PropertyAttribute { }
+    
+    [AttributeUsage(AttributeTargets.Field)]
+    public class SpriteAttribute : PropertyAttribute { }
+    
+    [AttributeUsage(AttributeTargets.Field)]
+    public class TextAttribute : PropertyAttribute { }
+    
     public enum UIType
     {
         // Colors (100–199)
-        Label = 100,
-        Header1,
-        Header2,
-        Header3,
-        Panel,
-        PanelBorder,
-        PanelSeparator,
+        [Color, Text] Label = 100,
+        [Color, Text] Header1, 
+        [Color, Text] Header2,
+        [Color, Text] Header3,
+        [Color] Panel,
+        [Color] PanelBorder,
+        [Color] PanelSeparator,
 
         // ColorBlocks (200–299)
-        ButtonBackground = 200,
-        ButtonBorder,
-        ButtonText,
-        ButtonIcon,
+        [ColorBlock] ButtonBackground = 200,
+        [ColorBlock] ButtonBorder,
+        [ColorBlock, Text] ButtonText,
+        [ColorBlock] ButtonIcon,
 
         // Sprites (300–399)
-        Logo = 300
+        [Sprite] Logo = 300
     }
 
     public static class UITypeExtensions
@@ -73,19 +86,28 @@ namespace Framework.UI
                 _ => 0
             };
         }
-        
-        public static bool IsColor(this UIType type) => (int)type is >= 100 and < 200;
-        
-        public static bool IsColorBlock(this UIType type) => (int)type is >= 200 and < 300;
-        
-        public static bool IsSprite(this UIType type) => (int)type is >= 300 and < 400;
 
-        public static bool IsText(this UIType type) => type is 
-            UIType.Label or 
-            UIType.ButtonText or
-            UIType.Header1 or 
-            UIType.Header2 or 
-            UIType.Header3;
+        private static bool HasAttribute<T>(this UIType type) where T : Attribute
+        {
+            // Get the field info for the specific enum value
+            var field = typeof(UIType).GetField(type.ToString());
+        
+            if (field == null)
+            {
+                return false;
+            }
+
+            // Check if the attribute is defined on that field
+            return Attribute.IsDefined(field, typeof(T));
+        }
+        
+        public static bool IsColor(this UIType type) => type.HasAttribute<ColorAttribute>();
+
+        public static bool IsColorBlock(this UIType type) => type.HasAttribute<ColorBlockAttribute>();
+        
+        public static bool IsSprite(this UIType type) =>  type.HasAttribute<SpriteAttribute>();
+
+        public static bool IsText(this UIType type) =>  type.HasAttribute<TextAttribute>();
     }
     
     public enum UIEvents

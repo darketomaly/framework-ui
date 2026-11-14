@@ -131,8 +131,17 @@ namespace Framework.UI
         }
 
         // --- Sprites ---
+        
+        public Sprite GetSprite (UIType uiType, UISemantic semantic)
+        {
+            if (!UITypeExtensions.s_SpriteSelectors.TryGetValue(uiType, out var selector))
+            {
+                this.LogError($"No sprite mapping for {uiType}");
+                return default;
+            }
 
-        public Sprite GetLogo(UISemantic semantic) => Resolve(semantic, e => e.m_Logo);
+            return Resolve(semantic, selector);
+        }
         
         // --- Colors ---
         

@@ -2156,7 +2156,7 @@ namespace Framework.UI.Editor
             {
                 if (propertyPath == "m_Logo")
                 {
-                    var logo = target.GetLogo(semantic);
+                    var logo = target.GetSprite(UIType.Logo, semantic);
                     if (logo != null) return logo;
                 }
             }
@@ -2424,7 +2424,7 @@ namespace Framework.UI.Editor
             m_PreviewHeader3.style.fontSize = h3FontSize > 0 ? h3FontSize : 12f;
 
             // 3. Logo Sprites
-            var logoSprite = GetResolvedSprite(() => m_TargetStyle.GetLogo(GetEffectiveSemanticForProperty("m_Logo")), "m_Logo");
+            var logoSprite = GetResolvedSprite(() => m_TargetStyle.GetSprite(UIType.Logo, GetEffectiveSemanticForProperty("m_Logo")), "m_Logo");
             if (logoSprite != null)
             {
                 m_PreviewLogoImage.image = null;

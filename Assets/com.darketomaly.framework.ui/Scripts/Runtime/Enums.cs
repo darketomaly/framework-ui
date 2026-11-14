@@ -37,6 +37,12 @@ namespace Framework.UI
                 [UIType.Header3] = e => e.m_Header3FontSize,
             };
         
+        public static readonly IReadOnlyDictionary<UIType, Func<StyleSemanticEntry, Overridable<Sprite>>> s_SpriteSelectors
+            = new Dictionary<UIType, Func<StyleSemanticEntry, Overridable<Sprite>>>
+            {
+                [UIType.Logo]   = e => e.m_Logo,
+            };
+        
         public static Color GetColor(this UIStyle uiStyle, UIType uiType, UISemantic semantic)
         {
             return uiType switch
@@ -66,11 +72,7 @@ namespace Framework.UI
 
         public static Sprite GetSprite(this UIStyle uiStyle, UIType uiType, UISemantic semantic)
         {
-            return uiType switch
-            {
-                UIType.Logo => uiStyle.GetLogo(semantic),
-                _ => null
-            };
+            return uiStyle.GetSprite(uiType, semantic);
         }
         
         public static float GetTextSize(this UIStyle uiStyle, UIType uiType, UISemantic semantic)

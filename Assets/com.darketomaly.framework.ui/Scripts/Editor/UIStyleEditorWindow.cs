@@ -2005,6 +2005,8 @@ namespace Framework.UI.Editor
             {
                 input.focusable = false;
                 input.style.backgroundImage = StyleKeyword.None;
+                input.style.position = Position.Relative;
+                input.style.overflow = Overflow.Hidden;
                 input.style.width = 16;
                 input.style.height = 16;
                 input.style.marginRight = 8;
@@ -2035,17 +2037,39 @@ namespace Framework.UI.Editor
             var checkmark = toggle.Q(className: "unity-toggle__checkmark");
             if (checkmark != null)
             {
-                checkmark.style.backgroundColor = Color.clear;
-                checkmark.style.borderTopWidth = 0;
-                checkmark.style.borderRightWidth = 0;
-                checkmark.style.borderBottomWidth = 0;
-                checkmark.style.borderLeftWidth = 0;
-                checkmark.style.transitionProperty = new List<StylePropertyName>
-                {
-                    new StylePropertyName("color"),
-                    new StylePropertyName("unity-background-image-tint-color")
-                };
+                checkmark.style.display = DisplayStyle.None;
             }
+            
+            var checkmarkGlyph = new Label("✓");
+            checkmarkGlyph.pickingMode = PickingMode.Ignore;
+            checkmarkGlyph.style.position = Position.Absolute;
+            checkmarkGlyph.style.left = 0;
+            checkmarkGlyph.style.right = 0;
+            checkmarkGlyph.style.top = 0;
+            checkmarkGlyph.style.bottom = 0;
+            checkmarkGlyph.style.unityTextAlign = TextAnchor.MiddleCenter;
+            checkmarkGlyph.style.fontSize = 11;
+            checkmarkGlyph.style.unityFontStyleAndWeight = FontStyle.Bold;
+            checkmarkGlyph.style.backgroundColor = Color.clear;
+            checkmarkGlyph.style.borderTopWidth = 0;
+            checkmarkGlyph.style.borderRightWidth = 0;
+            checkmarkGlyph.style.borderBottomWidth = 0;
+            checkmarkGlyph.style.borderLeftWidth = 0;
+            checkmarkGlyph.style.transitionProperty = new List<StylePropertyName>
+            {
+                new StylePropertyName("color")
+            };
+
+            if (input != null)
+            {
+                input.Add(checkmarkGlyph);
+            }
+
+            checkmarkGlyph.style.display = toggle.value ? DisplayStyle.Flex : DisplayStyle.None;
+            toggle.RegisterValueChangedCallback(evt =>
+            {
+                checkmarkGlyph.style.display = evt.newValue ? DisplayStyle.Flex : DisplayStyle.None;
+            });
 
             var text = toggle.Q<Label>(className: "unity-toggle__text") ?? toggle.Q<Label>();
             if (text != null)
@@ -2059,14 +2083,14 @@ namespace Framework.UI.Editor
                 toggle.SetEnabled(false);
                 m_DisabledPreviewToggle = toggle;
                 m_DisabledPreviewToggleInput = input;
-                m_DisabledPreviewToggleCheckmark = checkmark;
+                m_DisabledPreviewToggleCheckmark = checkmarkGlyph;
                 m_DisabledPreviewToggleText = text;
             }
             else
             {
                 m_PreviewToggle = toggle;
                 m_PreviewToggleInput = input;
-                m_PreviewToggleCheckmark = checkmark;
+                m_PreviewToggleCheckmark = checkmarkGlyph;
                 m_PreviewToggleText = text;
 
                 toggle.RegisterCallback<PointerEnterEvent>(evt =>
@@ -2797,7 +2821,6 @@ namespace Framework.UI.Editor
                 m_PreviewToggleCheckmark.style.borderBottomWidth = 0;
                 m_PreviewToggleCheckmark.style.borderLeftWidth = 0;
                 m_PreviewToggleCheckmark.style.color = iconColor;
-                m_PreviewToggleCheckmark.style.unityBackgroundImageTintColor = iconColor;
             }
         }
 
@@ -2859,7 +2882,6 @@ namespace Framework.UI.Editor
                 m_DisabledPreviewToggleCheckmark.style.borderBottomWidth = 0;
                 m_DisabledPreviewToggleCheckmark.style.borderLeftWidth = 0;
                 m_DisabledPreviewToggleCheckmark.style.color = iconColor;
-                m_DisabledPreviewToggleCheckmark.style.unityBackgroundImageTintColor = iconColor;
             }
         }
         

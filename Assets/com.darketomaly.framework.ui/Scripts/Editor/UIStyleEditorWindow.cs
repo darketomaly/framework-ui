@@ -65,9 +65,6 @@ namespace Framework.UI.Editor
         private int m_BackgroundThemeIndex = 0; // 0 = Dark, 1 = Light, 2 = Checkered
         private float m_PreviewScale = 1f;
 
-        // State Buttons
-        private Dictionary<SelectableState, Button> m_StateButtons = new Dictionary<SelectableState, Button>();
-
         [MenuItem("Tools/Framework/UI Style Editor", false, 100)]
         public static void OpenWindow()
         {
@@ -1658,35 +1655,6 @@ namespace Framework.UI.Editor
             toolbar.style.borderBottomColor = new Color(0.11f, 0.11f, 0.11f, 1f);
             toolbar.style.backgroundColor = new Color(0.18f, 0.18f, 0.18f, 1f);
 
-            // State Preview Buttons
-            var statesLabel = new Label("Button State:");
-            statesLabel.style.fontSize = 11;
-            statesLabel.style.color = new Color(0.7f, 0.7f, 0.7f, 1f);
-            statesLabel.style.marginRight = 4;
-            toolbar.Add(statesLabel);
-
-            var stateGroup = new VisualElement();
-            stateGroup.style.flexDirection = FlexDirection.Row;
-            stateGroup.style.marginRight = 12;
-
-            SelectableState[] states = { SelectableState.Normal, SelectableState.Highlighted, SelectableState.Pressed, SelectableState.Selected, SelectableState.Disabled };
-            foreach (var state in states)
-            {
-                var stateBtn = new Button(() =>
-                {
-                    SetButtonState(state);
-                })
-                {
-                    text = state.ToString()
-                };
-                stateBtn.style.paddingLeft = 6;
-                stateBtn.style.paddingRight = 6;
-                stateBtn.style.fontSize = 10;
-                m_StateButtons[state] = stateBtn;
-                stateGroup.Add(stateBtn);
-            }
-            toolbar.Add(stateGroup);
-
             var spacer = new VisualElement();
             spacer.style.flexGrow = 1;
             toolbar.Add(spacer);
@@ -1766,7 +1734,7 @@ namespace Framework.UI.Editor
             statusBar.style.borderTopColor = new Color(0.11f, 0.11f, 0.11f, 1f);
             statusBar.style.backgroundColor = new Color(0.12f, 0.12f, 0.12f, 1f);
 
-            m_StateInfoLabel = new Label("Button: Normal | Toggle: Normal | Hover/select preview controls for live animations | Mouse wheel to zoom.");
+            m_StateInfoLabel = new Label("Hover/select preview controls for live animations | Mouse wheel to zoom.");
             m_StateInfoLabel.style.fontSize = 11;
             m_StateInfoLabel.style.color = new Color(0.6f, 0.75f, 0.9f, 1f);
             statusBar.Add(m_StateInfoLabel);
@@ -2137,7 +2105,6 @@ namespace Framework.UI.Editor
         private void SetButtonState(SelectableState state)
         {
             m_CurrentButtonState = state;
-            UpdateStateButtonVisuals();
             UpdatePreviewButtonVisuals();
             UpdateStateInfoLabel();
         }
@@ -2149,29 +2116,10 @@ namespace Framework.UI.Editor
             UpdateStateInfoLabel();
         }
 
-        private void UpdateStateButtonVisuals()
-        {
-            foreach (var kvp in m_StateButtons)
-            {
-                if (kvp.Key == m_CurrentButtonState)
-                {
-                    kvp.Value.style.backgroundColor = new Color(0.24f, 0.48f, 0.82f, 1f);
-                    kvp.Value.style.color = Color.white;
-                    kvp.Value.style.unityFontStyleAndWeight = FontStyle.Bold;
-                }
-                else
-                {
-                    kvp.Value.style.backgroundColor = new Color(0.28f, 0.28f, 0.28f, 1f);
-                    kvp.Value.style.color = new Color(0.8f, 0.8f, 0.8f, 1f);
-                    kvp.Value.style.unityFontStyleAndWeight = FontStyle.Normal;
-                }
-            }
-        }
-        
         private void UpdateStateInfoLabel()
         {
             if (m_StateInfoLabel == null) return;
-            m_StateInfoLabel.text = $"Button: {m_CurrentButtonState}  |  Toggle: {m_CurrentToggleState}  |  Zoom: {m_PreviewScale * 100:F0}%";
+            m_StateInfoLabel.text = $"Zoom: {m_PreviewScale * 100:F0}%";
         }
 
         private bool IsPropertyOverriddenInCurrentContext(string propertyPath)

@@ -27,7 +27,7 @@ namespace Framework.UI
                 {
                     var foundStyles = Resources.LoadAll<UIStyle>("");
 
-                    if (foundStyles == null || foundStyles.IsFixedSize)
+                    if (foundStyles == null || foundStyles.Length == 0)
                     {
                         throw  new Exception("<color=red>[UIManager]</color> No found styles. Make sure your styles are on a resources folder.");;
                     }

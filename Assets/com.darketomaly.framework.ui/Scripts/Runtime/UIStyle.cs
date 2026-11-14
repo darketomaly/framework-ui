@@ -27,6 +27,11 @@ namespace Framework.UI
         public Overridable<ColorBlock> m_ButtonTextColorBlock = new();
         public Overridable<ColorBlock> m_ButtonIconColorBlock = new();
         
+        public Overridable<ColorBlock> m_ToggleColorBlock = new();
+        public Overridable<ColorBlock> m_ToggleBorderColorBlock = new();
+        public Overridable<ColorBlock> m_ToggleTextColorBlock = new();
+        public Overridable<ColorBlock> m_ToggleIconColorBlock = new();
+        
         [Header("Animations")] 
         public Overridable<float> m_ButtonHoverScale = new();
         public Overridable<float> m_ButtonClickScale = new();

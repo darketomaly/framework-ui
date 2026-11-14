@@ -12,21 +12,21 @@ namespace Framework.UI
     }
     
     [RequireComponent(typeof(SelectableEvents))]
-    public class UIComponentButton : MonoBehaviour
+    public class UIComponentSelectable : MonoBehaviour
     {
         public UISemantic m_Semantic;
         
         public TargetGraphic[] m_TargetGraphics;
 
         private SelectableEvents m_SelectableEvents;
-        private Button m_button;
+        private Selectable m_selectable;
         
         private void Awake()
         {
             m_SelectableEvents = GetComponent<SelectableEvents>();
             
-            m_button = GetComponent<Button>();
-            m_button.targetGraphic = null;
+            m_selectable = GetComponent<Selectable>();
+            m_selectable.targetGraphic = null;
         }
 
         private void OnEnable()
@@ -94,13 +94,18 @@ namespace Framework.UI
         private void ApplyScaleAnimation()
         {
             var state = m_SelectableEvents.CurrentState;
-            var rt = m_button.transform as RectTransform;
+            var rt = m_selectable.transform as RectTransform;
                     
             UIManager.UpdateScale(rt, state, m_Semantic);
         }
         
         private void ApplyStateColor(System.Func<ColorBlock, Color> colorSelector, bool instant)
         {
+            if (m_TargetGraphics == null)
+            {
+                return;
+            }
+            
             foreach (var targetGraphic in m_TargetGraphics)
             {
                 var graphic = targetGraphic.Graphic;

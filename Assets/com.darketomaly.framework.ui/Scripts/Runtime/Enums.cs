@@ -21,6 +21,11 @@ namespace Framework.UI
         [ColorBlock] ButtonBorder,
         [ColorBlock, Text] ButtonText,
         [ColorBlock] ButtonIcon,
+        
+        [ColorBlock] ToggleBackground,
+        [ColorBlock] ToggleBorder,
+        [ColorBlock] ToggleText,
+        [ColorBlock] ToggleIcon,
 
         // Sprites (300–399)
         [Sprite] Logo = 300
@@ -62,6 +67,11 @@ namespace Framework.UI
                 [UIType.ButtonBorder]   = e => e.m_ButtonBorderColorBlock,
                 [UIType.ButtonText]   = e => e.m_ButtonTextColorBlock,
                 [UIType.ButtonIcon]   = e => e.m_ButtonIconColorBlock,
+                
+                [UIType.ToggleBackground]   = e => e.m_ToggleColorBlock,
+                [UIType.ToggleBorder]   = e => e.m_ToggleBorderColorBlock,
+                [UIType.ToggleText]   = e => e.m_ToggleTextColorBlock,
+                [UIType.ToggleIcon]   = e => e.m_ToggleIconColorBlock,
             };
         
         public static bool IsColor(this UIType type) => type.HasAttribute<ColorAttribute>();

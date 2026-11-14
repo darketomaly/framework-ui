@@ -1,6 +1,6 @@
 {
   "name": "com.darketomaly.framework.ui",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "displayName": "Framework UI",
   "description": "Library of components and utility useful for building UI.",
   "unity": "2019.1",

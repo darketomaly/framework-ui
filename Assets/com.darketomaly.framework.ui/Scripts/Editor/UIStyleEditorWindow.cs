@@ -2000,10 +2000,11 @@ namespace Framework.UI.Editor
                 new StylePropertyName("scale")
             };
 
-            var input = toggle.Q(className: "unity-toggle__input");
+            var input = toggle.Q(className: "unity-toggle__input") ?? toggle.Q(className: "unity-base-field__input");
             if (input != null)
             {
                 input.focusable = false;
+                input.style.backgroundImage = StyleKeyword.None;
                 input.style.width = 16;
                 input.style.height = 16;
                 input.style.marginRight = 8;
@@ -2034,16 +2035,15 @@ namespace Framework.UI.Editor
             var checkmark = toggle.Q(className: "unity-toggle__checkmark");
             if (checkmark != null)
             {
-                checkmark.style.width = 10;
-                checkmark.style.height = 10;
-                checkmark.style.marginLeft = 0;
-                checkmark.style.marginRight = 0;
-                checkmark.style.marginTop = 0;
-                checkmark.style.marginBottom = 0;
-                checkmark.style.alignSelf = Align.Center;
+                checkmark.style.backgroundColor = Color.clear;
+                checkmark.style.borderTopWidth = 0;
+                checkmark.style.borderRightWidth = 0;
+                checkmark.style.borderBottomWidth = 0;
+                checkmark.style.borderLeftWidth = 0;
                 checkmark.style.transitionProperty = new List<StylePropertyName>
                 {
-                    new StylePropertyName("color")
+                    new StylePropertyName("color"),
+                    new StylePropertyName("unity-background-image-tint-color")
                 };
             }
 
@@ -2775,6 +2775,14 @@ namespace Framework.UI.Editor
                 m_PreviewToggleInput.style.borderBottomColor = borderColor;
                 m_PreviewToggleInput.style.borderLeftColor = borderColor;
             }
+            else
+            {
+                m_PreviewToggle.style.backgroundColor = bgColor;
+                m_PreviewToggle.style.borderTopColor = borderColor;
+                m_PreviewToggle.style.borderRightColor = borderColor;
+                m_PreviewToggle.style.borderBottomColor = borderColor;
+                m_PreviewToggle.style.borderLeftColor = borderColor;
+            }
 
             if (m_PreviewToggleText != null)
             {
@@ -2783,7 +2791,13 @@ namespace Framework.UI.Editor
 
             if (m_PreviewToggleCheckmark != null)
             {
+                m_PreviewToggleCheckmark.style.backgroundColor = Color.clear;
+                m_PreviewToggleCheckmark.style.borderTopWidth = 0;
+                m_PreviewToggleCheckmark.style.borderRightWidth = 0;
+                m_PreviewToggleCheckmark.style.borderBottomWidth = 0;
+                m_PreviewToggleCheckmark.style.borderLeftWidth = 0;
                 m_PreviewToggleCheckmark.style.color = iconColor;
+                m_PreviewToggleCheckmark.style.unityBackgroundImageTintColor = iconColor;
             }
         }
 
@@ -2823,6 +2837,14 @@ namespace Framework.UI.Editor
                 m_DisabledPreviewToggleInput.style.borderBottomColor = borderColor;
                 m_DisabledPreviewToggleInput.style.borderLeftColor = borderColor;
             }
+            else
+            {
+                m_DisabledPreviewToggle.style.backgroundColor = bgColor;
+                m_DisabledPreviewToggle.style.borderTopColor = borderColor;
+                m_DisabledPreviewToggle.style.borderRightColor = borderColor;
+                m_DisabledPreviewToggle.style.borderBottomColor = borderColor;
+                m_DisabledPreviewToggle.style.borderLeftColor = borderColor;
+            }
 
             if (m_DisabledPreviewToggleText != null)
             {
@@ -2831,7 +2853,13 @@ namespace Framework.UI.Editor
 
             if (m_DisabledPreviewToggleCheckmark != null)
             {
+                m_DisabledPreviewToggleCheckmark.style.backgroundColor = Color.clear;
+                m_DisabledPreviewToggleCheckmark.style.borderTopWidth = 0;
+                m_DisabledPreviewToggleCheckmark.style.borderRightWidth = 0;
+                m_DisabledPreviewToggleCheckmark.style.borderBottomWidth = 0;
+                m_DisabledPreviewToggleCheckmark.style.borderLeftWidth = 0;
                 m_DisabledPreviewToggleCheckmark.style.color = iconColor;
+                m_DisabledPreviewToggleCheckmark.style.unityBackgroundImageTintColor = iconColor;
             }
         }
         

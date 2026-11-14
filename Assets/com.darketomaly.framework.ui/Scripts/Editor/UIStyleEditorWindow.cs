@@ -2037,13 +2037,13 @@ namespace Framework.UI.Editor
             {
                 switch (propertyPath)
                 {
-                    case "m_LabelColor": return target.GetLabelColor(semantic);
-                    case "m_Header1Color": return target.GetHeader1Color(semantic);
-                    case "m_Header2Color": return target.GetHeader2Color(semantic);
-                    case "m_Header3Color": return target.GetHeader3Color(semantic);
-                    case "m_PanelColor": return target.GetPanelColor(semantic);
-                    case "m_PanelBorderColor": return target.GetPanelBorderColor(semantic);
-                    case "m_PanelSeparatorColor": return target.GetPanelSeparatorColor(semantic);
+                    case "m_LabelColor": return target.GetColor(UIType.Label, semantic);
+                    case "m_Header1Color": return target.GetColor(UIType.Header1, semantic);
+                    case "m_Header2Color": return target.GetColor(UIType.Header2, semantic);
+                    case "m_Header3Color": return target.GetColor(UIType.Header3, semantic);
+                    case "m_PanelColor": return target.GetColor(UIType.Panel, semantic);
+                    case "m_PanelBorderColor": return target.GetColor(UIType.PanelBorder, semantic);
+                    case "m_PanelSeparatorColor": return target.GetColor(UIType.PanelSeparator, semantic);
                 }
             }
             catch
@@ -2394,22 +2394,22 @@ namespace Framework.UI.Editor
             var sem = GetSelectedSemantic();
 
             // 1. Panel & Separator Colors
-            m_PreviewPanel.style.backgroundColor = GetResolvedColor(() => m_TargetStyle.GetPanelColor(GetEffectiveSemanticForProperty("m_PanelColor")), "m_PanelColor");
-            m_PreviewPanel.style.borderTopColor = GetResolvedColor(() => m_TargetStyle.GetPanelBorderColor(GetEffectiveSemanticForProperty("m_PanelBorderColor")), "m_PanelBorderColor");
-            m_PreviewPanel.style.borderRightColor = GetResolvedColor(() => m_TargetStyle.GetPanelBorderColor(GetEffectiveSemanticForProperty("m_PanelBorderColor")), "m_PanelBorderColor");
-            m_PreviewPanel.style.borderBottomColor = GetResolvedColor(() => m_TargetStyle.GetPanelBorderColor(GetEffectiveSemanticForProperty("m_PanelBorderColor")), "m_PanelBorderColor");
-            m_PreviewPanel.style.borderLeftColor = GetResolvedColor(() => m_TargetStyle.GetPanelBorderColor(GetEffectiveSemanticForProperty("m_PanelBorderColor")), "m_PanelBorderColor");
+            m_PreviewPanel.style.backgroundColor = GetResolvedColor(() => m_TargetStyle.GetColor(UIType.Panel, GetEffectiveSemanticForProperty("m_PanelColor")), "m_PanelColor");
+            m_PreviewPanel.style.borderTopColor = GetResolvedColor(() => m_TargetStyle.GetColor(UIType.PanelBorder, GetEffectiveSemanticForProperty("m_PanelBorderColor")), "m_PanelBorderColor");
+            m_PreviewPanel.style.borderRightColor = GetResolvedColor(() => m_TargetStyle.GetColor(UIType.PanelBorder, GetEffectiveSemanticForProperty("m_PanelBorderColor")), "m_PanelBorderColor");
+            m_PreviewPanel.style.borderBottomColor = GetResolvedColor(() => m_TargetStyle.GetColor(UIType.PanelBorder, GetEffectiveSemanticForProperty("m_PanelBorderColor")), "m_PanelBorderColor");
+            m_PreviewPanel.style.borderLeftColor = GetResolvedColor(() => m_TargetStyle.GetColor(UIType.PanelBorder, GetEffectiveSemanticForProperty("m_PanelBorderColor")), "m_PanelBorderColor");
 
             if (m_PreviewSeparator != null)
             {
-                m_PreviewSeparator.style.backgroundColor = GetResolvedColor(() => m_TargetStyle.GetPanelSeparatorColor(GetEffectiveSemanticForProperty("m_PanelSeparatorColor")), "m_PanelSeparatorColor");
+                m_PreviewSeparator.style.backgroundColor = GetResolvedColor(() => m_TargetStyle.GetColor(UIType.PanelSeparator, GetEffectiveSemanticForProperty("m_PanelSeparatorColor")), "m_PanelSeparatorColor");
             }
 
             // 2. Regular Text Colors & Sizes
-            m_PreviewLabel.style.color = GetResolvedColor(() => m_TargetStyle.GetLabelColor(GetEffectiveSemanticForProperty("m_LabelColor")), "m_LabelColor");
-            m_PreviewHeader1.style.color = GetResolvedColor(() => m_TargetStyle.GetHeader1Color(GetEffectiveSemanticForProperty("m_Header1Color")), "m_Header1Color");
-            m_PreviewHeader2.style.color = GetResolvedColor(() => m_TargetStyle.GetHeader2Color(GetEffectiveSemanticForProperty("m_Header2Color")), "m_Header2Color");
-            m_PreviewHeader3.style.color = GetResolvedColor(() => m_TargetStyle.GetHeader3Color(GetEffectiveSemanticForProperty("m_Header3Color")), "m_Header3Color");
+            m_PreviewLabel.style.color = GetResolvedColor(() => m_TargetStyle.GetColor(UIType.Label, GetEffectiveSemanticForProperty("m_LabelColor")), "m_LabelColor");
+            m_PreviewHeader1.style.color = GetResolvedColor(() => m_TargetStyle.GetColor(UIType.Header1, GetEffectiveSemanticForProperty("m_Header1Color")), "m_Header1Color");
+            m_PreviewHeader2.style.color = GetResolvedColor(() => m_TargetStyle.GetColor(UIType.Header2, GetEffectiveSemanticForProperty("m_Header2Color")), "m_Header2Color");
+            m_PreviewHeader3.style.color = GetResolvedColor(() => m_TargetStyle.GetColor(UIType.Header3, GetEffectiveSemanticForProperty("m_Header3Color")), "m_Header3Color");
 
             float labelFontSize = GetResolvedFloat(() => m_TargetStyle.GetTextSize(UIType.Label, GetEffectiveSemanticForProperty("m_LabelFontSize")), "m_LabelFontSize", 12f);
             m_PreviewLabel.style.fontSize = labelFontSize > 0 ? labelFontSize : 12f;

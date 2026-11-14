@@ -96,40 +96,6 @@ namespace Framework.UI
             return semanticEntry;
         }
         
-        private T Resolve<T>(UISemantic semantic, System.Func<StyleSemanticEntry, Overridable<T>> selector)
-        {
-            var entry = GetSemanticEntry(semantic);
-            
-            if (entry == null)
-            {
-                this.LogError("Semantic entry not found. This should not happen");
-                return default;
-            }
-            
-            var field = selector(entry);
-            
-            if (field == null)
-            {
-                this.LogError("Overridable field not found. This should not happen");
-                return default;
-            }
-            
-            // If there's no override on the semantic, grab the default semantic
-            // The default semantic may or may not have an override itself for the style
-
-            if (entry != m_StyleSemantics[0] && !field.IsOverriden)
-            {
-                return Resolve(m_StyleSemantics[0].Semantic, selector);
-            }
-
-            if (field.IsOverriden || m_ParentStyle == null)
-            {
-                return field;
-            }
-
-            return m_ParentStyle.Resolve(semantic, selector);
-        }
-
         // --- Sprites ---
         
         public Sprite GetSprite (UIType uiType, UISemantic semantic)
@@ -144,20 +110,17 @@ namespace Framework.UI
         }
         
         // --- Colors ---
-        
-        public Color GetLabelColor(UISemantic semantic) => Resolve(semantic, e => e.m_LabelColor);
 
-        public Color GetHeader1Color(UISemantic semantic) => Resolve(semantic, e=> e.m_Header1Color);
+        public Color GetColor(UIType uiType, UISemantic semantic)
+        {
+            if (!UITypeExtensions.s_ColorSelectors.TryGetValue(uiType, out var selector))
+            {
+                this.LogError($"No color mapping for {uiType}");
+                return default;
+            }
 
-        public Color GetHeader2Color(UISemantic semantic) => Resolve(semantic, e => e.m_Header2Color);
-
-        public Color GetHeader3Color(UISemantic semantic) => Resolve(semantic, e => e.m_Header3Color);
-
-        public Color GetPanelColor(UISemantic semantic) => Resolve(semantic, e => e.m_PanelColor);
-
-        public Color GetPanelBorderColor(UISemantic semantic) => Resolve(semantic, e => e.m_PanelBorderColor);
-
-        public Color GetPanelSeparatorColor(UISemantic semantic) => Resolve(semantic, e => e.m_PanelSeparatorColor);
+            return Resolve(semantic, selector);
+        }
         
         // --- Color blocks ---
 
@@ -195,5 +158,42 @@ namespace Framework.UI
 
             return Resolve(semantic, selector);
         }
+        
+        // --- Private methods ---
+        
+        private T Resolve<T>(UISemantic semantic, System.Func<StyleSemanticEntry, Overridable<T>> selector)
+                {
+                    var entry = GetSemanticEntry(semantic);
+                    
+                    if (entry == null)
+                    {
+                        this.LogError("Semantic entry not found. This should not happen");
+                        return default;
+                    }
+                    
+                    var field = selector(entry);
+                    
+                    if (field == null)
+                    {
+                        this.LogError("Overridable field not found. This should not happen");
+                        return default;
+                    }
+                    
+                    // If there's no override on the semantic, grab the default semantic
+                    // The default semantic may or may not have an override itself for the style
+        
+                    if (entry != m_StyleSemantics[0] && !field.IsOverriden)
+                    {
+                        return Resolve(m_StyleSemantics[0].Semantic, selector);
+                    }
+        
+                    if (field.IsOverriden || m_ParentStyle == null)
+                    {
+                        return field;
+                    }
+        
+                    return m_ParentStyle.Resolve(semantic, selector);
+                }
+        
     }
 }

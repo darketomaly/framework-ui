@@ -43,20 +43,17 @@ namespace Framework.UI
                 [UIType.Logo]   = e => e.m_Logo,
             };
         
-        public static Color GetColor(this UIStyle uiStyle, UIType uiType, UISemantic semantic)
-        {
-            return uiType switch
+        public static readonly IReadOnlyDictionary<UIType, Func<StyleSemanticEntry, Overridable<Color>>> s_ColorSelectors
+            = new Dictionary<UIType, Func<StyleSemanticEntry, Overridable<Color>>>
             {
-                UIType.Label => uiStyle.GetLabelColor(semantic),
-                UIType.Header1 => uiStyle.GetHeader1Color(semantic),
-                UIType.Header2 => uiStyle.GetHeader2Color(semantic),
-                UIType.Header3 => uiStyle.GetHeader3Color(semantic),
-                UIType.Panel =>  uiStyle.GetPanelColor(semantic),
-                UIType.PanelBorder => uiStyle.GetPanelBorderColor(semantic),
-                UIType.PanelSeparator => uiStyle.GetPanelSeparatorColor(semantic),
-                _ => default
+                [UIType.Label]   = e => e.m_LabelColor,
+                [UIType.Header1]   = e => e.m_Header1Color,
+                [UIType.Header2]   = e => e.m_Header2Color,
+                [UIType.Header3]   = e => e.m_Header3Color,
+                [UIType.Panel]   = e => e.m_PanelColor,
+                [UIType.PanelBorder]   = e => e.m_PanelBorderColor,
+                [UIType.PanelSeparator]   = e => e.m_PanelSeparatorColor,
             };
-        }
 
         public static ColorBlock GetColorBlock(this UIStyle uiStyle, UIType uiType, UISemantic semantic)
         {
@@ -68,16 +65,6 @@ namespace Framework.UI
                 UIType.ButtonIcon => uiStyle.GetButtonIconColorBlock(semantic),
                 _ => default
             };
-        }
-
-        public static Sprite GetSprite(this UIStyle uiStyle, UIType uiType, UISemantic semantic)
-        {
-            return uiStyle.GetSprite(uiType, semantic);
-        }
-        
-        public static float GetTextSize(this UIStyle uiStyle, UIType uiType, UISemantic semantic)
-        {
-            return uiStyle.GetTextSize(uiType, semantic);
         }
         
         public static bool IsColor(this UIType type) => type.HasAttribute<ColorAttribute>();

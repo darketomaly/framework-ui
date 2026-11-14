@@ -42,28 +42,6 @@ namespace Framework.UI
         public Overridable<float> m_Header3FontSize = new();
     }
     
-    [System.Serializable]
-    public class Overridable<T>
-    {
-        public bool IsOverriden;
-        
-        [SerializeField]
-        private T Value;
-        
-        // Implicit conversion from Overridable<T> to T
-        public static implicit operator T(Overridable<T> overridable)
-        {
-            return overridable.Value;
-        }
-
-        // Implicit conversion from T to Overridable<T>
-        public static implicit operator Overridable<T>(T value) => value is null ? null : new()
-        { 
-            Value = value, 
-            IsOverriden = true 
-        };
-    }
-    
     public class UIStyle : ScriptableObject
     {
         // --- Data storage (Parent style, semantics and its style values) ---
@@ -72,29 +50,6 @@ namespace Framework.UI
         private UIStyle m_ParentStyle;
         
         public List<StyleSemanticEntry> m_StyleSemantics = new();
-
-        private StyleSemanticEntry GetSemanticEntry(UISemantic semantic)
-        {
-            if (m_StyleSemantics == null || m_StyleSemantics.Count == 0)
-            {
-                this.LogError("Style has no semantics, this should not happen. It should always have at least the default semantic");
-                return null;
-            }
-            
-            // Always default to the default semantic
-            StyleSemanticEntry semanticEntry = m_StyleSemantics[0];
-            
-            foreach (var entry in m_StyleSemantics)
-            {
-                if (entry.Semantic == semantic)
-                {
-                    semanticEntry = entry;
-                    break;
-                }
-            }
-
-            return semanticEntry;
-        }
         
         // --- Sprites ---
         
@@ -164,6 +119,29 @@ namespace Framework.UI
         
         // --- Private methods ---
         
+        private StyleSemanticEntry GetSemanticEntry(UISemantic semantic)
+        {
+            if (m_StyleSemantics == null || m_StyleSemantics.Count == 0)
+            {
+                this.LogError("Style has no semantics, this should not happen. It should always have at least the default semantic");
+                return null;
+            }
+            
+            // Always default to the default semantic
+            StyleSemanticEntry semanticEntry = m_StyleSemantics[0];
+            
+            foreach (var entry in m_StyleSemantics)
+            {
+                if (entry.Semantic == semantic)
+                {
+                    semanticEntry = entry;
+                    break;
+                }
+            }
+
+            return semanticEntry;
+        }
+        
         private T Resolve<T>(UISemantic semantic, System.Func<StyleSemanticEntry, Overridable<T>> selector)
                 {
                     var entry = GetSemanticEntry(semantic);
@@ -197,5 +175,27 @@ namespace Framework.UI
         
                     return m_ParentStyle.Resolve(semantic, selector);
                 }
+    }
+    
+    [System.Serializable]
+    public class Overridable<T>
+    {
+        public bool IsOverriden;
+        
+        [SerializeField]
+        private T Value;
+        
+        // Implicit conversion from Overridable<T> to T
+        public static implicit operator T(Overridable<T> overridable)
+        {
+            return overridable.Value;
+        }
+
+        // Implicit conversion from T to Overridable<T>
+        public static implicit operator Overridable<T>(T value) => value is null ? null : new()
+        { 
+            Value = value, 
+            IsOverriden = true 
+        };
     }
 }

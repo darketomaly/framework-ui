@@ -77,22 +77,22 @@ namespace Framework.UI
             return CurrentStyle.GetSprite(uiType, semantic);
         }
 
-        public static void UpdateScale(RectTransform rt, ButtonState buttonState, UISemantic semantic)
+        public static void UpdateScale(RectTransform rt, SelectableState selectableState, UISemantic semantic)
         {
             var targetScaleMagnitude = 1f;
             var duration = CurrentStyle.GetButtonBackToNormalAnimationDuration(semantic);
-            
-            switch (buttonState)
+
+            switch (selectableState)
             {
-                case ButtonState.Highlighted:
+                case SelectableState.Highlighted:
                     duration = CurrentStyle.GetButtonHoverAnimationDuration(semantic);
                     targetScaleMagnitude = CurrentStyle.GetButtonHoverScale(semantic);
                     break;
-                case ButtonState.Pressed:
+                case SelectableState.Pressed:
                     duration = CurrentStyle.GetButtonClickAnimationDuration(semantic);
                     targetScaleMagnitude = CurrentStyle.GetButtonClickScale(semantic);
                     break;
-                case ButtonState.Selected:
+                case SelectableState.Selected:
                     duration = CurrentStyle.GetButtonClickAnimationDuration(semantic);
                     break;
             }

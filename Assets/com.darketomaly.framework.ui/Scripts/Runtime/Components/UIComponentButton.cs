@@ -11,19 +11,19 @@ namespace Framework.UI
         public UIType Type;
     }
     
-    [RequireComponent(typeof(ButtonEvents))]
+    [RequireComponent(typeof(SelectableEvents))]
     public class UIComponentButton : MonoBehaviour
     {
         public UISemantic m_Semantic;
         
         public TargetGraphic[] m_TargetGraphics;
 
-        private ButtonEvents m_buttonEvents;
+        private SelectableEvents m_SelectableEvents;
         private Button m_button;
         
         private void Awake()
         {
-            m_buttonEvents = GetComponent<ButtonEvents>();
+            m_SelectableEvents = GetComponent<SelectableEvents>();
             
             m_button = GetComponent<Button>();
             m_button.targetGraphic = null;
@@ -31,11 +31,11 @@ namespace Framework.UI
 
         private void OnEnable()
         {
-            m_buttonEvents.OnNormal += RefreshAnimated;
-            m_buttonEvents.OnHighlighted += RefreshAnimated;
-            m_buttonEvents.OnPressed += RefreshAnimated;
-            m_buttonEvents.OnSelected += RefreshAnimated;
-            m_buttonEvents.OnDisabled += RefreshAnimated;
+            m_SelectableEvents.OnNormal += RefreshAnimated;
+            m_SelectableEvents.OnHighlighted += RefreshAnimated;
+            m_SelectableEvents.OnPressed += RefreshAnimated;
+            m_SelectableEvents.OnSelected += RefreshAnimated;
+            m_SelectableEvents.OnDisabled += RefreshAnimated;
             
             FrameworkEventsFactory.Subscribe(UIEvents.ManagerInitialized, OnManagerInitialized);
             FrameworkEventsFactory.Subscribe(UIEvents.OnThemeChanged, OnThemeChanged);
@@ -43,11 +43,11 @@ namespace Framework.UI
 
         private void OnDisable()
         {
-            m_buttonEvents.OnNormal -= RefreshAnimated;
-            m_buttonEvents.OnHighlighted -= RefreshAnimated;
-            m_buttonEvents.OnPressed -= RefreshAnimated;
-            m_buttonEvents.OnSelected -= RefreshAnimated;
-            m_buttonEvents.OnDisabled -= RefreshAnimated;
+            m_SelectableEvents.OnNormal -= RefreshAnimated;
+            m_SelectableEvents.OnHighlighted -= RefreshAnimated;
+            m_SelectableEvents.OnPressed -= RefreshAnimated;
+            m_SelectableEvents.OnSelected -= RefreshAnimated;
+            m_SelectableEvents.OnDisabled -= RefreshAnimated;
             
             FrameworkEventsFactory.Unsubscribe(UIEvents.ManagerInitialized, OnThemeChanged);
             FrameworkEventsFactory.Unsubscribe(UIEvents.OnThemeChanged, OnThemeChanged);
@@ -71,21 +71,21 @@ namespace Framework.UI
 
         private void RefreshColor(bool instant)
         {
-            switch (m_buttonEvents.CurrentState)
+            switch (m_SelectableEvents.CurrentState)
             {
-                case ButtonState.Normal:
+                case SelectableState.Normal:
                     ApplyStateColor(block => block.normalColor, instant);
                     break;
-                case ButtonState.Highlighted:
+                case SelectableState.Highlighted:
                     ApplyStateColor(block => block.highlightedColor, instant);
                     break;
-                case ButtonState.Pressed:
+                case SelectableState.Pressed:
                     ApplyStateColor(block => block.pressedColor, instant);
                     break;
-                case ButtonState.Selected:
+                case SelectableState.Selected:
                     ApplyStateColor(block => block.selectedColor, instant);
                     break;
-                case ButtonState.Disabled:
+                case SelectableState.Disabled:
                     ApplyStateColor(block => block.disabledColor, instant);
                     break;
             }
@@ -93,7 +93,7 @@ namespace Framework.UI
 
         private void ApplyScaleAnimation()
         {
-            var state = m_buttonEvents.CurrentState;
+            var state = m_SelectableEvents.CurrentState;
             var rt = m_button.transform as RectTransform;
                     
             UIManager.UpdateScale(rt, state, m_Semantic);

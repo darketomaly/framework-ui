@@ -50,12 +50,12 @@ namespace Framework.UI.Editor
 
         // Status & State
         private Label m_StateInfoLabel;
-        private ButtonState m_CurrentButtonState = ButtonState.Normal;
+        private SelectableState m_CurrentButtonState = SelectableState.Normal;
         private int m_BackgroundThemeIndex = 0; // 0 = Dark, 1 = Light, 2 = Checkered
         private float m_PreviewScale = 1f;
 
         // State Buttons
-        private Dictionary<ButtonState, Button> m_StateButtons = new Dictionary<ButtonState, Button>();
+        private Dictionary<SelectableState, Button> m_StateButtons = new Dictionary<SelectableState, Button>();
 
         [MenuItem("Tools/Framework/UI Style Editor", false, 100)]
         public static void OpenWindow()
@@ -1626,7 +1626,7 @@ namespace Framework.UI.Editor
             stateGroup.style.flexDirection = FlexDirection.Row;
             stateGroup.style.marginRight = 12;
 
-            ButtonState[] states = { ButtonState.Normal, ButtonState.Highlighted, ButtonState.Pressed, ButtonState.Selected, ButtonState.Disabled };
+            SelectableState[] states = { SelectableState.Normal, SelectableState.Highlighted, SelectableState.Pressed, SelectableState.Selected, SelectableState.Disabled };
             foreach (var state in states)
             {
                 var stateBtn = new Button(() =>
@@ -1885,18 +1885,18 @@ namespace Framework.UI.Editor
                 // Mouse Event Handlers for Live Interactive Hover and Click Scaling
                 btn.RegisterCallback<PointerEnterEvent>(evt =>
                 {
-                    SetButtonState(ButtonState.Highlighted);
+                    SetButtonState(SelectableState.Highlighted);
                 });
 
                 btn.RegisterCallback<PointerLeaveEvent>(evt =>
                 {
-                    SetButtonState(ButtonState.Normal);
+                    SetButtonState(SelectableState.Normal);
                 });
 
                 btn.RegisterCallback<PointerDownEvent>(evt =>
                 {
                     btn.CapturePointer(evt.pointerId);
-                    SetButtonState(ButtonState.Pressed);
+                    SetButtonState(SelectableState.Pressed);
                 });
 
                 btn.RegisterCallback<PointerUpEvent>(evt =>
@@ -1908,11 +1908,11 @@ namespace Framework.UI.Editor
 
                     if (btn.worldBound.Contains(evt.position))
                     {
-                        SetButtonState(ButtonState.Highlighted);
+                        SetButtonState(SelectableState.Highlighted);
                     }
                     else
                     {
-                        SetButtonState(ButtonState.Normal);
+                        SetButtonState(SelectableState.Normal);
                     }
                 });
             }
@@ -1924,7 +1924,7 @@ namespace Framework.UI.Editor
 
         #region Preview Update Logic
 
-        private void SetButtonState(ButtonState state)
+        private void SetButtonState(SelectableState state)
         {
             m_CurrentButtonState = state;
             UpdateStateButtonVisuals();
@@ -2499,15 +2499,15 @@ namespace Framework.UI.Editor
 
             switch (m_CurrentButtonState)
             {
-                case ButtonState.Highlighted:
+                case SelectableState.Highlighted:
                     targetScale = GetResolvedFloat(() => m_TargetStyle.GetButtonHoverScale(GetEffectiveSemanticForProperty("m_ButtonHoverScale")), "m_ButtonHoverScale", 1.0f);
                     animDuration = GetResolvedFloat(() => m_TargetStyle.GetButtonHoverAnimationDuration(GetEffectiveSemanticForProperty("m_ButtonHoverAnimationDuration")), "m_ButtonHoverAnimationDuration", 0.5f);
                     break;
-                case ButtonState.Pressed:
+                case SelectableState.Pressed:
                     targetScale = GetResolvedFloat(() => m_TargetStyle.GetButtonClickScale(GetEffectiveSemanticForProperty("m_ButtonClickScale")), "m_ButtonClickScale", 1.0f);
                     animDuration = GetResolvedFloat(() => m_TargetStyle.GetButtonClickAnimationDuration(GetEffectiveSemanticForProperty("m_ButtonClickAnimationDuration")), "m_ButtonClickAnimationDuration", 0.25f);
                     break;
-                case ButtonState.Selected:
+                case SelectableState.Selected:
                     targetScale = GetResolvedFloat(() => m_TargetStyle.GetButtonClickScale(GetEffectiveSemanticForProperty("m_ButtonClickScale")), "m_ButtonClickScale", 1.0f);
                     animDuration = GetResolvedFloat(() => m_TargetStyle.GetButtonClickAnimationDuration(GetEffectiveSemanticForProperty("m_ButtonClickAnimationDuration")), "m_ButtonClickAnimationDuration", 0.25f);
                     break;
@@ -2551,10 +2551,10 @@ namespace Framework.UI.Editor
         {
             if (m_TargetStyle == null || m_DisabledPreviewButton == null) return;
 
-            Color bgColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonColorBlock(GetEffectiveSemanticForProperty("m_ButtonColorBlock")), "m_ButtonColorBlock"), ButtonState.Disabled);
-            Color borderColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonBorderColorBlock(GetEffectiveSemanticForProperty("m_ButtonBorderColorBlock")), "m_ButtonBorderColorBlock"), ButtonState.Disabled);
-            Color textColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonTextColorBlock(GetEffectiveSemanticForProperty("m_ButtonTextColorBlock")), "m_ButtonTextColorBlock"), ButtonState.Disabled);
-            Color iconColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonIconColorBlock(GetEffectiveSemanticForProperty("m_ButtonIconColorBlock")), "m_ButtonIconColorBlock"), ButtonState.Disabled);
+            Color bgColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonColorBlock(GetEffectiveSemanticForProperty("m_ButtonColorBlock")), "m_ButtonColorBlock"), SelectableState.Disabled);
+            Color borderColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonBorderColorBlock(GetEffectiveSemanticForProperty("m_ButtonBorderColorBlock")), "m_ButtonBorderColorBlock"), SelectableState.Disabled);
+            Color textColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonTextColorBlock(GetEffectiveSemanticForProperty("m_ButtonTextColorBlock")), "m_ButtonTextColorBlock"), SelectableState.Disabled);
+            Color iconColor = GetEffectiveColor(GetResolvedColorBlock(() => m_TargetStyle.GetButtonIconColorBlock(GetEffectiveSemanticForProperty("m_ButtonIconColorBlock")), "m_ButtonIconColorBlock"), SelectableState.Disabled);
 
             m_DisabledPreviewButton.style.backgroundColor = bgColor;
             m_DisabledPreviewButton.style.borderTopColor = borderColor;
@@ -2566,15 +2566,15 @@ namespace Framework.UI.Editor
             m_DisabledPreviewButtonIcon.tintColor = iconColor;
         }
 
-        private static Color GetEffectiveColor(ColorBlock block, ButtonState state)
+        private static Color GetEffectiveColor(ColorBlock block, SelectableState state)
         {
             return state switch
             {
-                ButtonState.Normal => block.normalColor,
-                ButtonState.Highlighted => block.highlightedColor,
-                ButtonState.Pressed => block.pressedColor,
-                ButtonState.Selected => block.selectedColor,
-                ButtonState.Disabled => block.disabledColor,
+                SelectableState.Normal => block.normalColor,
+                SelectableState.Highlighted => block.highlightedColor,
+                SelectableState.Pressed => block.pressedColor,
+                SelectableState.Selected => block.selectedColor,
+                SelectableState.Disabled => block.disabledColor,
                 _ => block.normalColor
             };
         }

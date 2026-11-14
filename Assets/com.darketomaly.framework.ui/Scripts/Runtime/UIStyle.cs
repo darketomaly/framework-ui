@@ -90,11 +90,13 @@ namespace Framework.UI
             return Resolve(semantic, selector);
         }
 
-        // --- Animations ---
-
+        // --- Button scales ---
+        
         public float GetButtonHoverScale(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonHoverScale);
 
         public float GetButtonClickScale(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonClickScale);
+        
+        // --- Animations ---
 
         public float GetButtonHoverAnimationDuration(UISemantic semantic) => Resolve(semantic, e => e.m_ButtonHoverAnimationDuration);
 
